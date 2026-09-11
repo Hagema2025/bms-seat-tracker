@@ -49,4 +49,7 @@ jobs:
           sleep 5
 
       - name: Run Scraper Loop
+        env:
+          TG_BOT_TOKEN: ${{ vars.TG_BOT_TOKEN }}
+          TG_GROUP_CHAT_ID: ${{ vars.TG_GROUP_CHAT_ID }}
         run: python -u seat_scraper.py
