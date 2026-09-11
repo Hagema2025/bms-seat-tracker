@@ -12,8 +12,8 @@ STATE_FILE = "state.json"
 MAX_RUNTIME_SECONDS = (5 * 3600) + (55 * 60) # 5 hours 55 mins
 
 # Telegram Configuration
-TG_BOT_TOKEN = "YOUR_BOT_TOKEN"
-TG_GROUP_CHAT_ID = "-100YOURGROUPID" 
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN")
+TG_GROUP_CHAT_ID = os.environ.get("TG_GROUP_CHAT_ID") 
 
 USE_WARP = False
 PROXIES = {
