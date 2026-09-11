@@ -178,7 +178,7 @@ def find_matching_seats(available_by_row, show_reqs):
             grouped_by_row = {}
             for s in all_valid_seats[:seat_count]: grouped_by_row.setdefault(s["row"], []).append(s["num"])
             
-            match_text = [f"Row {r}: {', '.join(sorted(nums, key=lambda x: int(x) if x.isdigit() else x))}" for r, grouped_by_row.items()]
+            match_text = [f"Row {r}: {', '.join(sorted(nums, key=lambda x: int(x) if x.isdigit() else x))}" for r, nums in grouped_by_row.items()]
             match_text.append("⭐ (Algorithmically selected best centered seats)")
             return True, match_text
         return False, []
