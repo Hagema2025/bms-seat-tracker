@@ -59,7 +59,6 @@ def fetch_seat_layout(session_id, venue_code):
     except Exception as e:
         print(f"Fetch error: {e}")
     return ""
-
 def parse_layout(str_data):
     if not str_data: return {}
     parts = str_data.split("||")
@@ -75,12 +74,22 @@ def parse_layout(str_data):
         for grid_idx, seat in enumerate(seats):
             if seat.endswith("000") or seat == "0000": continue
             if len(seat) >= 4 and seat[1] == '2': # '2' means available
-                avail_seats.append({"num": str(int(seat[2:])), "idx": grid_idx})
+                
+                # --- NEW SAFE PARSING LOGIC ---
+                raw_seat_num = seat[2:]
+                try:
+                    # Try normal integer conversion (turns "04" into "4")
+                    clean_num = str(int(raw_seat_num))
+                except ValueError:
+                    # If it has weird characters like "01+01", just strip the leading zero safely
+                    clean_num = raw_seat_num.lstrip("0") or raw_seat_num
+                
+                avail_seats.append({"num": clean_num, "idx": grid_idx})
+                # ------------------------------
                 
         if avail_seats:
             available_seats_by_row[row_letter] = {"width": len(seats), "seats": avail_seats}
     return available_seats_by_row
-
 def find_matching_seats(available_by_row, show_reqs):
     seat_count = show_reqs.get("seat_count", 1)
     req_adj = show_reqs.get("require_adjacent", False)
