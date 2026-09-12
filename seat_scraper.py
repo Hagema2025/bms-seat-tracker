@@ -101,15 +101,29 @@ def save_json(filepath, data):
 def fetch_seat_layout(session_id, venue_code):
     url = "https://services-in.bookmyshow.com/doTrans.aspx"
     
-    # 💥 THE FIX: Add a live Unix Timestamp to force BMS to bypass its cache and give us REAL-TIME data!
+    # Cache buster to ensure real-time data
     cache_buster = int(time.time() * 1000)
     payload = f"strParam4=&strParam5=Y&strParam6=&strParam7=N&strParam1={session_id}&strParam2=WEB&strParam3=&strVenueCode={venue_code}&lngTransactionIdentifier={cache_buster}&strAppCode=MOBAND2&strFormat=json&strCommand=GETSEATLAYOUT"
     
     resp = make_bms_request('POST', url, headers=POST_HEADERS, data=payload)
-    if not resp or resp.status_code != 200: return ""
-    try: return resp.json().get("BookMyShow", {}).get("strData", "")
-    except Exception: return ""
-
+    
+    if not resp:
+        print("    -> [DEBUG] Network failed or hit max retries.")
+        return ""
+        
+    if resp.status_code != 200:
+        print(f"    -> [DEBUG] BMS Blocked Request! HTTP {resp.status_code}. Response: {resp.text[:150]}")
+        return ""
+        
+    try:
+        json_resp = resp.json()
+        str_data = json_resp.get("BookMyShow", {}).get("strData", "")
+        if not str_data:
+            print(f"    -> [DEBUG] BMS returned 200 OK, but no seat data: {json.dumps(json_resp)[:150]}")
+        return str_data
+    except Exception as e:
+        print(f"    -> [DEBUG] Failed to parse JSON: {e}")
+        return ""
 def parse_layout(str_data):
     if not str_data: return {}
     parts = str_data.split("||")
