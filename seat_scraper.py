@@ -58,8 +58,7 @@ def fetch_seat_layout(session_id, venue_code):
             return resp.json().get("BookMyShow", {}).get("strData", "")
     except Exception as e:
         print(f"Fetch error: {e}")
-    return ""
-def parse_layout(str_data):
+    return ""def parse_layout(str_data):
     if not str_data: return {}
     parts = str_data.split("||")
     rows_data = parts[1] if len(parts) > 1 else parts[0]
@@ -68,28 +67,41 @@ def parse_layout(str_data):
     for row_str in rows_data.split("|"):
         if not row_str or ":" not in row_str: continue
         elements = row_str.split(":")
-        row_letter, seats = elements[1], elements[2:]
+        
+        # The row letter is always the 2nd element for all theaters
+        row_letter = elements[1] 
+        seats = elements[2:]
         
         avail_seats = []
         for grid_idx, seat in enumerate(seats):
-            if seat.endswith("000") or seat == "0000": continue
-            if len(seat) >= 4 and seat[1] == '2': # '2' means available
+            # We only care if it is a real seat and its status is '2' (Available)
+            if len(seat) >= 4 and seat[1] == '2': 
                 
-                # --- NEW SAFE PARSING LOGIC ---
                 raw_seat_num = seat[2:]
+                
+                # --- UNIVERSAL SEAT PARSER ---
+                # If there's a '+', the REAL seat number is on the right side
+                if "+" in raw_seat_num:
+                    display_num = raw_seat_num.split("+")[1]
+                else:
+                    display_num = raw_seat_num
+                    
                 try:
-                    # Try normal integer conversion (turns "04" into "4")
-                    clean_num = str(int(raw_seat_num))
+                    # Convert to normal integer (turns "04" into "4")
+                    clean_num = str(int(display_num))
                 except ValueError:
-                    # If it has weird characters like "01+01", just strip the leading zero safely
-                    clean_num = raw_seat_num.lstrip("0") or raw_seat_num
+                    # Fallback for truly weird characters (removes leading zero)
+                    clean_num = display_num.lstrip("0") or display_num
+                # -----------------------------
                 
                 avail_seats.append({"num": clean_num, "idx": grid_idx})
-                # ------------------------------
                 
         if avail_seats:
             available_seats_by_row[row_letter] = {"width": len(seats), "seats": avail_seats}
+            
     return available_seats_by_row
+
+
 def find_matching_seats(available_by_row, show_reqs):
     seat_count = show_reqs.get("seat_count", 1)
     req_adj = show_reqs.get("require_adjacent", False)
