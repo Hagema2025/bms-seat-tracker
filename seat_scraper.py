@@ -1,100 +1,29 @@
-import requests
-from curl_cffi import requests as cffi_requests
+import os
 import time
 import json
-import os
-import re
-import subprocess
+import requests
+from curl_cffi import requests as cffi_requests
 
 # --- CONFIGURATION ---
 SHOWS_FILE = "shows.json"
 STATE_FILE = "state.json"
-MAX_RUNTIME_SECONDS = (5 * 3600) + (55 * 60) # 5 hours 55 mins
 
-# Telegram Configuration loaded via Environment Variables / GitHub Secrets
-TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN")
-TG_GROUP_CHAT_ID = os.environ.get("TG_GROUP_CHAT_ID") 
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
+TG_GROUP_CHAT_ID = os.environ.get("TG_GROUP_CHAT_ID", "YOUR_CHAT_ID_HERE") 
 
 if not TG_BOT_TOKEN or not TG_GROUP_CHAT_ID:
-    print("❌ ERROR: Telegram secrets are missing! Please set them in your environment/GitHub Secrets.")
+    print("❌ ERROR: Telegram secrets are missing!")
     exit(1)
 
-USE_WARP = False
-PROXIES = {
-    "http": "socks5://127.0.0.1:40000",
-    "https": "socks5://127.0.0.1:40000"
-}
-
-# 💥 Aggressive Cache-Busting Headers
 POST_HEADERS = {
     "Host": "services-in.bookmyshow.com",
-    "X-Timeout": "10",
     "X-App-Code": "MOBAND2",
-    "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 10; Android SDK built for x86_64 Build/QSR1.211112.011)",
-    "X-App-Version": "18.2.3",
+    "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 10)",
     "Content-Type": "application/x-www-form-urlencoded",
     "Accept-Encoding": "gzip, deflate",
-    "Cache-Control": "no-cache, no-store, must-revalidate",
-    "Pragma": "no-cache",
-    "Expires": "0"
 }
 
-# --- GIT SYNC ENGINE ---
-
-def pull_latest_changes():
-    subprocess.run(["git", "fetch", "origin", "main"], capture_output=True, check=False)
-    subprocess.run(["git", "reset", "--hard", "origin/main"], capture_output=True, check=False)
-
-def push_state_to_github():
-    subprocess.run(["git", "add", STATE_FILE], capture_output=True)
-    status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
-    
-    if STATE_FILE in status.stdout:
-        print("    -> 💾 Pushing updated state.json to GitHub...")
-        subprocess.run(["git", "commit", "-m", "Auto-update state.json (Baseline/Unblocks)"], capture_output=True)
-        subprocess.run(["git", "push", "origin", "main"], capture_output=True)
-
-# --- NOTIFICATION ENGINE ---
-
-def send_telegram_alert(message, thread_id=None):
-    url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
-    payload = {"chat_id": TG_GROUP_CHAT_ID, "text": message, "parse_mode": "Markdown"}
-    if thread_id: payload["message_thread_id"] = thread_id
-    try: requests.post(url, json=payload, timeout=10)
-    except Exception as e: print(f"    -> ⚠️ Telegram alert exception: {e}")
-
-# --- NETWORK ENGINE ---
-
-def toggle_warp():
-    global USE_WARP
-    if USE_WARP:
-        subprocess.run(["warp-cli", "--accept-tos", "disconnect"], capture_output=True, check=False)
-        USE_WARP = False
-    else:
-        subprocess.run(["warp-cli", "--accept-tos", "connect"], capture_output=True, check=False)
-        time.sleep(5)
-        USE_WARP = True
-
-def make_bms_request(method, url, max_retries=3, **kwargs):
-    for attempt in range(1, max_retries + 1):
-        current_proxies = PROXIES if USE_WARP else None
-        try:
-            if method.upper() == 'GET':
-                resp = cffi_requests.get(url, proxies=current_proxies, impersonate="chrome", timeout=15, **kwargs)
-            else:
-                resp = cffi_requests.post(url, proxies=current_proxies, impersonate="chrome", timeout=15, **kwargs)
-            
-            if resp.status_code == 429:
-                if attempt < max_retries:
-                    toggle_warp()
-                    continue
-                return None
-            return resp
-        except Exception:
-            if attempt < max_retries: time.sleep(3)
-    return None
-
-# --- PARSING & SCORING LOGIC ---
+# --- HELPERS ---
 
 def load_json(filepath, default_val):
     if os.path.exists(filepath):
@@ -106,18 +35,28 @@ def load_json(filepath, default_val):
 def save_json(filepath, data):
     with open(filepath, "w") as f: json.dump(data, f, indent=2)
 
+def send_telegram_alert(message, thread_id=None):
+    url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
+    payload = {"chat_id": TG_GROUP_CHAT_ID, "text": message, "parse_mode": "Markdown"}
+    if thread_id: payload["message_thread_id"] = thread_id
+    try: 
+        requests.post(url, json=payload, timeout=10)
+    except Exception as e: 
+        print(f"⚠️ Telegram alert failed: {e}")
+
+# --- CORE LOGIC ---
+
 def fetch_seat_layout(session_id, venue_code):
-    # 💥 URL Cache Buster: Tricks Cloudflare CDN into fetching fresh data
-    cache_buster = int(time.time() * 1000)
-    url = f"https://services-in.bookmyshow.com/doTrans.aspx?_={cache_buster}"
-    
-    # Payload lngTransactionIdentifier MUST remain 0, otherwise BMS backend throws an exception
+    url = f"https://services-in.bookmyshow.com/doTrans.aspx?_={int(time.time() * 1000)}"
     payload = f"strParam4=&strParam5=Y&strParam6=&strParam7=N&strParam1={session_id}&strParam2=WEB&strParam3=&strVenueCode={venue_code}&lngTransactionIdentifier=0&strAppCode=MOBAND2&strFormat=json&strCommand=GETSEATLAYOUT"
     
-    resp = make_bms_request('POST', url, headers=POST_HEADERS, data=payload)
-    if not resp or resp.status_code != 200: return ""
-    try: return resp.json().get("BookMyShow", {}).get("strData", "")
-    except Exception: return ""
+    try:
+        resp = cffi_requests.post(url, headers=POST_HEADERS, data=payload, impersonate="chrome", timeout=15)
+        if resp.status_code == 200:
+            return resp.json().get("BookMyShow", {}).get("strData", "")
+    except Exception as e:
+        print(f"Fetch error: {e}")
+    return ""
 
 def parse_layout(str_data):
     if not str_data: return {}
@@ -129,18 +68,15 @@ def parse_layout(str_data):
         if not row_str or ":" not in row_str: continue
         elements = row_str.split(":")
         row_letter, seats = elements[1], elements[2:]
-        row_width = len(seats)
         
         avail_seats = []
         for grid_idx, seat in enumerate(seats):
-            # Ignore physical empty walking spaces
             if seat.endswith("000") or seat == "0000": continue
-            # Only track available seats (status '2')
-            if len(seat) >= 4 and seat[1] == '2':
+            if len(seat) >= 4 and seat[1] == '2': # '2' means available
                 avail_seats.append({"num": str(int(seat[2:])), "idx": grid_idx})
                 
         if avail_seats:
-            available_seats_by_row[row_letter] = {"width": row_width, "seats": avail_seats}
+            available_seats_by_row[row_letter] = {"width": len(seats), "seats": avail_seats}
     return available_seats_by_row
 
 def find_matching_seats(available_by_row, show_reqs):
@@ -165,145 +101,90 @@ def find_matching_seats(available_by_row, show_reqs):
             seat_objs, row_center = row_data["seats"], row_data["width"] / 2.0
             for i in range(len(seat_objs) - seat_count + 1):
                 window = seat_objs[i : i + seat_count]
-                # Verify physical adjacency (ignores aisles)
-                is_strictly_adjacent = all(window[j]["idx"] - window[j-1]["idx"] == 1 for j in range(1, seat_count))
-                
-                if is_strictly_adjacent:
+                # Check if seats are physically next to each other
+                if all(window[j]["idx"] - window[j-1]["idx"] == 1 for j in range(1, seat_count)):
                     block_center = sum(s["idx"] for s in window) / seat_count
                     ranked_matches.append({
-                        "row": row, "score": abs(row_center - block_center),
+                        "score": abs(row_center - block_center),
                         "text": f"Row {row}: {', '.join([s['num'] for s in window])}"
                     })
+        
         if not ranked_matches: return False, []
         ranked_matches.sort(key=lambda x: x["score"])
-        
-        best_matches = []
-        for idx, match in enumerate(ranked_matches[:3]):
-            best_matches.append(match["text"] + (" ⭐ (Best Center Seats)" if idx == 0 else ""))
-        return True, best_matches
-    else:
-        all_valid_seats = []
-        for row, row_data in valid_seats_pool.items():
-            row_center = row_data["width"] / 2.0
-            for s in row_data["seats"]:
-                all_valid_seats.append({"row": row, "num": s["num"], "score": abs(row_center - s["idx"])})
-                
-        if len(all_valid_seats) >= seat_count:
-            all_valid_seats.sort(key=lambda x: x["score"])
-            grouped_by_row = {}
-            for s in all_valid_seats[:seat_count]: grouped_by_row.setdefault(s["row"], []).append(s["num"])
-            
-            match_text = [f"Row {r}: {', '.join(sorted(nums, key=lambda x: int(x) if x.isdigit() else x))}" for r, nums in grouped_by_row.items()]
-            match_text.append("⭐ (Algorithmically selected best centered seats)")
-            return True, match_text
-        return False, []
+        return True, [m["text"] for m in ranked_matches[:3]] # Return top 3 matches
+    
+    return True, ["Seats available (Adjacency not required)"]
 
-# --- MAIN LOOP (6 HOURS) ---
+# --- MAIN EXECUTION ---
 
 def main():
-    start_time = time.time()
-    print("🚀 STARTING 6-HOUR CONTINUOUS SEAT SCRAPER")
-    
-    cycle = 1
-    # Load state directly into RAM to protect memory from Git conflicts
+    print("🚀 CRON JOB STARTED: Checking Seat Availability")
     state = load_json(STATE_FILE, {})
+    shows = load_json(SHOWS_FILE, [])
     
-    while (time.time() - start_time) < MAX_RUNTIME_SECONDS:
-        print(f"\n🔄 CYCLE {cycle}")
+    if not shows:
+        print("No shows in shows.json. Exiting...")
+        return
         
-        pull_latest_changes()
-        shows = load_json(SHOWS_FILE, [])
-        state_changed = False
+    for show in shows:
+        s_id, v_code, s_name = show.get("session_id"), show.get("venue_code"), show.get("name")
+        state_key = f"{v_code}_{s_id}"
         
-        if not shows:
-            print("    -> No shows found in shows.json. Waiting 60s...")
-            time.sleep(60)
-            continue
-            
-        for index, show in enumerate(shows, 1):
-            s_id, v_code, s_name = show.get("session_id"), show.get("venue_code"), show.get("name")
-            
-            # 💥 Thread ID ensures multiple queries for the same movie don't overwrite each other's memory
-            thread_id = show.get("message_thread_id", str(index))
-            state_key = f"{v_code}_{s_id}_{thread_id}"
-            
-            print(f"\n[{index}/{len(shows)}] Checking '{s_name}' (Session: {s_id})")
-            time.sleep(15) 
-            
-            str_data = fetch_seat_layout(s_id, v_code)
-            if not str_data:
-                print("    -> ⚠️ Failed to fetch layout.")
-                continue
-                
-            current_avail = parse_layout(str_data)
-            
-            # Flatten all valid seats in preferred rows into a single set for Unblock checking
-            current_valid_seats = set()
-            row_prefs = show.get("row_preferences", {})
-            any_row = len(row_prefs) == 0
-            
-            for row, row_data in current_avail.items():
-                if not any_row and row not in row_prefs: continue
-                allowed = row_prefs.get(row, [])
-                for s in row_data["seats"]:
-                    if not allowed or s["num"] in allowed:
-                        current_valid_seats.add(f"{row}-{s['num']}")
+        print(f"Checking '{s_name}' (Session: {s_id})...")
+        
+        str_data = fetch_seat_layout(s_id, v_code)
+        current_avail = parse_layout(str_data)
+        
+        # Get flat list of all currently valid available seats in preferred rows
+        current_valid_seats = set()
+        row_prefs = show.get("row_preferences", {})
+        any_row = len(row_prefs) == 0
+        
+        for row, row_data in current_avail.items():
+            if not any_row and row not in row_prefs: continue
+            allowed_seats = row_prefs.get(row, [])
+            for s in row_data["seats"]:
+                if not allowed_seats or s["num"] in allowed_seats:
+                    current_valid_seats.add(f"{row}-{s['num']}")
 
-            # 💥 THE SILENT BASELINE: Stop Ghost-Seat notification spam on the very first run
-            if state_key not in state: 
-                print("    -> 🤫 First time tracking this session. Establishing baseline silently to ignore ghost seats...")
-                state[state_key] = {"known_seats": list(current_valid_seats)}
-                save_json(STATE_FILE, state)
-                push_state_to_github()
-                continue # Skip alerting logic for this specific cycle!
-                
-            previous_seats = set(state[state_key].get("known_seats", []))
-            newly_unblocked = current_valid_seats - previous_seats
-            
-            is_match, match_details = find_matching_seats(current_avail, show)
-            
-            if is_match:
-                # ONLY alert if seats dynamically transition from Booked -> Available
-                if newly_unblocked:
-                    print(f"    -> 🟢 REAL-TIME UNBLOCK DETECTED! {len(newly_unblocked)} new seats opened up.")
-                        
-                    req_type = "Strictly Adjacent" if show.get('require_adjacent') else "Distributed OK"
-                    seats_text = "\n".join([f"• {m}" for m in match_details])
-                    
-                    msg = (
-                        f"🚨 **NEW SEATS UNBLOCKED!** 🚨\n\n"
-                        f"🎬 **Show:** {s_name}\n"
-                        f"📅 **Date/Time:** {show.get('date')} | {show.get('show_time')}\n"
-                        f"💺 **Requirement:** {show.get('seat_count')} seats ({req_type})\n\n"
-                        f"✅ **Best Available Matches:**\n{seats_text}\n\n"
-                        f"[Book Now!](https://in.bookmyshow.com/booktickets/{v_code}/{s_id})"
-                    )
-                    
-                    send_telegram_alert(msg, show.get("message_thread_id"))
-                    
-                    state[state_key]["known_seats"] = list(current_valid_seats)
-                    state_changed = True
-                else:
-                    print("    -> ⚪ Matches exist, but no NEW seats unblocked. Staying quiet.")
-                    
-                    if current_valid_seats != previous_seats:
-                        state[state_key]["known_seats"] = list(current_valid_seats)
-                        state_changed = True
-            else:
-                if previous_seats:
-                    print("    -> 🔴 Match lost (seats booked). Clearing memory.")
-                    state[state_key]["known_seats"] = []
-                    state_changed = True
-                else:
-                    print("    -> ⚪ Requirements not met yet.")
-
-        if state_changed:
+        # First time tracking - establish baseline silently
+        if state_key not in state: 
+            print(f"   -> 🤫 Establishing silent baseline for {s_name}...")
+            state[state_key] = {"known_seats": list(current_valid_seats)}
             save_json(STATE_FILE, state)
-            push_state_to_github()
-
-        cycle += 1
+            continue 
+            
+        previous_seats = set(state[state_key].get("known_seats", []))
+        newly_unblocked = current_valid_seats - previous_seats
         
-    print("\n🏁 Time limit reached (5h 55m). Shutting down gracefully.")
+        # Check if current available seats match user preferences
+        is_match, match_details = find_matching_seats(current_avail, show)
+        
+        if is_match and newly_unblocked:
+            print(f"   -> 🟢 UNBLOCK DETECTED for {s_name}!")
+            seats_text = "\n".join([f"• {m}" for m in match_details])
+            
+            msg = (
+                f"🚨 **NEW SEATS UNBLOCKED!** 🚨\n\n"
+                f"🎬 **Show:** {s_name}\n"
+                f"✅ **Best Matches:**\n{seats_text}\n\n"
+                f"[Book Now!](https://in.bookmyshow.com/booktickets/{v_code}/{s_id})"
+            )
+            
+            send_telegram_alert(msg, show.get("message_thread_id"))
+            
+            # Update state so we don't spam the same notification
+            state[state_key]["known_seats"] = list(current_valid_seats)
+            save_json(STATE_FILE, state)
+            
+        elif current_valid_seats != previous_seats:
+            print(f"   -> ⚪ Seats changed (booked or partial open). Updating state quietly.")
+            state[state_key]["known_seats"] = list(current_valid_seats)
+            save_json(STATE_FILE, state)
+        else:
+             print(f"   -> ⚪ No new unblocks.")
+
+    print("✅ CRON JOB FINISHED. Exiting.\n")
 
 if __name__ == "__main__":
     main()
