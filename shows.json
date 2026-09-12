@@ -13,5 +13,31 @@
       "O": []
     },
     "message_thread_id": 19
+  },
+  {
+    "name": "Mandaddi 60rs- vivivra",
+    "venue_code": "ACON",
+    "session_id": "47238",
+    "date": "20260913",
+    "show_time": "08:15 pm",
+    "seat_count": 3,
+    "require_adjacent": true,
+    "pending_rows": [],
+    "row_preferences": {
+      "U": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9"
+      ],
+      "V": [],
+      "W": []
+    },
+    "message_thread_id": 21
   }
 ]
