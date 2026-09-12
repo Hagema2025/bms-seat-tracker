@@ -1,17 +1,2 @@
 [
-  {
-    "name": "Mandaddi 60rs-marina",
-    "venue_code": "INTO",
-    "session_id": "90169",
-    "date": "20260913",
-    "show_time": "4:20 PM",
-    "seat_count": 2,
-    "require_adjacent": true,
-    "pending_rows": [],
-    "row_preferences": {
-      "N": [],
-      "O": []
-    },
-    "message_thread_id": 11
-  }
 ]
