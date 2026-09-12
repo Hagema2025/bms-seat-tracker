@@ -137,7 +137,22 @@ def find_matching_seats(available_by_row, show_reqs):
         ranked_matches.sort(key=lambda x: x["score"])
         return True, [m["text"] for m in ranked_matches[:3]] # Return top 3 matches
     
-    return True, ["Seats available (Adjacency not required)"]
+    # --- DISTRIBUTED SEATS LOGIC (Adjacency Off) ---
+    else:
+        # Collect all valid seats from all preferred rows into one big list
+        all_valid_seats = []
+        for row, row_data in valid_seats_pool.items():
+            for s in row_data["seats"]:
+                all_valid_seats.append(f"{row}-{s['num']}")
+        
+        # Check if the total scattered seats is enough for your group size
+        if len(all_valid_seats) >= seat_count:
+            # Grab just the number of seats you need and show them
+            found_seats = all_valid_seats[:seat_count]
+            return True, [f"Scattered Seats: {', '.join(found_seats)}"]
+            
+        # Not enough seats found anywhere
+        return False, []
 
 # --- MAIN EXECUTION ---
 
