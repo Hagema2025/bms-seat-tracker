@@ -97,13 +97,12 @@ def load_json(filepath, default_val):
 
 def save_json(filepath, data):
     with open(filepath, "w") as f: json.dump(data, f, indent=2)
-
 def fetch_seat_layout(session_id, venue_code):
     url = "https://services-in.bookmyshow.com/doTrans.aspx"
     
-    # Cache buster to ensure real-time data
-    cache_buster = int(time.time() * 1000)
-    payload = f"strParam4=&strParam5=Y&strParam6=&strParam7=N&strParam1={session_id}&strParam2=WEB&strParam3=&strVenueCode={venue_code}&lngTransactionIdentifier={cache_buster}&strAppCode=MOBAND2&strFormat=json&strCommand=GETSEATLAYOUT"
+    # Reverted lngTransactionIdentifier back to 0. 
+    # (BMS backend rejects the request if this is not exactly 0 for layout fetches)
+    payload = f"strParam4=&strParam5=Y&strParam6=&strParam7=N&strParam1={session_id}&strParam2=WEB&strParam3=&strVenueCode={venue_code}&lngTransactionIdentifier=0&strAppCode=MOBAND2&strFormat=json&strCommand=GETSEATLAYOUT"
     
     resp = make_bms_request('POST', url, headers=POST_HEADERS, data=payload)
     
@@ -112,14 +111,14 @@ def fetch_seat_layout(session_id, venue_code):
         return ""
         
     if resp.status_code != 200:
-        print(f"    -> [DEBUG] BMS Blocked Request! HTTP {resp.status_code}. Response: {resp.text[:150]}")
+        print(f"    -> [DEBUG] BMS Blocked Request! HTTP {resp.status_code}")
         return ""
         
     try:
         json_resp = resp.json()
         str_data = json_resp.get("BookMyShow", {}).get("strData", "")
         if not str_data:
-            print(f"    -> [DEBUG] BMS returned 200 OK, but no seat data: {json.dumps(json_resp)[:150]}")
+            print(f"    -> [DEBUG] BMS returned 200 OK, but no seat data. Exception: {json_resp.get('BookMyShow', {}).get('strException', 'Unknown')}")
         return str_data
     except Exception as e:
         print(f"    -> [DEBUG] Failed to parse JSON: {e}")
