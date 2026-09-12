@@ -11,9 +11,13 @@ SHOWS_FILE = "shows.json"
 STATE_FILE = "state.json"
 MAX_RUNTIME_SECONDS = (5 * 3600) + (55 * 60) # 5 hours 55 mins
 
-# Telegram Configuration
+# Telegram Configuration loaded via Environment Variables / GitHub Secrets
 TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN")
 TG_GROUP_CHAT_ID = os.environ.get("TG_GROUP_CHAT_ID") 
+
+if not TG_BOT_TOKEN or not TG_GROUP_CHAT_ID:
+    print("❌ ERROR: Telegram secrets are missing! Please set them in your environment/GitHub Secrets.")
+    exit(1)
 
 USE_WARP = False
 PROXIES = {
@@ -21,6 +25,7 @@ PROXIES = {
     "https": "socks5://127.0.0.1:40000"
 }
 
+# 💥 Aggressive Cache-Busting Headers
 POST_HEADERS = {
     "Host": "services-in.bookmyshow.com",
     "X-Timeout": "10",
@@ -28,7 +33,10 @@ POST_HEADERS = {
     "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 10; Android SDK built for x86_64 Build/QSR1.211112.011)",
     "X-App-Version": "18.2.3",
     "Content-Type": "application/x-www-form-urlencoded",
-    "Accept-Encoding": "gzip, deflate"
+    "Accept-Encoding": "gzip, deflate",
+    "Cache-Control": "no-cache, no-store, must-revalidate",
+    "Pragma": "no-cache",
+    "Expires": "0"
 }
 
 # --- GIT SYNC ENGINE ---
@@ -43,7 +51,7 @@ def push_state_to_github():
     
     if STATE_FILE in status.stdout:
         print("    -> 💾 Pushing updated state.json to GitHub...")
-        subprocess.run(["git", "commit", "-m", "Auto-update state.json"], capture_output=True)
+        subprocess.run(["git", "commit", "-m", "Auto-update state.json (Baseline/Unblocks)"], capture_output=True)
         subprocess.run(["git", "push", "origin", "main"], capture_output=True)
 
 # --- NOTIFICATION ENGINE ---
@@ -97,32 +105,20 @@ def load_json(filepath, default_val):
 
 def save_json(filepath, data):
     with open(filepath, "w") as f: json.dump(data, f, indent=2)
+
 def fetch_seat_layout(session_id, venue_code):
-    url = "https://services-in.bookmyshow.com/doTrans.aspx"
+    # 💥 URL Cache Buster: Tricks Cloudflare CDN into fetching fresh data
+    cache_buster = int(time.time() * 1000)
+    url = f"https://services-in.bookmyshow.com/doTrans.aspx?_={cache_buster}"
     
-    # Reverted lngTransactionIdentifier back to 0. 
-    # (BMS backend rejects the request if this is not exactly 0 for layout fetches)
+    # Payload lngTransactionIdentifier MUST remain 0, otherwise BMS backend throws an exception
     payload = f"strParam4=&strParam5=Y&strParam6=&strParam7=N&strParam1={session_id}&strParam2=WEB&strParam3=&strVenueCode={venue_code}&lngTransactionIdentifier=0&strAppCode=MOBAND2&strFormat=json&strCommand=GETSEATLAYOUT"
     
     resp = make_bms_request('POST', url, headers=POST_HEADERS, data=payload)
-    
-    if not resp:
-        print("    -> [DEBUG] Network failed or hit max retries.")
-        return ""
-        
-    if resp.status_code != 200:
-        print(f"    -> [DEBUG] BMS Blocked Request! HTTP {resp.status_code}")
-        return ""
-        
-    try:
-        json_resp = resp.json()
-        str_data = json_resp.get("BookMyShow", {}).get("strData", "")
-        if not str_data:
-            print(f"    -> [DEBUG] BMS returned 200 OK, but no seat data. Exception: {json_resp.get('BookMyShow', {}).get('strException', 'Unknown')}")
-        return str_data
-    except Exception as e:
-        print(f"    -> [DEBUG] Failed to parse JSON: {e}")
-        return ""
+    if not resp or resp.status_code != 200: return ""
+    try: return resp.json().get("BookMyShow", {}).get("strData", "")
+    except Exception: return ""
+
 def parse_layout(str_data):
     if not str_data: return {}
     parts = str_data.split("||")
@@ -137,7 +133,9 @@ def parse_layout(str_data):
         
         avail_seats = []
         for grid_idx, seat in enumerate(seats):
+            # Ignore physical empty walking spaces
             if seat.endswith("000") or seat == "0000": continue
+            # Only track available seats (status '2')
             if len(seat) >= 4 and seat[1] == '2':
                 avail_seats.append({"num": str(int(seat[2:])), "idx": grid_idx})
                 
@@ -167,6 +165,7 @@ def find_matching_seats(available_by_row, show_reqs):
             seat_objs, row_center = row_data["seats"], row_data["width"] / 2.0
             for i in range(len(seat_objs) - seat_count + 1):
                 window = seat_objs[i : i + seat_count]
+                # Verify physical adjacency (ignores aisles)
                 is_strictly_adjacent = all(window[j]["idx"] - window[j-1]["idx"] == 1 for j in range(1, seat_count))
                 
                 if is_strictly_adjacent:
@@ -206,6 +205,7 @@ def main():
     print("🚀 STARTING 6-HOUR CONTINUOUS SEAT SCRAPER")
     
     cycle = 1
+    # Load state directly into RAM to protect memory from Git conflicts
     state = load_json(STATE_FILE, {})
     
     while (time.time() - start_time) < MAX_RUNTIME_SECONDS:
@@ -223,8 +223,7 @@ def main():
         for index, show in enumerate(shows, 1):
             s_id, v_code, s_name = show.get("session_id"), show.get("venue_code"), show.get("name")
             
-            # 💥 THE FIX: Create a 100% Unique ID for memory tracking based on the Telegram Thread
-            # This prevents multiple searches for the same session from overwriting each other!
+            # 💥 Thread ID ensures multiple queries for the same movie don't overwrite each other's memory
             thread_id = show.get("message_thread_id", str(index))
             state_key = f"{v_code}_{s_id}_{thread_id}"
             
@@ -238,6 +237,7 @@ def main():
                 
             current_avail = parse_layout(str_data)
             
+            # Flatten all valid seats in preferred rows into a single set for Unblock checking
             current_valid_seats = set()
             row_prefs = show.get("row_preferences", {})
             any_row = len(row_prefs) == 0
@@ -249,8 +249,13 @@ def main():
                     if not allowed or s["num"] in allowed:
                         current_valid_seats.add(f"{row}-{s['num']}")
 
+            # 💥 THE SILENT BASELINE: Stop Ghost-Seat notification spam on the very first run
             if state_key not in state: 
-                state[state_key] = {"known_seats": []}
+                print("    -> 🤫 First time tracking this session. Establishing baseline silently to ignore ghost seats...")
+                state[state_key] = {"known_seats": list(current_valid_seats)}
+                save_json(STATE_FILE, state)
+                push_state_to_github()
+                continue # Skip alerting logic for this specific cycle!
                 
             previous_seats = set(state[state_key].get("known_seats", []))
             newly_unblocked = current_valid_seats - previous_seats
@@ -258,17 +263,15 @@ def main():
             is_match, match_details = find_matching_seats(current_avail, show)
             
             if is_match:
-                if not previous_seats or newly_unblocked:
-                    if newly_unblocked and previous_seats:
-                        print(f"    -> 🟢 UNBLOCK DETECTED! {len(newly_unblocked)} new seats opened up.")
-                    else:
-                        print("    -> 🟢 INITIAL MATCH FOUND!")
+                # ONLY alert if seats dynamically transition from Booked -> Available
+                if newly_unblocked:
+                    print(f"    -> 🟢 REAL-TIME UNBLOCK DETECTED! {len(newly_unblocked)} new seats opened up.")
                         
                     req_type = "Strictly Adjacent" if show.get('require_adjacent') else "Distributed OK"
                     seats_text = "\n".join([f"• {m}" for m in match_details])
                     
                     msg = (
-                        f"🚨 **SEATS FOUND!** 🚨\n\n"
+                        f"🚨 **NEW SEATS UNBLOCKED!** 🚨\n\n"
                         f"🎬 **Show:** {s_name}\n"
                         f"📅 **Date/Time:** {show.get('date')} | {show.get('show_time')}\n"
                         f"💺 **Requirement:** {show.get('seat_count')} seats ({req_type})\n\n"
