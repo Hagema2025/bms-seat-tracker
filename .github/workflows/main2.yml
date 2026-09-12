@@ -53,3 +53,8 @@ jobs:
           TG_BOT_TOKEN: ${{ vars.TG_BOT_TOKEN }}
           TG_GROUP_CHAT_ID: ${{ vars.TG_GROUP_CHAT_ID }}
         run: python -u seat_scraper.py
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🤖 Auto-update state.json"
+          file_pattern: "state.json"
