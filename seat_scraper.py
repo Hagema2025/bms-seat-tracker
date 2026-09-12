@@ -34,11 +34,13 @@ POST_HEADERS = {
 # --- GIT SYNC ENGINE ---
 
 def pull_latest_changes():
-    subprocess.run(["git", "pull", "--rebase", "origin", "main"], capture_output=True, check=False)
+    subprocess.run(["git", "fetch", "origin", "main"], capture_output=True, check=False)
+    subprocess.run(["git", "reset", "--hard", "origin/main"], capture_output=True, check=False)
 
 def push_state_to_github():
     subprocess.run(["git", "add", STATE_FILE], capture_output=True)
     status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
+    
     if STATE_FILE in status.stdout:
         print("    -> 💾 Pushing updated state.json to GitHub...")
         subprocess.run(["git", "commit", "-m", "Auto-update state.json"], capture_output=True)
@@ -98,7 +100,11 @@ def save_json(filepath, data):
 
 def fetch_seat_layout(session_id, venue_code):
     url = "https://services-in.bookmyshow.com/doTrans.aspx"
-    payload = f"strParam4=&strParam5=Y&strParam6=&strParam7=N&strParam1={session_id}&strParam2=WEB&strParam3=&strVenueCode={venue_code}&lngTransactionIdentifier=0&strAppCode=MOBAND2&strFormat=json&strCommand=GETSEATLAYOUT"
+    
+    # 💥 THE FIX: Add a live Unix Timestamp to force BMS to bypass its cache and give us REAL-TIME data!
+    cache_buster = int(time.time() * 1000)
+    payload = f"strParam4=&strParam5=Y&strParam6=&strParam7=N&strParam1={session_id}&strParam2=WEB&strParam3=&strVenueCode={venue_code}&lngTransactionIdentifier={cache_buster}&strAppCode=MOBAND2&strFormat=json&strCommand=GETSEATLAYOUT"
+    
     resp = make_bms_request('POST', url, headers=POST_HEADERS, data=payload)
     if not resp or resp.status_code != 200: return ""
     try: return resp.json().get("BookMyShow", {}).get("strData", "")
@@ -187,13 +193,13 @@ def main():
     print("🚀 STARTING 6-HOUR CONTINUOUS SEAT SCRAPER")
     
     cycle = 1
+    state = load_json(STATE_FILE, {})
     
     while (time.time() - start_time) < MAX_RUNTIME_SECONDS:
         print(f"\n🔄 CYCLE {cycle}")
         
         pull_latest_changes()
         shows = load_json(SHOWS_FILE, [])
-        state = load_json(STATE_FILE, {})
         state_changed = False
         
         if not shows:
@@ -203,7 +209,11 @@ def main():
             
         for index, show in enumerate(shows, 1):
             s_id, v_code, s_name = show.get("session_id"), show.get("venue_code"), show.get("name")
-            state_key = f"{v_code}_{s_id}"
+            
+            # 💥 THE FIX: Create a 100% Unique ID for memory tracking based on the Telegram Thread
+            # This prevents multiple searches for the same session from overwriting each other!
+            thread_id = show.get("message_thread_id", str(index))
+            state_key = f"{v_code}_{s_id}_{thread_id}"
             
             print(f"\n[{index}/{len(shows)}] Checking '{s_name}' (Session: {s_id})")
             time.sleep(15) 
@@ -215,8 +225,6 @@ def main():
                 
             current_avail = parse_layout(str_data)
             
-            # --- FIXED UNBLOCK DETECTION ---
-            # Create a flat set of ALL seats currently available in the user's preferred rows
             current_valid_seats = set()
             row_prefs = show.get("row_preferences", {})
             any_row = len(row_prefs) == 0
@@ -232,15 +240,11 @@ def main():
                 state[state_key] = {"known_seats": []}
                 
             previous_seats = set(state[state_key].get("known_seats", []))
-            
-            # Mathematical difference: Are there any seats NOW that weren't there BEFORE?
             newly_unblocked = current_valid_seats - previous_seats
             
-            # Check if the user's specific conditions (adjacency, count) are met
             is_match, match_details = find_matching_seats(current_avail, show)
             
             if is_match:
-                # ONLY alert if this is the first run, OR if a cancellation/unblock happened!
                 if not previous_seats or newly_unblocked:
                     if newly_unblocked and previous_seats:
                         print(f"    -> 🟢 UNBLOCK DETECTED! {len(newly_unblocked)} new seats opened up.")
@@ -261,13 +265,11 @@ def main():
                     
                     send_telegram_alert(msg, show.get("message_thread_id"))
                     
-                    # Update memory with the FULL theater layout so we don't spam next cycle
                     state[state_key]["known_seats"] = list(current_valid_seats)
                     state_changed = True
                 else:
                     print("    -> ⚪ Matches exist, but no NEW seats unblocked. Staying quiet.")
                     
-                    # We still silently update memory if seats were BOOKED so we don't fall out of sync
                     if current_valid_seats != previous_seats:
                         state[state_key]["known_seats"] = list(current_valid_seats)
                         state_changed = True
