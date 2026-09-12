@@ -34,17 +34,14 @@ POST_HEADERS = {
 # --- GIT SYNC ENGINE ---
 
 def pull_latest_changes():
-    """Pulls the latest shows.json from your repo so bot additions are seen instantly."""
     subprocess.run(["git", "pull", "--rebase", "origin", "main"], capture_output=True, check=False)
 
 def push_state_to_github():
-    """Pushes the updated state.json so the memory isn't lost if the runner crashes."""
     subprocess.run(["git", "add", STATE_FILE], capture_output=True)
     status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
-    
     if STATE_FILE in status.stdout:
         print("    -> 💾 Pushing updated state.json to GitHub...")
-        subprocess.run(["git", "commit", "-m", "Auto-update state.json (Match Found/Lost)"], capture_output=True)
+        subprocess.run(["git", "commit", "-m", "Auto-update state.json"], capture_output=True)
         subprocess.run(["git", "push", "origin", "main"], capture_output=True)
 
 # --- NOTIFICATION ENGINE ---
@@ -194,7 +191,6 @@ def main():
     while (time.time() - start_time) < MAX_RUNTIME_SECONDS:
         print(f"\n🔄 CYCLE {cycle}")
         
-        # 1. Pull the latest shows added by your Telegram Bot
         pull_latest_changes()
         shows = load_json(SHOWS_FILE, [])
         state = load_json(STATE_FILE, {})
@@ -218,14 +214,39 @@ def main():
                 continue
                 
             current_avail = parse_layout(str_data)
+            
+            # --- FIXED UNBLOCK DETECTION ---
+            # Create a flat set of ALL seats currently available in the user's preferred rows
+            current_valid_seats = set()
+            row_prefs = show.get("row_preferences", {})
+            any_row = len(row_prefs) == 0
+            
+            for row, row_data in current_avail.items():
+                if not any_row and row not in row_prefs: continue
+                allowed = row_prefs.get(row, [])
+                for s in row_data["seats"]:
+                    if not allowed or s["num"] in allowed:
+                        current_valid_seats.add(f"{row}-{s['num']}")
+
+            if state_key not in state: 
+                state[state_key] = {"known_seats": []}
+                
+            previous_seats = set(state[state_key].get("known_seats", []))
+            
+            # Mathematical difference: Are there any seats NOW that weren't there BEFORE?
+            newly_unblocked = current_valid_seats - previous_seats
+            
+            # Check if the user's specific conditions (adjacency, count) are met
             is_match, match_details = find_matching_seats(current_avail, show)
             
-            if state_key not in state: state[state_key] = {"last_matches": []}
-            previous_matches = state[state_key].get("last_matches", [])
-            
             if is_match:
-                if set(match_details) != set(previous_matches):
-                    print("    -> 🟢 MATCH FOUND! Requirements met.")
+                # ONLY alert if this is the first run, OR if a cancellation/unblock happened!
+                if not previous_seats or newly_unblocked:
+                    if newly_unblocked and previous_seats:
+                        print(f"    -> 🟢 UNBLOCK DETECTED! {len(newly_unblocked)} new seats opened up.")
+                    else:
+                        print("    -> 🟢 INITIAL MATCH FOUND!")
+                        
                     req_type = "Strictly Adjacent" if show.get('require_adjacent') else "Distributed OK"
                     seats_text = "\n".join([f"• {m}" for m in match_details])
                     
@@ -234,24 +255,30 @@ def main():
                         f"🎬 **Show:** {s_name}\n"
                         f"📅 **Date/Time:** {show.get('date')} | {show.get('show_time')}\n"
                         f"💺 **Requirement:** {show.get('seat_count')} seats ({req_type})\n\n"
-                        f"✅ **Available Matches:**\n{seats_text}\n\n"
+                        f"✅ **Best Available Matches:**\n{seats_text}\n\n"
                         f"[Book Now!](https://in.bookmyshow.com/booktickets/{v_code}/{s_id})"
                     )
                     
                     send_telegram_alert(msg, show.get("message_thread_id"))
-                    state[state_key]["last_matches"] = match_details
+                    
+                    # Update memory with the FULL theater layout so we don't spam next cycle
+                    state[state_key]["known_seats"] = list(current_valid_seats)
                     state_changed = True
                 else:
-                    print("    -> ⚪ Match exists, already notified.")
+                    print("    -> ⚪ Matches exist, but no NEW seats unblocked. Staying quiet.")
+                    
+                    # We still silently update memory if seats were BOOKED so we don't fall out of sync
+                    if current_valid_seats != previous_seats:
+                        state[state_key]["known_seats"] = list(current_valid_seats)
+                        state_changed = True
             else:
-                if previous_matches:
-                    print("    -> 🔴 Seats lost/booked. Clearing state.")
-                    state[state_key]["last_matches"] = []
+                if previous_seats:
+                    print("    -> 🔴 Match lost (seats booked). Clearing memory.")
+                    state[state_key]["known_seats"] = []
                     state_changed = True
                 else:
                     print("    -> ⚪ Requirements not met yet.")
 
-        # 2. Push state to GitHub ONLY if changes occurred during this cycle
         if state_changed:
             save_json(STATE_FILE, state)
             push_state_to_github()
