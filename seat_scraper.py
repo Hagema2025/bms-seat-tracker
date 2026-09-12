@@ -58,7 +58,8 @@ def fetch_seat_layout(session_id, venue_code):
             return resp.json().get("BookMyShow", {}).get("strData", "")
     except Exception as e:
         print(f"Fetch error: {e}")
-    return ""def parse_layout(str_data):
+    return ""
+def parse_layout(str_data):
     if not str_data: return {}
     parts = str_data.split("||")
     rows_data = parts[1] if len(parts) > 1 else parts[0]
