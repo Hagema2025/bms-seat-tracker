@@ -1,7 +1,9 @@
 import os
 import time
 import json
+from zoneinfo import ZoneInfo
 import requests
+from datetime import datetime
 from curl_cffi import requests as cffi_requests
 
 # --- CONFIGURATION ---
@@ -131,6 +133,31 @@ def main():
         state_key = f"{v_code}_{s_id}_{show.get('message_thread_id', '')}"
         
         print(f"Checking '{s_name}' (Session: {s_id})...")
+
+        # --- NEW EXPIRATION CHECK LOGIC ---
+        # --- NEW EXPIRATION CHECK LOGIC (IST SECURE) ---
+        date_str = show.get("date")      # e.g., "20260912"
+        time_str = show.get("show_time") # e.g., "4:20 pm"
+        
+        if date_str and time_str:
+            try:
+                # Get the current time in IST
+                ist_now = datetime.now(ZoneInfo("Asia/Kolkata"))
+                
+                # Combine them and force uppercase for AM/PM consistency
+                show_datetime_str = f"{date_str} {time_str.upper()}"
+                
+                # Parse the time AND tell Python this time is in IST
+                show_dt = datetime.strptime(show_datetime_str, "%Y%m%d %I:%M %p").replace(tzinfo=ZoneInfo("Asia/Kolkata"))
+                
+                # Now it accurately compares IST to IST
+                if ist_now >= show_dt:
+                    print(f"   -> ⏰ Movie has already started! Skipping check.")
+                    continue
+            except Exception as e:
+                print(f"   -> ⚠️ Could not parse date/time: {e}. Checking anyway...")
+        # ----------------------------------
+        # ----------------------------------
         
         str_data = fetch_seat_layout(s_id, v_code)
         current_avail = parse_layout(str_data)
