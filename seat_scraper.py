@@ -128,7 +128,7 @@ def main():
         
     for show in shows:
         s_id, v_code, s_name = show.get("session_id"), show.get("venue_code"), show.get("name")
-        state_key = f"{v_code}_{s_id}"
+        state_key = f"{v_code}_{s_id}_{show.get('message_thread_id', '')}"
         
         print(f"Checking '{s_name}' (Session: {s_id})...")
         
