@@ -76,7 +76,7 @@ def parse_layout(str_data):
         avail_seats = []
         for grid_idx, seat in enumerate(seats):
             # We only care if it is a real seat and its status is '2' (Available)
-            if len(seat) >= 4 and seat[1] == '2': 
+            if len(seat) >= 4 and seat[1] == '1': 
                 
                 raw_seat_num = seat[2:]
                 
