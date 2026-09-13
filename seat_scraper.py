@@ -56,7 +56,7 @@ def send_ntfy_error(show_name):
     
     url = f"{NTFY_URL}/{NTFY_TOPIC}"
     headers = {
-        "Title": "⚠️ BMS Fetch Failed",
+        "Title": "⚠️ BMS Seat Scraper Fetch Failed",
         "Priority": "high",
         "Tags": "warning,rotating_light"
     }
