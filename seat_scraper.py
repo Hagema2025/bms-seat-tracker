@@ -3,6 +3,7 @@ import time
 import json
 from zoneinfo import ZoneInfo
 import requests
+import random  
 from datetime import datetime
 from curl_cffi import requests as cffi_requests
 
@@ -12,6 +13,9 @@ STATE_FILE = "state.json"
 
 TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
 TG_GROUP_CHAT_ID = os.environ.get("TG_GROUP_CHAT_ID", "YOUR_CHAT_ID_HERE") 
+NTFY_URL = os.environ.get("NTFY_URL", "https://ntfy.sh").strip()
+NTFY_TOPIC = os.environ.get("NTFY_TOPIC", "").strip()
+
 
 if not TG_BOT_TOKEN or not TG_GROUP_CHAT_ID:
     print("❌ ERROR: Telegram secrets are missing!")
@@ -46,19 +50,57 @@ def send_telegram_alert(message, thread_id=None):
     except Exception as e: 
         print(f"⚠️ Telegram alert failed: {e}")
 
-# --- CORE LOGIC ---
+def send_ntfy_error(show_name):
+    if not NTFY_TOPIC:
+        return
+    
+    url = f"{NTFY_URL}/{NTFY_TOPIC}"
+    headers = {
+        "Title": "⚠️ BMS Fetch Failed",
+        "Priority": "high",
+        "Tags": "warning,rotating_light"
+    }
+    message = f"Failed to fetch seat layout for '{show_name}' after maximum retries. Cloudflare might be blocking the request."
+    
+    try:
+        requests.post(url, data=message.encode("utf-8"), headers=headers, timeout=10)
+    except Exception as e:
+        print(f"  ⚠️ Ntfy error alert failed: {e}")
 
-def fetch_seat_layout(session_id, venue_code):
+# --- CORE LOGIC ---
+# Added show_name parameter
+def fetch_seat_layout(session_id, venue_code, show_name, max_retries=3):
     url = f"https://services-in.bookmyshow.com/doTrans.aspx?_={int(time.time() * 1000)}"
     payload = f"strParam4=&strParam5=Y&strParam6=&strParam7=N&strParam1={session_id}&strParam2=WEB&strParam3=&strVenueCode={venue_code}&lngTransactionIdentifier=0&strAppCode=MOBAND2&strFormat=json&strCommand=GETSEATLAYOUT"
     
-    try:
-        resp = cffi_requests.post(url, headers=POST_HEADERS, data=payload, impersonate="chrome", timeout=15)
-        if resp.status_code == 200:
-            return resp.json().get("BookMyShow", {}).get("strData", "")
-    except Exception as e:
-        print(f"Fetch error: {e}")
+    time.sleep(random.uniform(1.0, 2.5))
+
+    for attempt in range(1, max_retries + 1):
+        try:
+            resp = cffi_requests.post(url, headers=POST_HEADERS, data=payload, impersonate="chrome", timeout=15)
+            
+            if resp.status_code == 200:
+                return resp.json().get("BookMyShow", {}).get("strData", "")
+            
+            print(f"   ⚠️ Fetch HTTP {resp.status_code} for session {session_id} (Attempt {attempt}/{max_retries})")
+            
+            if resp.status_code in [403, 429]:
+                time.sleep(attempt * 3)
+            else:
+                time.sleep(2)
+
+        except Exception as e:
+            print(f"   ⚠️ Fetch error: {e} (Attempt {attempt}/{max_retries})")
+            time.sleep(2)
+            
+    print(f"   ❌ Failed to fetch layout for {session_id} after {max_retries} attempts.")
+    
+    # --- TRIGGER THE ALERT HERE ---
+    send_ntfy_error(show_name)
+    
     return ""
+    
+
 def parse_layout(str_data):
     if not str_data: return {}
     parts = str_data.split("||")
@@ -196,7 +238,7 @@ def main():
         # ----------------------------------
         # ----------------------------------
         
-        str_data = fetch_seat_layout(s_id, v_code)
+        str_data = fetch_seat_layout(s_id, v_code,s_name)
         current_avail = parse_layout(str_data)
         
         # Get flat list of all currently valid available seats in preferred rows
