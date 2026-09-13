@@ -1,20 +1,5 @@
 [
   {
-    "name": "Mandaddi 60rs-marina",
-    "venue_code": "INTO",
-    "session_id": "90204",
-    "date": "20260914",
-    "show_time": "04:20 pm",
-    "seat_count": 3,
-    "require_adjacent": true,
-    "pending_rows": [],
-    "row_preferences": {
-      "N": [],
-      "O": []
-    },
-    "message_thread_id": 19
-  },
-  {
     "name": "Mandaddi 60rs- vivivra",
     "venue_code": "ACON",
     "session_id": "47238",
