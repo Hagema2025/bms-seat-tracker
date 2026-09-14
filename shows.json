@@ -1,27 +1,5 @@
 [
   {
-    "name": "Mandaddi 60rs-vivira mall",
-    "venue_code": "ACON",
-    "session_id": "47240",
-    "date": "20260914",
-    "show_time": "04:55 pm",
-    "seat_count": 3,
-    "require_adjacent": true,
-    "pending_rows": [],
-    "row_preferences": {
-      "U": [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5"
-      ],
-      "V": [],
-      "W": []
-    },
-    "message_thread_id": 27
-  },
-  {
     "name": "Mandaddi 60rs-marina mall",
     "venue_code": "INTO",
     "session_id": "90204",
