@@ -159,7 +159,7 @@ def find_matching_seats(available_by_row, show_reqs):
         valid = [s for s in seat_objs if s["num"] in allowed_seats] if allowed_seats else seat_objs
         if valid: valid_seats_pool[row] = {"width": row_data["width"], "seats": valid}
 
-    if not valid_seats_pool: return False, []
+    if not valid_seats_pool: return False, [], []
 
     if req_adj:
         ranked_matches = []
@@ -175,27 +175,29 @@ def find_matching_seats(available_by_row, show_reqs):
                         "text": f"Row {row}: {', '.join([s['num'] for s in window])}"
                     })
         
-        if not ranked_matches: return False, []
+        if not ranked_matches: return False, [], []
+        
+        # STRICTLY sort by distance from the center (score)
         ranked_matches.sort(key=lambda x: x["score"])
-        return True, [m["text"] for m in ranked_matches[:3]] # Return top 3 matches
+        
+        all_matches_text = [m["text"] for m in ranked_matches]
+        top_5_matches = all_matches_text[:5] # Broader visibility: Top 5
+        
+        return True, top_5_matches, all_matches_text
     
     # --- DISTRIBUTED SEATS LOGIC (Adjacency Off) ---
     else:
-        # Collect all valid seats from all preferred rows into one big list
         all_valid_seats = []
         for row, row_data in valid_seats_pool.items():
             for s in row_data["seats"]:
                 all_valid_seats.append(f"{row}-{s['num']}")
         
-        # Check if the total scattered seats is enough for your group size
         if len(all_valid_seats) >= seat_count:
-            # Grab just the number of seats you need and show them
             found_seats = all_valid_seats[:seat_count]
-            return True, [f"Scattered Seats: {', '.join(found_seats)}"]
+            match_text = f"Scattered Seats: {', '.join(found_seats)}"
+            return True, [match_text], [match_text]
             
-        # Not enough seats found anywhere
-        return False, []
-
+        return False, [], []
 # --- MAIN EXECUTION ---
 
 def main():
@@ -213,7 +215,6 @@ def main():
         
         print(f"Checking '{s_name}' (Session: {s_id})...")
 
-        # --- NEW EXPIRATION CHECK LOGIC ---
         # --- NEW EXPIRATION CHECK LOGIC (IST SECURE) ---
         date_str = show.get("date")      # e.g., "20260912"
         time_str = show.get("show_time") # e.g., "4:20 pm"
@@ -236,9 +237,8 @@ def main():
             except Exception as e:
                 print(f"   -> ⚠️ Could not parse date/time: {e}. Checking anyway...")
         # ----------------------------------
-        # ----------------------------------
         
-        str_data = fetch_seat_layout(s_id, v_code,s_name)
+        str_data = fetch_seat_layout(s_id, v_code, s_name)
         current_avail = parse_layout(str_data)
         
         # Get flat list of all currently valid available seats in preferred rows
@@ -253,42 +253,69 @@ def main():
                 if not allowed_seats or s["num"] in allowed_seats:
                     current_valid_seats.add(f"{row}-{s['num']}")
 
+        # We now track BOTH raw known_seats AND the valid combinations (all_matches)
+        is_match, top_5_matches, current_all_matches = find_matching_seats(current_avail, show)
+        
         # First time tracking - establish baseline silently
         if state_key not in state: 
             print(f"   -> 🤫 Establishing silent baseline for {s_name}...")
-            state[state_key] = {"known_seats": list(current_valid_seats)}
+            state[state_key] = {
+                "known_seats": list(current_valid_seats),
+                "all_matches": current_all_matches
+            }
             save_json(STATE_FILE, state)
             continue 
             
         previous_seats = set(state[state_key].get("known_seats", []))
-        newly_unblocked = current_valid_seats - previous_seats
+        previous_all_matches = set(state[state_key].get("all_matches", []))
         
-        # Check if current available seats match user preferences
-        is_match, match_details = find_matching_seats(current_avail, show)
+        newly_unblocked_raw = current_valid_seats - previous_seats
+        new_combinations = set(current_all_matches) - previous_all_matches
+        lost_combinations = previous_all_matches - set(current_all_matches)
         
-        if is_match and newly_unblocked:
+        state_changed = False
+        
+        # 1. NOTIFY IF A COMBINATION WAS BOOKED/LOST
+        if lost_combinations:
+            print(f"   -> 🔴 SEATS BOOKED/LOST for {s_name}!")
+            lost_text = "\n".join([f"• ❌ {m}" for m in lost_combinations])
+            
+            msg = (
+                f"💔 **SEATS BOOKED!** 💔\n\n"
+                f"🎬 **Show:** {s_name}\n\n"
+                f"The following combinations were just taken:\n{lost_text}\n\n"
+                f"_(Still watching for new cancellations...)_"
+            )
+            send_telegram_alert(msg, show.get("message_thread_id"))
+            state_changed = True
+
+        # 2. NOTIFY IF NEW COMBINATIONS APPEAR
+        if is_match and new_combinations:
             print(f"   -> 🟢 UNBLOCK DETECTED for {s_name}!")
-            seats_text = "\n".join([f"• {m}" for m in match_details])
+            seats_text = "\n".join([f"• ✅ {m}" for m in top_5_matches])
             
             msg = (
                 f"🚨 **NEW SEATS UNBLOCKED!** 🚨\n\n"
                 f"🎬 **Show:** {s_name}\n"
-                f"✅ **Best Matches:**\n{seats_text}\n\n"
+                f"🆕 **Freshly Opened:** {len(newly_unblocked_raw)} seat(s) in hall\n\n"
+                f"🎯 **Top 5 Matching Options:**\n{seats_text}\n\n"
                 f"[Book Now!](https://in.bookmyshow.com/booktickets/{v_code}/{s_id})"
             )
-            
             send_telegram_alert(msg, show.get("message_thread_id"))
+            state_changed = True
             
-            # Update state so we don't spam the same notification
+        # 3. SILENT STATE UPDATE FOR PARTIAL CHANGES (Single seats booked that didn't break our blocks)
+        if not state_changed and current_valid_seats != previous_seats:
+            print(f"   -> ⚪ Seats changed in background. Updating state quietly.")
+            state_changed = True
+        elif not state_changed:
+            print(f"   -> ⚪ No actionable changes.")
+
+        # Save state if anything shifted
+        if state_changed:
             state[state_key]["known_seats"] = list(current_valid_seats)
+            state[state_key]["all_matches"] = current_all_matches
             save_json(STATE_FILE, state)
-            
-        elif current_valid_seats != previous_seats:
-            print(f"   -> ⚪ Seats changed (booked or partial open). Updating state quietly.")
-            state[state_key]["known_seats"] = list(current_valid_seats)
-            save_json(STATE_FILE, state)
-        else:
-             print(f"   -> ⚪ No new unblocks.")
 
     print("✅ CRON JOB FINISHED. Exiting.\n")
 
