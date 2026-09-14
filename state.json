@@ -1,10 +1,6 @@
 {
   "CBMC_12758_25": {
-    "known_seats": [
-      "A-2",
-      "A-3",
-      "A-1"
-    ]
+    "known_seats": []
   },
   "ACON_47240_27": {
     "known_seats": []
