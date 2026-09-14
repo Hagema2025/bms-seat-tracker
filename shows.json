@@ -1,51 +1,5 @@
 [
   {
-    "name": "Mandaddi 60rs-BSR thoraipakkam",
-    "venue_code": "CBMC",
-    "session_id": "12758",
-    "date": "20260914",
-    "show_time": "12:35 pm",
-    "seat_count": 1,
-    "require_adjacent": true,
-    "pending_rows": [],
-    "row_preferences": {
-      "A": [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10"
-      ],
-      "B": [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10",
-        "11",
-        "12",
-        "13",
-        "14",
-        "15",
-        "16",
-        "17",
-        "18",
-        "19"
-      ]
-    },
-    "message_thread_id": 25
-  },
-  {
     "name": "Mandaddi 60rs-vivira mall",
     "venue_code": "ACON",
     "session_id": "47240",
