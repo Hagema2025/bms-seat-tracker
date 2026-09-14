@@ -1,17 +1,1 @@
-[
-  {
-    "name": "Mandaddi 60rs-marina mall",
-    "venue_code": "INTO",
-    "session_id": "90204",
-    "date": "20260914",
-    "show_time": "04:20 pm",
-    "seat_count": 2,
-    "require_adjacent": true,
-    "pending_rows": [],
-    "row_preferences": {
-      "N": [],
-      "O": []
-    },
-    "message_thread_id": 29
-  }
-]
+[]
