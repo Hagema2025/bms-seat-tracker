@@ -1,7 +1,13 @@
 {
   "PVPZ_38249_54": {
-    "known_seats": [],
-    "all_matches": []
+    "known_seats": [
+      "E-5",
+      "E-6"
+    ],
+    "all_matches": [
+      "Row E: 6",
+      "Row E: 5"
+    ]
   },
   "INTO_90584_56": {
     "known_seats": [],
