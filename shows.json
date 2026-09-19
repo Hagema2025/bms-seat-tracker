@@ -18,24 +18,5 @@
       "G": []
     },
     "message_thread_id": 54
-  },
-  {
-    "name": "Enna villai 60rs-Marina mall",
-    "venue_code": "INTO",
-    "session_id": "90584",
-    "date": "20260919",
-    "show_time": "7:20 pm",
-    "seat_count": 2,
-    "require_adjacent": true,
-    "pending_rows": [],
-    "row_preferences": {
-      "J": [
-        "4",
-        "5",
-        "6"
-      ],
-      "K": []
-    },
-    "message_thread_id": 56
   }
 ]
