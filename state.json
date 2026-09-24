@@ -4,12 +4,7 @@
     "all_matches": []
   },
   "INTO_90855_70": {
-    "known_seats": [
-      "D-14",
-      "D-15"
-    ],
-    "all_matches": [
-      "Row D: 14, 15"
-    ]
+    "known_seats": [],
+    "all_matches": []
   }
 }
