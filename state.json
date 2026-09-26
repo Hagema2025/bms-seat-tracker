@@ -8,7 +8,12 @@
     "all_matches": []
   },
   "CBMC_13558_105": {
-    "known_seats": [],
-    "all_matches": []
+    "known_seats": [
+      "B-23",
+      "B-22"
+    ],
+    "all_matches": [
+      "Row B: 23, 22"
+    ]
   }
 }
