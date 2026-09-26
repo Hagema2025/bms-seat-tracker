@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "venue_code": "ACON",
+    "theatre": "AGS Cinemas OMR: Navlur",
+    "session_id": "47648",
+    "date": "20260927",
+    "url": "https://in.bookmyshow.com/movies/chennai/seat-layout/ET00516813/ACON/47648/20260927",
+    "name": "Messaya murukku 2-60rs vivira mall",
+    "show_time": "4:20 PM",
+    "seat_count": 2,
+    "require_adjacent": true,
+    "pending_rows": [],
+    "row_preferences": {
+      "U": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9"
+      ],
+      "V": [],
+      "W": []
+    },
+    "message_thread_id": 97
+  }
+]
