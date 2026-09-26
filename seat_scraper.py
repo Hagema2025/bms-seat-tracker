@@ -29,6 +29,29 @@ POST_HEADERS = {
     "Accept-Encoding": "gzip, deflate",
 }
 
+
+# --- CINEMA CHAIN URLS ---
+CINEMA_CHAIN_URLS = {
+    # INOX
+    "INTO": "https://www.inoxmovies.com/cinemasessions/Chennai/INOX-The-Marina-Mall,-OMR,-Chennai/232",
+    "INPR": "https://www.inoxmovies.com/cinemasessions/Chennai/INOX-Luxe-Phoenix-Market-City,-Velachery--(formerly-Jazz-Cinemas)Chennai/320",
+    "INCH": "https://www.inoxmovies.com/cinemasessions/Chennai/INOX-Chennai-Citi-Centre,Dr.-R.-K.-Salai-Chennai/113",
+    "FMCN": "https://www.inoxmovies.com/cinemasessions/Chennai/INOX-National,Virugambakkam-Chennai/28",
+
+    # PVR
+    "PVHR": "https://www.pvrcinemas.com/cinemasessions/Chennai/PVR-Heritage-RSL-ECR-Chennai/417",
+    "PGMV": "https://www.pvrcinemas.com/cinemasessions/Chennai/PVR,-Grand-Mall,-Velachery/389",
+    "PVES": "https://www.pvrcinemas.com/cinemasessions/Chennai/HDFC-Millennia-PVR:-Escape-Express-Avenue-Mall/359",
+    "PVSR": "https://www.pvrcinemas.com/cinemasessions/Chennai/PVR-Sathyam-Royapettah-Chennai/331",
+    "PABC": "https://www.pvrcinemas.com/cinemasessions/Chennai/PVR-AEROHUB-Chennai/432",
+    "PGRA": "https://www.pvrcinemas.com/cinemasessions/Chennai/PVR-Grand-Galada-Chennai/400",
+    "PVPZ": "https://www.pvrcinemas.com/cinemasessions/Chennai/PVR-Palazzo-The-Nexus-Vijaya-Mall/388",
+    "PVHC": "https://www.pvrcinemas.com/cinemasessions/Chennai/PVR,-Ampa-Mall,-Nelson-Manickam-Road-Chennai/358",
+    "PCAN": "https://www.pvrcinemas.com/cinemasessions/Chennai/PVR-VR-Chennai-Anna-Nagar/523",
+    "PBRM": "https://www.pvrcinemas.com/cinemasessions/Chennai/PVR-Perambur---Spectrum-Mall-Chennai/372",
+    "PSKL": "https://www.pvrcinemas.com/cinemasessions/Chennai/PVR-SKLS-Galaxy-Mall,-Red-Hills-Chennai/410",
+}
+
 # --- HELPERS ---
 
 def load_json(filepath, default_val):
@@ -294,15 +317,34 @@ def main():
             print(f"   -> 🟢 UNBLOCK DETECTED for {s_name}!")
             seats_text = "\n".join([f"• ✅ {m}" for m in top_5_matches])
             
+            # --- DYNAMIC CINEMA LINKING ---
+            bms_link = f"[BMS App](https://in.bookmyshow.com/booktickets/{v_code}/{s_id})"
+            chain_url = CINEMA_CHAIN_URLS.get(v_code)
+            
+            if chain_url:
+                chain_name = "PVR App" if "pvr" in chain_url.lower() else "INOX App"
+                action_links = f"🔗 {bms_link}  |  [{chain_name}]({chain_url})"
+            else:
+                # Generic fallback if a new PVR/INOX opens and isn't in your dict yet
+                s_name_upper = s_name.upper()
+                if "PVR" in s_name_upper:
+                    action_links = f"🔗 {bms_link}  |  [PVR App](https://www.pvrcinemas.com/)"
+                elif "INOX" in s_name_upper:
+                    action_links = f"🔗 {bms_link}  |  [INOX App](https://www.inoxmovies.com/)"
+                else:
+                    action_links = f"🔗 {bms_link}"
+            # ------------------------------
+
             msg = (
                 f"🚨 **NEW SEATS UNBLOCKED!** 🚨\n\n"
                 f"🎬 **Show:** {s_name}\n"
                 f"🆕 **Freshly Opened:** {len(newly_unblocked_raw)} seat(s) in hall\n\n"
                 f"🎯 **Top 5 Matching Options:**\n{seats_text}\n\n"
-                f"[Book Now!](https://in.bookmyshow.com/booktickets/{v_code}/{s_id})"
+                f"{action_links}"
             )
             send_telegram_alert(msg, show.get("message_thread_id"))
             state_changed = True
+            
             
         # 3. SILENT STATE UPDATE FOR PARTIAL CHANGES (Single seats booked that didn't break our blocks)
         if not state_changed and current_valid_seats != previous_seats:
