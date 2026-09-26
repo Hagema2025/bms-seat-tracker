@@ -43,5 +43,43 @@
       "O": []
     },
     "message_thread_id": 101
+  },
+  {
+    "venue_code": "CBMC",
+    "theatre": "Cinepolis: BSR Mall, OMR, Thoraipakkam",
+    "session_id": "13558",
+    "date": "20260927",
+    "url": "https://in.bookmyshow.com/movies/CHEN/seat-layout/ET00516813/CBMC/13558/20260927",
+    "name": "messaya muruuku 2-60rs BSR mall",
+    "show_time": "5:15 PM",
+    "seat_count": 2,
+    "require_adjacent": true,
+    "pending_rows": [],
+    "row_preferences": {
+      "A": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20"
+      ],
+      "B": []
+    },
+    "message_thread_id": 105
   }
 ]
