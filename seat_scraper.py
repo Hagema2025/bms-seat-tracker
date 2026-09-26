@@ -322,21 +322,18 @@ def main():
                     current_valid_seats.add(f"{row}-{s['num']}")
 
         # We now track BOTH raw known_seats AND the valid combinations (all_matches)
+        # We now track BOTH raw known_seats AND the valid combinations (all_matches)
         is_match, top_5_matches, current_all_matches = find_matching_seats(current_avail, show)
         
-        # First time tracking - establish baseline silently
+        # If it's the first time tracking, treat previous state as empty so it alerts immediately!
         if state_key not in state: 
-            print(f"   -> 🤫 Establishing silent baseline for {s_name}...")
-            state[state_key] = {
-                "known_seats": list(current_valid_seats),
-                "all_matches": current_all_matches
-            }
-            save_json(STATE_FILE, state)
-            continue 
+            print(f"   -> ⚡ First run detected for {s_name}. Checking for immediate availability...")
+            previous_seats = set()
+            previous_all_matches = set()
+        else:
+            previous_seats = set(state[state_key].get("known_seats", []))
+            previous_all_matches = set(state[state_key].get("all_matches", []))
             
-        previous_seats = set(state[state_key].get("known_seats", []))
-        previous_all_matches = set(state[state_key].get("all_matches", []))
-        
         newly_unblocked_raw = current_valid_seats - previous_seats
         new_combinations = set(current_all_matches) - previous_all_matches
         lost_combinations = previous_all_matches - set(current_all_matches)
@@ -357,9 +354,9 @@ def main():
             send_telegram_alert(msg, show.get("message_thread_id"))
             state_changed = True
 
-        # 2. NOTIFY IF NEW COMBINATIONS APPEAR
+        # 2. NOTIFY IF NEW COMBINATIONS APPEAR (Will fire on 1st run if seats are open!)
         if is_match and new_combinations:
-            print(f"   -> 🟢 UNBLOCK DETECTED for {s_name}!")
+            print(f"   -> 🟢 UNBLOCK/INITIAL AVAILABILITY DETECTED for {s_name}!")
             seats_text = "\n".join([f"• ✅ {m}" for m in top_5_matches])
             
             # --- DYNAMIC CINEMA LINKING ---
@@ -375,7 +372,6 @@ def main():
                     chain_name="CINEPOLIS LINK"
                 action_links = f"🔗 {bms_link}  |  [{chain_name}]({chain_url})"
             else:
-                # Generic fallback if a new PVR/INOX opens and isn't in your dict yet
                 s_name_upper = s_name.upper()
                 if "PVR" in s_name_upper:
                     action_links = f"🔗 {bms_link}  |  [PVR App](https://www.pvrcinemas.com/)"
@@ -383,32 +379,31 @@ def main():
                     action_links = f"🔗 {bms_link}  |  [INOX App](https://www.inoxmovies.com/)"
                 else:
                     action_links = f"🔗 {bms_link}"
-            # ------------------------------
 
             msg = (
-                f"🚨 **NEW SEATS UNBLOCKED!** 🚨\n\n"
+                f"🚨 **SEATS AVAILABLE NOW!** 🚨\n\n"
                 f"🎬 **Show:** {s_name}\n"
-                f"🆕 **Freshly Opened:** {len(newly_unblocked_raw)} seat(s) in hall\n\n"
+                f"🆕 **Available:** {len(newly_unblocked_raw)} seat(s) in hall\n\n"
                 f"🎯 **Top 5 Matching Options:**\n{seats_text}\n\n"
                 f"{action_links}"
             )
             send_telegram_alert(msg, show.get("message_thread_id"))
             state_changed = True
             
-            
-        # 3. SILENT STATE UPDATE FOR PARTIAL CHANGES (Single seats booked that didn't break our blocks)
+        # 3. SILENT STATE UPDATE
         if not state_changed and current_valid_seats != previous_seats:
             print(f"   -> ⚪ Seats changed in background. Updating state quietly.")
             state_changed = True
         elif not state_changed:
             print(f"   -> ⚪ No actionable changes.")
 
-        # Save state if anything shifted
-        if state_changed:
+        # Save state if anything shifted or if it's a fresh entry
+        if state_changed or state_key not in state:
+            if state_key not in state:
+                state[state_key] = {}
             state[state_key]["known_seats"] = list(current_valid_seats)
             state[state_key]["all_matches"] = current_all_matches
             save_json(STATE_FILE, state)
-
     print("✅ CRON JOB FINISHED. Exiting.\n")
 
 if __name__ == "__main__":
