@@ -50,6 +50,9 @@ CINEMA_CHAIN_URLS = {
     "PCAN": "https://www.pvrcinemas.com/cinemasessions/Chennai/PVR-VR-Chennai-Anna-Nagar/523",
     "PBRM": "https://www.pvrcinemas.com/cinemasessions/Chennai/PVR-Perambur---Spectrum-Mall-Chennai/372",
     "PSKL": "https://www.pvrcinemas.com/cinemasessions/Chennai/PVR-SKLS-Galaxy-Mall,-Red-Hills-Chennai/410",
+
+     #Cinepolis
+        "CBMC":"https://cinepolisindia.com/movie-list/38",
 }
 
 # --- HELPERS ---
@@ -364,7 +367,12 @@ def main():
             chain_url = CINEMA_CHAIN_URLS.get(v_code)
             
             if chain_url:
-                chain_name = "PVR App" if "pvr" in chain_url.lower() else "INOX App"
+                if "pvr" in chain_url.lower():
+                    chain_name="PVR LINK"
+                elif "inox" in chain_url.lower():
+                    chain_name="INOX LINK"
+                else:
+                    chain_name="CINEPOLIS LINK"
                 action_links = f"🔗 {bms_link}  |  [{chain_name}]({chain_url})"
             else:
                 # Generic fallback if a new PVR/INOX opens and isn't in your dict yet
