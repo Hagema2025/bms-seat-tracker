@@ -34,5 +34,22 @@
       ]
     },
     "message_thread_id": 78
+  },
+  {
+    "venue_code": "INTO",
+    "theatre": "INOX: The Marina Mall, OMR",
+    "session_id": "90850",
+    "date": "20260926",
+    "url": "https://in.bookmyshow.com/movies/chen/seat-layout/ET00516813/INTO/90850/20260926",
+    "name": "Messaya murukku 2-60rs marina mall",
+    "show_time": "08:10 PM",
+    "seat_count": 2,
+    "require_adjacent": true,
+    "pending_rows": [],
+    "row_preferences": {
+      "N": [],
+      "O": []
+    },
+    "message_thread_id": 82
   }
 ]
