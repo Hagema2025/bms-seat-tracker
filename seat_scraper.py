@@ -73,6 +73,36 @@ def send_telegram_alert(message, thread_id=None):
     except Exception as e: 
         print(f"⚠️ Telegram alert failed: {e}")
 
+def send_expired_alert_with_button(show_name, thread_id, idx, scheduled_time, current_time):
+    url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
+    
+    msg_text = (
+        f"⏰ **Showtime Reached!**\n\n"
+        f"🎬 **Show:** '{show_name}'\n"
+        f"📅 **Scheduled Time:** {scheduled_time}\n"
+        f"🕒 **Crossed At:** {current_time}\n\n"
+        f"Seat tracking has been paused. Click below to clear this tracker and close the topic."
+    )
+    
+    payload = {
+        "chat_id": TG_GROUP_CHAT_ID, 
+        "text": msg_text, 
+        "parse_mode": "Markdown",
+        "reply_markup": {
+            "inline_keyboard": [[
+                {"text": "🔒 Close Topic & Remove Tracker", "callback_data": f"delshow_{idx}"}
+            ]]
+        }
+    }
+    
+    if thread_id: 
+        payload["message_thread_id"] = thread_id
+        
+    try: 
+        requests.post(url, json=payload, timeout=10)
+    except Exception as e: 
+        print(f"⚠️ Telegram alert failed: {e}")
+
 def send_ntfy_error(show_name):
     if not NTFY_TOPIC:
         return
@@ -232,34 +262,46 @@ def main():
         print("No shows in shows.json. Exiting...")
         return
         
-    for show in shows:
+    # Use enumerate to grab the current index (idx)
+    for idx, show in enumerate(shows):
         s_id, v_code, s_name = show.get("session_id"), show.get("venue_code"), show.get("name")
         state_key = f"{v_code}_{s_id}_{show.get('message_thread_id', '')}"
         
         print(f"Checking '{s_name}' (Session: {s_id})...")
 
-        # --- NEW EXPIRATION CHECK LOGIC (IST SECURE) ---
-        date_str = show.get("date")      # e.g., "20260912"
-        time_str = show.get("show_time") # e.g., "4:20 pm"
+        # --- EXPIRATION CHECK ---
+        date_str = show.get("date")      
+        time_str = show.get("show_time") 
         
         if date_str and time_str:
             try:
-                # Get the current time in IST
                 ist_now = datetime.now(ZoneInfo("Asia/Kolkata"))
-                
-                # Combine them and force uppercase for AM/PM consistency
                 show_datetime_str = f"{date_str} {time_str.upper()}"
-                
-                # Parse the time AND tell Python this time is in IST
                 show_dt = datetime.strptime(show_datetime_str, "%Y%m%d %I:%M %p").replace(tzinfo=ZoneInfo("Asia/Kolkata"))
                 
-                # Now it accurately compares IST to IST
                 if ist_now >= show_dt:
-                    print(f"   -> ⏰ Movie has already started! Skipping check.")
-                    continue
+                    if not state.get(state_key, {}).get("expired_notified"):
+                        print(f"   -> ⏰ Showtime crossed! Sending clear button to Telegram.")
+                        formatted_scheduled = show_dt.strftime("%d/%m/%Y %I:%M %p")
+                        formatted_current = ist_now.strftime("%d/%m/%Y %I:%M %p")
+                        # Pass 'idx' exactly as the bot expects it
+                        send_expired_alert_with_button(
+                            s_name, 
+                            show.get("message_thread_id"), 
+                            idx, 
+                            formatted_scheduled,
+                            formatted_current
+                        )
+                        
+                        if state_key not in state:
+                            state[state_key] = {}
+                        state[state_key]["expired_notified"] = True
+                        save_json(STATE_FILE, state)
+                        
+                    print(f"   -> ⏰ Movie started. Paused tracking pending manual clear.")
+                    continue 
             except Exception as e:
-                print(f"   -> ⚠️ Could not parse date/time: {e}. Checking anyway...")
-        # ----------------------------------
+                print(f"   -> ⚠️ Could not parse date/time: {e}. Checking anyway...")    # ----------------------------------
         
         str_data = fetch_seat_layout(s_id, v_code, s_name)
         current_avail = parse_layout(str_data)
