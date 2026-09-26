@@ -1,6 +1,7 @@
 {
   "INTO_90943_91": {
     "known_seats": [],
-    "all_matches": []
+    "all_matches": [],
+    "expired_notified": true
   }
 }
