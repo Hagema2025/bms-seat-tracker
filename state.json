@@ -1,1 +1,23 @@
-{}
+{
+  "ACON_47648_97": {
+    "known_seats": [],
+    "all_matches": []
+  },
+  "INTO_90885_101": {
+    "known_seats": [],
+    "all_matches": []
+  },
+  "CBMC_13558_105": {
+    "known_seats": [
+      "B-22",
+      "B-23"
+    ],
+    "all_matches": [
+      "Row B: 23, 22"
+    ]
+  },
+  "CBMC_13558_117": {
+    "known_seats": [],
+    "all_matches": []
+  }
+}
