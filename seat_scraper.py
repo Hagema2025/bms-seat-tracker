@@ -271,16 +271,20 @@ def main():
     
     surviving_shows = []
     shows_updated = False
+    state_updated = False
 
     for idx, show in enumerate(shows):
         status = show.get("status")
         closed_at = show.get("closed_at", 0)
         s_name = show.get("name", "Unknown")
         thread_id = show.get("message_thread_id")
+        s_id = show.get("session_id")
+        v_code = show.get("venue_code")
 
         # --- 1. 14-DAY PASSIVE CLEANUP FOR CLOSED SHOWS ---
         if status == "closed":
             if closed_at and (current_time - closed_at) > FOURTEEN_DAYS_SECONDS:
+                # A. Permanently delete the topic from Telegram
                 if thread_id and TG_GROUP_CHAT_ID and TG_BOT_TOKEN:
                     try:
                         del_url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/deleteForumTopic"
@@ -296,6 +300,22 @@ def main():
                     except Exception as e:
                         print(f"⚠️ Error deleting forum topic: {e}")
                 
+                # B. Purge residual keys from state.json
+                # B. Purge ONLY the exact key from state.json
+                try:
+                    raw_thread = show.get("message_thread_id", "")
+                    thread_id_str = str(raw_thread).strip() if raw_thread is not None else ""
+                    exact_state_key = f"{v_code}_{s_id}_{thread_id_str}"
+                    
+                    if exact_state_key in state:
+                        del state[exact_state_key]
+                        state_updated = True
+                        print(f"🧹 Cleaned up exact state record '{exact_state_key}' for '{s_name}'")
+                    else:
+                        print(f"⚠️ Exact state key '{exact_state_key}' not found in state.json.")
+                except Exception as e:
+                    print(f"⚠️ Error cleaning residual state for '{s_name}': {e}")
+
                 print(f"🧹 Removing closed show '{s_name}' permanently from shows.json.")
                 shows_updated = True
                 continue  # Drops the show from surviving_shows (deleting it)
@@ -306,7 +326,6 @@ def main():
 
         # --- 2. ACTIVE SHOW PROCESSING ---
         surviving_shows.append(show)
-        s_id, v_code = show.get("session_id"), show.get("venue_code")
         state_key = f"{v_code}_{s_id}_{thread_id or ''}"
         
         print(f"Checking '{s_name}' (Session: {s_id})...")
@@ -432,9 +451,12 @@ def main():
                 state[state_key] = {}
             state[state_key]["known_seats"] = list(current_valid_seats)
             state[state_key]["all_matches"] = current_all_matches
-            save_json(STATE_FILE, state)
+            state_updated = True
 
-    # Save updated shows list if any items were purged after 14 days
+    # Save state and updated shows list if any items were purged or modified
+    if state_updated:
+        save_json(STATE_FILE, state)
+        
     if shows_updated:
         save_json(SHOWS_FILE, surviving_shows)
 
