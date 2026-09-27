@@ -84,7 +84,7 @@ def send_expired_alert_with_button(show_name, thread_id, idx, scheduled_time, cu
         f"🎬 **Show:** '{show_name}'\n"
         f"📅 **Scheduled Time:** {scheduled_time}\n"
         f"🕒 **Crossed At:** {current_time}\n\n"
-        f"Seat tracking has been paused. Click below to clear this tracker and close the topic."
+        f"Seat tracking has been paused."
     )
     
     payload = {
@@ -93,10 +93,9 @@ def send_expired_alert_with_button(show_name, thread_id, idx, scheduled_time, cu
         "parse_mode": "Markdown",
         "reply_markup": {
             "inline_keyboard": [[
-                {"text": "🔒 Close Topic & Remove Tracker", "callback_data": f"delshow_{idx}"}
-            ],[
-                {"text": "🔒 Delete Topic & Remove Tracker", "callback_data": f"delshowperm_{idx}"}
-            ]]
+                {"text": "Close Topic", "callback_data": f"delshow_{idx}"}
+            ],[                {"text": "Delete Topic", "callback_data": f"delshowperm_{idx}"}
+]]
         }
     }
     
