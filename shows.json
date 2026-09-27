@@ -1,33 +1,5 @@
 [
   {
-    "venue_code": "CBMC",
-    "theatre": "Cinepolis: BSR Mall, OMR, Thoraipakkam",
-    "session_id": "13608",
-    "date": "20260928",
-    "url": "https://in.bookmyshow.com/movies/chen/seat-layout/ET00516813/CBMC/13608/20260928",
-    "name": "MessayaMurukku2-60rs",
-    "show_time": "7:45 PM",
-    "seat_count": 4,
-    "require_adjacent": true,
-    "pending_rows": [],
-    "row_preferences": {
-      "A": [],
-      "B": [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10"
-      ]
-    },
-    "message_thread_id": 129
-  },
-  {
     "venue_code": "ACON",
     "theatre": "AGS Cinemas OMR: Navlur",
     "session_id": "47657",
