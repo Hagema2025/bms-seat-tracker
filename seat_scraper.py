@@ -94,6 +94,8 @@ def send_expired_alert_with_button(show_name, thread_id, idx, scheduled_time, cu
         "reply_markup": {
             "inline_keyboard": [[
                 {"text": "🔒 Close Topic & Remove Tracker", "callback_data": f"delshow_{idx}"}
+            ],[
+                {"text": "🔒 Delete Topic & Remove Tracker", "callback_data": f"delshowperm_{idx}"}
             ]]
         }
     }
