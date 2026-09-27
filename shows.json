@@ -26,5 +26,33 @@
       "W": []
     },
     "message_thread_id": 144
+  },
+  {
+    "venue_code": "CBMC",
+    "theatre": "Cinepolis: BSR Mall, OMR, Thoraipakkam",
+    "session_id": "13608",
+    "date": "20260928",
+    "url": "https://in.bookmyshow.com/movies/chen/seat-layout/ET00516813/CBMC/13608/20260928",
+    "name": "MeesayaMurukku2-60rs",
+    "show_time": "7:45 PM",
+    "seat_count": 6,
+    "require_adjacent": true,
+    "pending_rows": [],
+    "row_preferences": {
+      "A": [],
+      "B": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+      ]
+    },
+    "message_thread_id": 148
   }
 ]
