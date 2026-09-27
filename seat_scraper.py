@@ -255,7 +255,6 @@ def find_matching_seats(available_by_row, show_reqs):
             
         return False, [], []
 # --- MAIN EXECUTION ---
-
 def main():
     print("🚀 CRON JOB STARTED: Checking Seat Availability")
     state = load_json(STATE_FILE, {})
@@ -265,20 +264,59 @@ def main():
         print("No shows in shows.json. Exiting...")
         return
         
-    # Use enumerate to grab the current index (idx)
+    current_time = time.time()
+    FOURTEEN_DAYS_SECONDS = 14 * 86400
+    ist_now = datetime.now(ZoneInfo("Asia/Kolkata"))
+    today_int = int(ist_now.strftime("%Y%m%d"))
+    
+    surviving_shows = []
+    shows_updated = False
+
     for idx, show in enumerate(shows):
-        s_id, v_code, s_name = show.get("session_id"), show.get("venue_code"), show.get("name")
-        state_key = f"{v_code}_{s_id}_{show.get('message_thread_id', '')}"
+        status = show.get("status")
+        closed_at = show.get("closed_at", 0)
+        s_name = show.get("name", "Unknown")
+        thread_id = show.get("message_thread_id")
+
+        # --- 1. 14-DAY PASSIVE CLEANUP FOR CLOSED SHOWS ---
+        if status == "closed":
+            if closed_at and (current_time - closed_at) > FOURTEEN_DAYS_SECONDS:
+                if thread_id and TG_GROUP_CHAT_ID and TG_BOT_TOKEN:
+                    try:
+                        del_url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/deleteForumTopic"
+                        payload = {
+                            "chat_id": TG_GROUP_CHAT_ID,
+                            "message_thread_id": thread_id
+                        }
+                        res = requests.post(del_url, json=payload, timeout=10)
+                        if res.status_code == 200:
+                            print(f"🗑️ 14-day retention expired. Purged topic ID {thread_id} for '{s_name}'")
+                        else:
+                            print(f"⚠️ Failed to purge topic for '{s_name}': {res.text}")
+                    except Exception as e:
+                        print(f"⚠️ Error deleting forum topic: {e}")
+                
+                print(f"🧹 Removing closed show '{s_name}' permanently from shows.json.")
+                shows_updated = True
+                continue  # Drops the show from surviving_shows (deleting it)
+            else:
+                # Retain inside the 14-day window
+                surviving_shows.append(show)
+                continue
+
+        # --- 2. ACTIVE SHOW PROCESSING ---
+        surviving_shows.append(show)
+        s_id, v_code = show.get("session_id"), show.get("venue_code")
+        state_key = f"{v_code}_{s_id}_{thread_id or ''}"
         
         print(f"Checking '{s_name}' (Session: {s_id})...")
 
         # --- EXPIRATION CHECK ---
         date_str = show.get("date")      
-        time_str = show.get("show_time") 
+        time_str = show.get("show_time")  
         
         if date_str and time_str:
             try:
-                ist_now = datetime.now(ZoneInfo("Asia/Kolkata"))
                 show_datetime_str = f"{date_str} {time_str.upper()}"
                 show_dt = datetime.strptime(show_datetime_str, "%Y%m%d %I:%M %p").replace(tzinfo=ZoneInfo("Asia/Kolkata"))
                 
@@ -287,10 +325,10 @@ def main():
                         print(f"   -> ⏰ Showtime crossed! Sending clear button to Telegram.")
                         formatted_scheduled = show_dt.strftime("%d/%m/%Y %I:%M %p")
                         formatted_current = ist_now.strftime("%d/%m/%Y %I:%M %p")
-                        # Pass 'idx' exactly as the bot expects it
+                        
                         send_expired_alert_with_button(
                             s_name, 
-                            show.get("message_thread_id"), 
+                            thread_id, 
                             idx, 
                             formatted_scheduled,
                             formatted_current
@@ -302,14 +340,13 @@ def main():
                         save_json(STATE_FILE, state)
                         
                     print(f"   -> ⏰ Movie started. Paused tracking pending manual clear.")
-                    continue 
+                    continue  
             except Exception as e:
-                print(f"   -> ⚠️ Could not parse date/time: {e}. Checking anyway...")    # ----------------------------------
-        
+                print(f"   -> ⚠️ Could not parse date/time: {e}. Checking anyway...")
+
         str_data = fetch_seat_layout(s_id, v_code, s_name)
         current_avail = parse_layout(str_data)
         
-        # Get flat list of all currently valid available seats in preferred rows
         current_valid_seats = set()
         row_prefs = show.get("row_preferences", {})
         any_row = len(row_prefs) == 0
@@ -321,11 +358,8 @@ def main():
                 if not allowed_seats or s["num"] in allowed_seats:
                     current_valid_seats.add(f"{row}-{s['num']}")
 
-        # We now track BOTH raw known_seats AND the valid combinations (all_matches)
-        # We now track BOTH raw known_seats AND the valid combinations (all_matches)
         is_match, top_5_matches, current_all_matches = find_matching_seats(current_avail, show)
         
-        # If it's the first time tracking, treat previous state as empty so it alerts immediately!
         if state_key not in state: 
             print(f"   -> ⚡ First run detected for {s_name}. Checking for immediate availability...")
             previous_seats = set()
@@ -340,7 +374,6 @@ def main():
         
         state_changed = False
         
-        # 1. NOTIFY IF A COMBINATION WAS BOOKED/LOST
         if lost_combinations:
             print(f"   -> 🔴 SEATS BOOKED/LOST for {s_name}!")
             lost_text = "\n".join([f"• ❌ {m}" for m in lost_combinations])
@@ -351,15 +384,13 @@ def main():
                 f"The following combinations were just taken:\n{lost_text}\n\n"
                 f"_(Still watching for new cancellations...)_"
             )
-            send_telegram_alert(msg, show.get("message_thread_id"))
+            send_telegram_alert(msg, thread_id)
             state_changed = True
 
-        # 2. NOTIFY IF NEW COMBINATIONS APPEAR (Will fire on 1st run if seats are open!)
         if is_match and new_combinations:
             print(f"   -> 🟢 UNBLOCK/INITIAL AVAILABILITY DETECTED for {s_name}!")
             seats_text = "\n".join([f"• ✅ {m}" for m in top_5_matches])
             
-            # --- DYNAMIC CINEMA LINKING ---
             bms_link = f"[BMS App](https://in.bookmyshow.com/booktickets/{v_code}/{s_id})"
             chain_url = CINEMA_CHAIN_URLS.get(v_code)
             
@@ -387,23 +418,26 @@ def main():
                 f"🎯 **Top 5 Matching Options:**\n{seats_text}\n\n"
                 f"{action_links}"
             )
-            send_telegram_alert(msg, show.get("message_thread_id"))
+            send_telegram_alert(msg, thread_id)
             state_changed = True
             
-        # 3. SILENT STATE UPDATE
         if not state_changed and current_valid_seats != previous_seats:
             print(f"   -> ⚪ Seats changed in background. Updating state quietly.")
             state_changed = True
         elif not state_changed:
             print(f"   -> ⚪ No actionable changes.")
 
-        # Save state if anything shifted or if it's a fresh entry
         if state_changed or state_key not in state:
             if state_key not in state:
                 state[state_key] = {}
             state[state_key]["known_seats"] = list(current_valid_seats)
             state[state_key]["all_matches"] = current_all_matches
             save_json(STATE_FILE, state)
+
+    # Save updated shows list if any items were purged after 14 days
+    if shows_updated:
+        save_json(SHOWS_FILE, surviving_shows)
+
     print("✅ CRON JOB FINISHED. Exiting.\n")
 
 if __name__ == "__main__":
