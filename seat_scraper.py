@@ -14,7 +14,8 @@ STATE_FILE = "state.json"
 TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
 TG_GROUP_CHAT_ID = os.environ.get("TG_GROUP_CHAT_ID", "YOUR_CHAT_ID_HERE") 
 NTFY_URL = os.environ.get("NTFY_URL", "https://ntfy.sh").strip()
-NTFY_TOPIC = os.environ.get("NTFY_TOPIC", "").strip()
+NTFY_ERROR_TOPIC = os.environ.get("NTFY_ERROR_TOPIC", "").strip()
+NTFY_SEAT_TOPIC = os.environ.get("NTFY_SEAT_TOPIC", "").strip()
 
 
 if not TG_BOT_TOKEN or not TG_GROUP_CHAT_ID:
@@ -107,13 +108,31 @@ def send_expired_alert_with_button(show_name, thread_id, idx, scheduled_time, cu
     except Exception as e: 
         print(f"⚠️ Telegram alert failed: {e}")
 
-def send_ntfy_error(show_name):
-    if not NTFY_TOPIC:
+def send_ntfy_alert(movie_name, venue, show_time, status_msg):
+    if not NTFY_SEAT_TOPIC:
         return
     
-    url = f"{NTFY_URL}/{NTFY_TOPIC}"
+    url = f"{NTFY_URL}/{NTFY_SEAT_TOPIC}"
+    message = f"🎬 {movie_name}\n🏟️ Venue: {venue}\n⏰ {show_time}\n{status_msg}"
+    
     headers = {
-        "Title": "⚠️ BMS Seat Scraper Fetch Failed",
+        "Title": "Seat Alert",
+        "Priority": "high",
+        "Tags": "ticket,movie_camera"
+    }
+    
+    try:
+        requests.post(url, data=message.encode("utf-8"), headers=headers, timeout=10)
+    except Exception as e:
+        print(f"  ⚠️ Ntfy alert failed: {e}")
+
+def send_ntfy_error(show_name):
+    if not NTFY_ERROR_TOPIC:
+        return
+    
+    url = f"{NTFY_URL}/{NTFY_ERROR_TOPIC}"
+    headers = {
+        "Title": "⚠️ Seat Scraper Fetch Failed",
         "Priority": "high",
         "Tags": "warning,rotating_light"
     }
@@ -125,7 +144,6 @@ def send_ntfy_error(show_name):
         print(f"  ⚠️ Ntfy error alert failed: {e}")
 
 # --- CORE LOGIC ---
-# Added show_name parameter
 def fetch_seat_layout(session_id, venue_code, show_name, max_retries=3):
     url = f"https://services-in.bookmyshow.com/doTrans.aspx?_={int(time.time() * 1000)}"
     payload = f"strParam4=&strParam5=Y&strParam6=&strParam7=N&strParam1={session_id}&strParam2=WEB&strParam3=&strVenueCode={venue_code}&lngTransactionIdentifier=0&strAppCode=MOBAND2&strFormat=json&strCommand=GETSEATLAYOUT"
@@ -152,7 +170,6 @@ def fetch_seat_layout(session_id, venue_code, show_name, max_retries=3):
             
     print(f"   ❌ Failed to fetch layout for {session_id} after {max_retries} attempts.")
     
-    # --- TRIGGER THE ALERT HERE ---
     send_ntfy_error(show_name)
     
     return ""
@@ -168,31 +185,24 @@ def parse_layout(str_data):
         if not row_str or ":" not in row_str: continue
         elements = row_str.split(":")
         
-        # The row letter is always the 2nd element for all theaters
         row_letter = elements[1] 
         seats = elements[2:]
         
         avail_seats = []
         for grid_idx, seat in enumerate(seats):
-            # We only care if it is a real seat and its status is '2' (Available)
             if len(seat) >= 4 and seat[1] == '1': 
                 
                 raw_seat_num = seat[2:]
                 
-                # --- UNIVERSAL SEAT PARSER ---
-                # If there's a '+', the REAL seat number is on the right side
                 if "+" in raw_seat_num:
                     display_num = raw_seat_num.split("+")[1]
                 else:
                     display_num = raw_seat_num
                     
                 try:
-                    # Convert to normal integer (turns "04" into "4")
                     clean_num = str(int(display_num))
                 except ValueError:
-                    # Fallback for truly weird characters (removes leading zero)
                     clean_num = display_num.lstrip("0") or display_num
-                # -----------------------------
                 
                 avail_seats.append({"num": clean_num, "idx": grid_idx})
                 
@@ -224,7 +234,6 @@ def find_matching_seats(available_by_row, show_reqs):
             seat_objs, row_center = row_data["seats"], row_data["width"] / 2.0
             for i in range(len(seat_objs) - seat_count + 1):
                 window = seat_objs[i : i + seat_count]
-                # Check if seats are physically next to each other
                 if all(window[j]["idx"] - window[j-1]["idx"] == 1 for j in range(1, seat_count)):
                     block_center = sum(s["idx"] for s in window) / seat_count
                     ranked_matches.append({
@@ -234,15 +243,13 @@ def find_matching_seats(available_by_row, show_reqs):
         
         if not ranked_matches: return False, [], []
         
-        # STRICTLY sort by distance from the center (score)
         ranked_matches.sort(key=lambda x: x["score"])
         
         all_matches_text = [m["text"] for m in ranked_matches]
-        top_5_matches = all_matches_text[:5] # Broader visibility: Top 5
+        top_5_matches = all_matches_text[:5]
         
         return True, top_5_matches, all_matches_text
     
-    # --- DISTRIBUTED SEATS LOGIC (Adjacency Off) ---
     else:
         all_valid_seats = []
         for row, row_data in valid_seats_pool.items():
@@ -255,6 +262,8 @@ def find_matching_seats(available_by_row, show_reqs):
             return True, [match_text], [match_text]
             
         return False, [], []
+
+
 # --- MAIN EXECUTION ---
 def main():
     print("🚀 CRON JOB STARTED: Checking Seat Availability")
@@ -268,7 +277,6 @@ def main():
     current_time = time.time()
     FOURTEEN_DAYS_SECONDS = 14 * 86400
     ist_now = datetime.now(ZoneInfo("Asia/Kolkata"))
-    today_int = int(ist_now.strftime("%Y%m%d"))
     
     surviving_shows = []
     shows_updated = False
@@ -281,11 +289,11 @@ def main():
         thread_id = show.get("message_thread_id")
         s_id = show.get("session_id")
         v_code = show.get("venue_code")
+        theatre=show.get("theatre")
 
         # --- 1. 14-DAY PASSIVE CLEANUP FOR CLOSED SHOWS ---
         if status == "closed":
             if closed_at and (current_time - closed_at) > FOURTEEN_DAYS_SECONDS:
-                # A. Permanently delete the topic from Telegram
                 if thread_id and TG_GROUP_CHAT_ID and TG_BOT_TOKEN:
                     try:
                         del_url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/deleteForumTopic"
@@ -301,8 +309,6 @@ def main():
                     except Exception as e:
                         print(f"⚠️ Error deleting forum topic: {e}")
                 
-                # B. Purge residual keys from state.json
-                # B. Purge ONLY the exact key from state.json
                 try:
                     raw_thread = show.get("message_thread_id", "")
                     thread_id_str = str(raw_thread).strip() if raw_thread is not None else ""
@@ -319,9 +325,8 @@ def main():
 
                 print(f"🧹 Removing closed show '{s_name}' permanently from shows.json.")
                 shows_updated = True
-                continue  # Drops the show from surviving_shows (deleting it)
+                continue
             else:
-                # Retain inside the 14-day window
                 surviving_shows.append(show)
                 continue
 
@@ -394,51 +399,114 @@ def main():
         
         state_changed = False
         
-        if lost_combinations:
+        # --- BUILD THE LISTS SAFELY (WITH CAPS) ---
+        MAX_EXTRA_SEATS = 15  # Shows Top 5 + up to 15 extra = 20 max available shown
+        MAX_LOST_SEATS = 20   # Caps the lost seats list to 20
+        
+        still_avail_text = ""
+        if current_all_matches:
+            top_5_still = "\n".join([f"• ✅ {m}" for m in current_all_matches[:5]])
+            still_avail_text = f"🎯 **Top 5 Matching Options:**\n{top_5_still}"
+            
+            if len(current_all_matches) > 5:
+                # Cap the extra seats array
+                extra_matches = current_all_matches[5:5+MAX_EXTRA_SEATS]
+                other_still = "\n".join([f"• ⚪ {m}" for m in extra_matches])
+                still_avail_text += f"\n\n👇 **More Options (Ranked):**\n{other_still}"
+                
+                # If there are still seats left over after the cap, add a summary line
+                if len(current_all_matches) > (5 + MAX_EXTRA_SEATS):
+                    hidden_count = len(current_all_matches) - (5 + MAX_EXTRA_SEATS)
+                    still_avail_text += f"\n\n*...and {hidden_count} more options available.*"
+        else:
+            still_avail_text = "🚫 **No matching seats left.**"
+
+        # Build the links
+        bms_link = f"[BMS App](https://in.bookmyshow.com/booktickets/{v_code}/{s_id})"
+        chain_url = CINEMA_CHAIN_URLS.get(v_code)
+        
+        if chain_url:
+            if "pvr" in chain_url.lower():
+                chain_name="PVR LINK"
+            elif "inox" in chain_url.lower():
+                chain_name="INOX LINK"
+            else:
+                chain_name="CINEPOLIS LINK"
+            action_links = f"🔗 {bms_link}  |  [{chain_name}]({chain_url})"
+        else:
+            s_name_upper = s_name.upper()
+            if "PVR" in s_name_upper:
+                action_links = f"🔗 {bms_link}  |  [PVR App](https://www.pvrcinemas.com/)"
+            elif "INOX" in s_name_upper:
+                action_links = f"🔗 {bms_link}  |  [INOX App](https://www.inoxmovies.com/)"
+            else:
+                action_links = f"🔗 {bms_link}"
+
+        show_time_display = show.get("show_time", "Unknown Time")
+
+        # --- SEND ALERTS BASED ON SCENARIO ---
+        # SCENARIO 1: BOTH lost and new seats at the exact same time
+        if lost_combinations and new_combinations:
+            print(f"   -> 🔄 SIMULTANEOUS SEAT UPDATE for {s_name}!")
+            lost_list = list(lost_combinations)
+            lost_to_show = lost_list[:MAX_LOST_SEATS]
+            lost_text = "\n".join([f"• ❌ {m}" for m in lost_to_show])
+            
+            if len(lost_list) > MAX_LOST_SEATS:
+                lost_hidden = len(lost_list) - MAX_LOST_SEATS
+                lost_text += f"\n*...and {lost_hidden} more booked.*"
+            
+            msg = (
+                f"🔄 **SEATS UPDATED!** 🔄\n\n"
+                f"🎬 **Show:** {s_name}\n\n"
+                f"💔 **Just Booked/Lost:**\n{lost_text}\n\n"
+                f"➖➖➖➖➖➖➖➖➖➖\n\n"
+                f"{still_avail_text}\n\n"
+                f"{action_links}"
+            )
+            send_telegram_alert(msg, thread_id)
+            send_ntfy_alert(s_name, theatre, show_time_display, "🔄 STATUS: Seats Lost & Unlocked simultaneously!")
+            state_changed = True
+
+        # SCENARIO 2: ONLY seats were lost
+        elif lost_combinations:
             print(f"   -> 🔴 SEATS BOOKED/LOST for {s_name}!")
-            lost_text = "\n".join([f"• ❌ {m}" for m in lost_combinations])
+            lost_list = list(lost_combinations)
+            lost_to_show = lost_list[:MAX_LOST_SEATS]
+            lost_text = "\n".join([f"• ❌ {m}" for m in lost_to_show])
+            
+            if len(lost_list) > MAX_LOST_SEATS:
+                lost_hidden = len(lost_list) - MAX_LOST_SEATS
+                lost_text += f"\n*...and {lost_hidden} more booked.*"
             
             msg = (
                 f"💔 **SEATS BOOKED!** 💔\n\n"
                 f"🎬 **Show:** {s_name}\n\n"
                 f"The following combinations were just taken:\n{lost_text}\n\n"
-                f"_(Still watching for new cancellations...)_"
+                f"➖➖➖➖➖➖➖➖➖➖\n\n"
+                f"{still_avail_text}"
             )
+            # Only show action links if there are actually seats left to book
+            if current_all_matches:
+                msg += f"\n\n{action_links}"
+                
             send_telegram_alert(msg, thread_id)
+            send_ntfy_alert(s_name, theatre, show_time_display, "💔 STATUS: Seats Booked/Lost!")
             state_changed = True
 
-        if is_match and new_combinations:
+        # SCENARIO 3: ONLY new seats became available
+        elif is_match and new_combinations:
             print(f"   -> 🟢 UNBLOCK/INITIAL AVAILABILITY DETECTED for {s_name}!")
-            seats_text = "\n".join([f"• ✅ {m}" for m in top_5_matches])
             
-            bms_link = f"[BMS App](https://in.bookmyshow.com/booktickets/{v_code}/{s_id})"
-            chain_url = CINEMA_CHAIN_URLS.get(v_code)
-            
-            if chain_url:
-                if "pvr" in chain_url.lower():
-                    chain_name="PVR LINK"
-                elif "inox" in chain_url.lower():
-                    chain_name="INOX LINK"
-                else:
-                    chain_name="CINEPOLIS LINK"
-                action_links = f"🔗 {bms_link}  |  [{chain_name}]({chain_url})"
-            else:
-                s_name_upper = s_name.upper()
-                if "PVR" in s_name_upper:
-                    action_links = f"🔗 {bms_link}  |  [PVR App](https://www.pvrcinemas.com/)"
-                elif "INOX" in s_name_upper:
-                    action_links = f"🔗 {bms_link}  |  [INOX App](https://www.inoxmovies.com/)"
-                else:
-                    action_links = f"🔗 {bms_link}"
-
             msg = (
                 f"🚨 **SEATS AVAILABLE NOW!** 🚨\n\n"
                 f"🎬 **Show:** {s_name}\n"
                 f"🆕 **Available:** {len(newly_unblocked_raw)} seat(s) in hall\n\n"
-                f"🎯 **Top 5 Matching Options:**\n{seats_text}\n\n"
+                f"{still_avail_text}\n\n"
                 f"{action_links}"
             )
             send_telegram_alert(msg, thread_id)
+            send_ntfy_alert(s_name, theatre, show_time_display, "🚨 STATUS: New Seats Unlocked!")
             state_changed = True
             
         if not state_changed and current_valid_seats != previous_seats:
