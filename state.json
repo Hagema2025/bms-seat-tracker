@@ -1,12 +1,9 @@
 {
   "INTO_91081_169": {
     "known_seats": [
-      "L-20",
-      "L-19"
+      "L-20"
     ],
-    "all_matches": [
-      "Row L: 19, 20"
-    ]
+    "all_matches": []
   },
   "INTO_91131_193": {
     "known_seats": [],
