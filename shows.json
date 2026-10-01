@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "venue_code": "ACON",
+    "theatre": "AGS Cinemas OMR: Navlur",
+    "session_id": "47764",
+    "date": "20261002",
+    "url": "https://in.bookmyshow.com/movies/chennai/seat-layout/ET00518059/ACON/47764/20261002",
+    "name": "Anbil avan 60rs",
+    "show_time": "10:25 PM",
+    "seat_count": 2,
+    "require_adjacent": true,
+    "pending_rows": [],
+    "row_preferences": {
+      "U": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "V": [],
+      "W": []
+    },
+    "message_thread_id": 201
+  }
+]
