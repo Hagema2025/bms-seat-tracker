@@ -77,7 +77,7 @@ def send_telegram_alert(message, thread_id=None):
     except Exception as e: 
         print(f"⚠️ Telegram alert failed: {e}")
 
-def send_expired_alert_with_button(show_name, thread_id, idx, scheduled_time, current_time):
+def send_expired_alert_with_button(show_name, thread_id, uid, scheduled_time, current_time):
     url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
     
     msg_text = (
@@ -88,15 +88,16 @@ def send_expired_alert_with_button(show_name, thread_id, idx, scheduled_time, cu
         f"Seat tracking has been paused."
     )
     
+    # 🔥 Use the UID here instead of idx
     payload = {
         "chat_id": TG_GROUP_CHAT_ID, 
         "text": msg_text, 
         "parse_mode": "Markdown",
         "reply_markup": {
-            "inline_keyboard": [[
-                {"text": "Close Topic", "callback_data": f"delshow_{idx}"}
-            ],[                {"text": "Delete Topic", "callback_data": f"delshowperm_{idx}"}
-]]
+            "inline_keyboard": [
+                [{"text": "Close Topic", "callback_data": f"delshow_{uid}"}],
+                [{"text": "Delete Topic", "callback_data": f"delshowperm_{uid}"}]
+            ]
         }
     }
     
@@ -350,11 +351,12 @@ def main():
                         print(f"   -> ⏰ Showtime crossed! Sending clear button to Telegram.")
                         formatted_scheduled = show_dt.strftime("%d/%m/%Y %I:%M %p")
                         formatted_current = ist_now.strftime("%d/%m/%Y %I:%M %p")
+                        uid = f"{str(v_code).strip().upper()}-{str(s_id).strip()}"
                         
                         send_expired_alert_with_button(
                             s_name, 
                             thread_id, 
-                            idx, 
+                            uid, 
                             formatted_scheduled,
                             formatted_current
                         )
