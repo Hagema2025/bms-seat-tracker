@@ -1,18 +1,1 @@
-[
-  {
-    "venue_code": "MAYJ",
-    "theatre": "MAYAJAAL Multiplex: ECR, Chennai",
-    "session_id": "239719",
-    "date": "20261002",
-    "url": "https://in.bookmyshow.com/movies/chen/seat-layout/ET00518059/MAYJ/239719/20261002",
-    "name": "Anbil avan 60rs",
-    "show_time": "11:50 PM",
-    "seat_count": 2,
-    "require_adjacent": true,
-    "pending_rows": [],
-    "row_preferences": {
-      "K": []
-    },
-    "message_thread_id": 205
-  }
-]
+[]
