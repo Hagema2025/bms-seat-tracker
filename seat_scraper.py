@@ -295,50 +295,136 @@ def find_matching_seats(available_by_row, show_reqs):
     any_row = len(row_prefs) == 0
 
     valid_seats_pool = {}
+
     for row, row_data in available_by_row.items():
-        if not any_row and row not in row_prefs: continue
+        if not any_row and row not in row_prefs:
+            continue
+
         allowed_seats = row_prefs.get(row, [])
         seat_objs = row_data["seats"]
-        valid = [s for s in seat_objs if s["num"] in allowed_seats] if allowed_seats else seat_objs
-        if valid: valid_seats_pool[row] = {"width": row_data["width"], "seats": valid}
 
-    if not valid_seats_pool: return False, [], []
+        valid = (
+            [s for s in seat_objs if s["num"] in allowed_seats]
+            if allowed_seats
+            else seat_objs
+        )
 
+        if valid:
+            valid_seats_pool[row] = {
+                "width": row_data["width"],
+                "seats": valid
+            }
+
+    if not valid_seats_pool:
+        return False, [], [], []
+
+    # ==========================================================
+    # ADJACENT SEATS
+    # ==========================================================
     if req_adj:
+
         ranked_matches = []
+
         for row, row_data in valid_seats_pool.items():
-            seat_objs, row_center = row_data["seats"], row_data["width"] / 2.0
+
+            seat_objs = row_data["seats"]
+            row_center = row_data["width"] / 2.0
+
             for i in range(len(seat_objs) - seat_count + 1):
-                window = seat_objs[i : i + seat_count]
-                if all(window[j]["idx"] - window[j-1]["idx"] == 1 for j in range(1, seat_count)):
-                    block_center = sum(s["idx"] for s in window) / seat_count
+
+                window = seat_objs[i:i + seat_count]
+
+                # Must be physically adjacent in the raw grid
+                if all(
+                    window[j]["idx"] - window[j - 1]["idx"] == 1
+                    for j in range(1, seat_count)
+                ):
+
+                    block_center = sum(
+                        s["idx"] for s in window
+                    ) / seat_count
+
                     ranked_matches.append({
                         "score": abs(row_center - block_center),
-                        "text": f"Row {row}: {', '.join([s['num'] for s in window])}"
+                        "row": row,
+                        "seats": window,
+                        "text": (
+                            f"Row {row}: "
+                            f"{', '.join(s['num'] for s in window)}"
+                        )
                     })
-        
-        if not ranked_matches: return False, [], []
-        
-        ranked_matches.sort(key=lambda x: x["score"])
-        
-        all_matches_text = [m["text"] for m in ranked_matches]
-        top_5_matches = all_matches_text[:5]
-        
-        return True, top_5_matches, all_matches_text
-    
-    else:
-        all_valid_seats = []
-        for row, row_data in valid_seats_pool.items():
-            for s in row_data["seats"]:
-                all_valid_seats.append(f"{row}-{s['num']}")
-        
-        if len(all_valid_seats) >= seat_count:
-            found_seats = all_valid_seats[:seat_count]
-            match_text = f"Scattered Seats: {', '.join(found_seats)}"
-            return True, [match_text], [match_text]
-            
-        return False, [], []
 
+        if not ranked_matches:
+            return False, [], [], []
+
+        ranked_matches.sort(key=lambda x: x["score"])
+
+        top_matches = ranked_matches[:5]
+
+        top_5_matches = [
+            m["text"]
+            for m in top_matches
+        ]
+
+        all_matches_text = [
+            m["text"]
+            for m in ranked_matches
+        ]
+
+        return (
+            True,
+            top_5_matches,
+            all_matches_text,
+            top_matches
+        )
+
+    # ==========================================================
+    # NON-ADJACENT
+    # ==========================================================
+    else:
+
+        all_valid_seats = []
+
+        for row, row_data in valid_seats_pool.items():
+
+            row_center = row_data["width"] / 2.0
+
+            for seat in row_data["seats"]:
+
+                all_valid_seats.append({
+                    "score": abs(
+                        row_center - seat["idx"]
+                    ),
+                    "row": row,
+                    "seats": [seat],
+                    "text": f"Row {row}: {seat['num']}"
+                })
+
+        if not all_valid_seats:
+            return False, [], [], []
+
+        all_valid_seats.sort(
+            key=lambda x: x["score"]
+        )
+
+        top_matches = all_valid_seats[:5]
+
+        top_5_matches = [
+            m["text"]
+            for m in top_matches
+        ]
+
+        all_matches_text = [
+            m["text"]
+            for m in all_valid_seats
+        ]
+
+        return (
+            True,
+            top_5_matches,
+            all_matches_text,
+            top_matches
+        )
 
 # --- MAIN EXECUTION ---
 def main():
@@ -475,7 +561,9 @@ def main():
                 if not allowed_seats or s["num"] in allowed_seats:
                     current_valid_seats.add(f"{row}-{s['num']}")
 
-        is_match, top_5_matches, current_all_matches = find_matching_seats(current_avail, show)
+        is_match, top_5_matches, current_all_matches, ranked_match_objects = find_matching_seats(
+    current_avail, show
+)
 
         # --- DEBUG TOP MATCHING SEATS + BMS MAPPING ---
         if is_match:
