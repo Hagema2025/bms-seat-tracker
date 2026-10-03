@@ -88,7 +88,6 @@ def send_expired_alert_with_button(show_name, thread_id, uid, scheduled_time, cu
         f"Seat tracking has been paused."
     )
     
-    # 🔥 Use the UID here instead of idx
     payload = {
         "chat_id": TG_GROUP_CHAT_ID, 
         "text": msg_text, 
@@ -290,7 +289,7 @@ def main():
         thread_id = show.get("message_thread_id")
         s_id = show.get("session_id")
         v_code = show.get("venue_code")
-        theatre=show.get("theatre")
+        theatre = show.get("theatre")
 
         # --- 1. 14-DAY PASSIVE CLEANUP FOR CLOSED SHOWS ---
         if status == "closed":
@@ -387,6 +386,7 @@ def main():
 
         is_match, top_5_matches, current_all_matches = find_matching_seats(current_avail, show)
         
+        # --- NON-SILENT INITIALIZATION FOR FIRST RUN ---
         if state_key not in state: 
             print(f"   -> ⚡ First run detected for {s_name}. Checking for immediate availability...")
             previous_seats = set()
@@ -401,25 +401,15 @@ def main():
         
         state_changed = False
         
-        # --- BUILD THE LISTS SAFELY (WITH CAPS) ---
-        MAX_EXTRA_SEATS = 15  # Shows Top 5 + up to 15 extra = 20 max available shown
-        MAX_LOST_SEATS = 20   # Caps the lost seats list to 20
-        
+        # --- BUILD CLEAN LIST (TOP 5 ONLY) ---
         still_avail_text = ""
         if current_all_matches:
             top_5_still = "\n".join([f"• ✅ {m}" for m in current_all_matches[:5]])
             still_avail_text = f"🎯 **Top 5 Matching Options:**\n{top_5_still}"
             
             if len(current_all_matches) > 5:
-                # Cap the extra seats array
-                extra_matches = current_all_matches[5:5+MAX_EXTRA_SEATS]
-                other_still = "\n".join([f"• ⚪ {m}" for m in extra_matches])
-                still_avail_text += f"\n\n👇 **More Options (Ranked):**\n{other_still}"
-                
-                # If there are still seats left over after the cap, add a summary line
-                if len(current_all_matches) > (5 + MAX_EXTRA_SEATS):
-                    hidden_count = len(current_all_matches) - (5 + MAX_EXTRA_SEATS)
-                    still_avail_text += f"\n\n*...and {hidden_count} more options available.*"
+                hidden_count = len(current_all_matches) - 5
+                still_avail_text += f"\n*...and {hidden_count} more options available.*"
         else:
             still_avail_text = "🚫 **No matching seats left.**"
 
@@ -447,21 +437,16 @@ def main():
         show_time_display = show.get("show_time", "Unknown Time")
 
         # --- SEND ALERTS BASED ON SCENARIO ---
-        # SCENARIO 1: BOTH lost and new seats at the exact same time
+        
+        # SCENARIO 1: BOTH lost and new seats at the exact same time (Short & Neat)
         if lost_combinations and new_combinations:
             print(f"   -> 🔄 SIMULTANEOUS SEAT UPDATE for {s_name}!")
-            lost_list = list(lost_combinations)
-            lost_to_show = lost_list[:MAX_LOST_SEATS]
-            lost_text = "\n".join([f"• ❌ {m}" for m in lost_to_show])
-            
-            if len(lost_list) > MAX_LOST_SEATS:
-                lost_hidden = len(lost_list) - MAX_LOST_SEATS
-                lost_text += f"\n*...and {lost_hidden} more booked.*"
             
             msg = (
-                f"🔄 **SEATS UPDATED!** 🔄\n\n"
-                f"🎬 **Show:** {s_name}\n\n"
-                f"💔 **Just Booked/Lost:**\n{lost_text}\n\n"
+                f"🔄 **SEATS UPDATED!**\n\n"
+                f"🎬 **{s_name}**\n\n"
+                f"❌ **Lost:** {len(lost_combinations)} seat combo(s)\n"
+                f"🆕 **New:** {len(new_combinations)} seat combo(s)\n\n"
                 f"➖➖➖➖➖➖➖➖➖➖\n\n"
                 f"{still_avail_text}\n\n"
                 f"{action_links}"
@@ -474,17 +459,17 @@ def main():
         elif lost_combinations:
             print(f"   -> 🔴 SEATS BOOKED/LOST for {s_name}!")
             lost_list = list(lost_combinations)
-            lost_to_show = lost_list[:MAX_LOST_SEATS]
+            lost_to_show = lost_list[:5] # Capped at Top 5
             lost_text = "\n".join([f"• ❌ {m}" for m in lost_to_show])
             
-            if len(lost_list) > MAX_LOST_SEATS:
-                lost_hidden = len(lost_list) - MAX_LOST_SEATS
+            if len(lost_list) > 5:
+                lost_hidden = len(lost_list) - 5
                 lost_text += f"\n*...and {lost_hidden} more booked.*"
             
             msg = (
-                f"💔 **SEATS BOOKED!** 💔\n\n"
+                f"💔 **SEATS BOOKED!**\n\n"
                 f"🎬 **Show:** {s_name}\n\n"
-                f"The following combinations were just taken:\n{lost_text}\n\n"
+                f"Just Taken:\n{lost_text}\n\n"
                 f"➖➖➖➖➖➖➖➖➖➖\n\n"
                 f"{still_avail_text}"
             )
@@ -501,9 +486,9 @@ def main():
             print(f"   -> 🟢 UNBLOCK/INITIAL AVAILABILITY DETECTED for {s_name}!")
             
             msg = (
-                f"🚨 **SEATS AVAILABLE NOW!** 🚨\n\n"
+                f"🚨 **SEATS AVAILABLE NOW!**\n\n"
                 f"🎬 **Show:** {s_name}\n"
-                f"🆕 **Available:** {len(newly_unblocked_raw)} seat(s) in hall\n\n"
+                f"🆕 **Available:** {len(newly_unblocked_raw)} seat(s) unblocked\n\n"
                 f"{still_avail_text}\n\n"
                 f"{action_links}"
             )
