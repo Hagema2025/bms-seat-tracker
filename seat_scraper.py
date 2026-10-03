@@ -448,6 +448,32 @@ def find_matching_seats(available_by_row, show_reqs):
             top_matches
         )
 
+def build_booking_payload(show, match_seats):
+    """
+    Build the BMS booking payload from the actual selected seat objects.
+
+    DRY-RUN ONLY:
+    This function only creates the payload.
+    It does NOT send any request.
+    """
+
+    selected_seats = build_selected_seats_from_objects(match_seats)
+
+    payload = {
+        "appCode": "WEB",
+        "venueCode": show.get("venue_code", ""),
+        "eventCode": show.get("event_code", ""),
+        "sessionId": show.get("session_id", ""),
+        "numberOfTickets": str(len(match_seats)),
+        "seatLayoutType": "Y",
+        "selectedSeats": selected_seats,
+        "ticketCategory": "0001",
+        "companyCode": "AGS",
+        "offerData": "offerSelected=false",
+    }
+
+    return payload
+
 # --- MAIN EXECUTION ---
 def main():
     print("🚀 CRON JOB STARTED: Checking Seat Availability")
@@ -473,6 +499,7 @@ def main():
         thread_id = show.get("message_thread_id")
         s_id = show.get("session_id")
         v_code = show.get("venue_code")
+        event_code = show.get("event_code", "")
         theatre = show.get("theatre")
 
         # --- 1. 14-DAY PASSIVE CLEANUP FOR CLOSED SHOWS ---
@@ -588,32 +615,49 @@ def main():
 )
 
         # --- DEBUG TOP MATCHING SEATS + BMS MAPPING ---
-        if is_match:
-           print("\n=== TOP MATCH BOOKING MAPPING ===")
+        # --- DRY-RUN BOOKING PAYLOAD ---
+        if is_match and ranked_match_objects:
+         print("\n" + "=" * 60)
+         print("🎟️ DRY-RUN BOOKING PAYLOAD")
+         print("=" * 60)
 
-           for match in ranked_match_objects[:5]:
+    # Best-ranked seat combination
+         best_match = ranked_match_objects[0]
 
-                 print(f"🎯 {match['text']}")
-                 selected_seats = build_selected_seats_from_objects(
-            match["seats"]
+         print(f"🎯 Selected match: {best_match['text']}")
+
+         print("\nPhysical seats:")
+
+         for seat in best_match["seats"]:
+           print(
+            f"   Row {best_match['row']} "
+            f"Seat {seat['num']} "
+            f"(row_index={seat['row_index']}, "
+            f"grid_idx={seat['idx']}, "
+            f"booking_position={seat['idx'] + 1})"
         )
 
+    # Build payload
+         booking_payload = build_booking_payload(
+        show,
+        best_match["seats"]
+    )
 
-        # Example match:
-        # "Row E: 16, 17"
-                 print("   Physical seats:")
+         print("\nselectedSeats:")
+         print(booking_payload["selectedSeats"])
 
-                 for seat in match["seats"]:
-                    print(
-                f"      row={match['row']} "
-                f"display={seat['num']} "
-                f"grid_idx={seat['idx']} "
-                f"row_index={seat['row_index']}"
-            )
+         print("\nPayload:")
 
-                 print(f"   selectedSeats: {selected_seats}")
+         for key, value in booking_payload.items():
 
-           print("===============================\n")
+        # Never print session credentials
+            if key == "sessionId":
+             value = "[REDACTED]"
+
+            print(f"{key} = {value}")
+
+         print("\n🚫 DRY RUN ONLY — NO BOOKING REQUEST SENT")
+         print("=" * 60 + "\n")
         
         # --- NON-SILENT INITIALIZATION FOR FIRST RUN ---
         if state_key not in state: 
