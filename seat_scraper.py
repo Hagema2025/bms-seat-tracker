@@ -288,6 +288,28 @@ def build_selected_seats(available_by_row, selected_seat_names):
 
     return "".join(selected_parts)
 
+def build_selected_seats_from_objects(match_seats):
+    """
+    Build BMS selectedSeats directly from the actual parsed
+    seat objects.
+
+    This is important for couple rows where two physical seats
+    can have the same display number.
+    """
+
+    selected_parts = []
+
+    for seat in match_seats:
+
+        row_index = seat["row_index"]
+        grid_idx = seat["idx"]
+
+        selected_parts.append(
+            f"|2|{row_index}|{grid_idx + 1}|0000000001"
+        )
+
+    return "".join(selected_parts)
+
 def find_matching_seats(available_by_row, show_reqs):
     seat_count = show_reqs.get("seat_count", 1)
     req_adj = show_reqs.get("require_adjacent", False)
@@ -569,36 +591,27 @@ def main():
         if is_match:
            print("\n=== TOP MATCH BOOKING MAPPING ===")
 
-           for match in top_5_matches:
-                 print(f"\n🎯 {match}")
+           for match in ranked_match_objects[:5]:
+
+                 print(f"🎯 {match['text']}")
+                 selected_seats = build_selected_seats_from_objects(
+            match["seats"]
+        )
+
 
         # Example match:
         # "Row E: 16, 17"
-                 try:
-                    row_part, seats_part = match.split(":", 1)
-                    row = row_part.replace("Row ", "").strip()
+                 print("   Physical seats:")
 
-                    seat_numbers = [
-                s.strip()
-                for s in seats_part.split(",")
-            ]
-
-                    selected_names = [
-                f"{row}{num}"
-                for num in seat_numbers
-            ]
-
-                    print(f"   Seats: {selected_names}")
-
-                    selected_seats = build_selected_seats(
-                current_avail,
-                selected_names
+                 for seat in match["seats"]:
+                    print(
+                f"      row={match['row']} "
+                f"display={seat['num']} "
+                f"grid_idx={seat['idx']} "
+                f"row_index={seat['row_index']}"
             )
 
-                    print(f"   selectedSeats: {selected_seats}")
-
-                 except Exception as e:
-                     print(f"   ⚠️ Mapping failed: {e}")
+                 print(f"   selectedSeats: {selected_seats}")
 
            print("===============================\n")
         
