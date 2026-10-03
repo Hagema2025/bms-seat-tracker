@@ -497,6 +497,71 @@ def build_booking_request(booking_payload):
 
     return url, headers, booking_payload
 
+def parse_booking_response(response_data):
+    """
+    Parse the successful BMS booking response.
+
+    No payment or authorization is performed here.
+    """
+
+    if not isinstance(response_data, dict):
+        raise ValueError("Invalid booking response")
+
+    transaction_id = response_data.get("transactionId")
+    transaction_uid = response_data.get("transactionUID")
+    booking_id = response_data.get("bookingId")
+    numeric_booking_id = response_data.get("numericBookingId")
+
+    if not transaction_id or not transaction_uid or not booking_id:
+        raise ValueError(
+            f"Incomplete booking response: {response_data}"
+        )
+
+    return {
+        "transactionId": transaction_id,
+        "transactionUID": transaction_uid,
+        "bookingId": booking_id,
+        "numericBookingId": numeric_booking_id,
+    }
+
+def process_booking_response(response):
+    """
+    Process the HTTP response returned by BMS.
+    """
+
+    try:
+        response_data = response.json()
+
+        print("\n=== BOOKING RESPONSE ===")
+        print(response_data)
+
+        booking_result = parse_booking_response(response_data)
+
+        print("\n=== BOOKING RESPONSE PARSED ===")
+        print(
+            f"transactionId    = "
+            f"{booking_result['transactionId']}"
+        )
+        print(
+            f"transactionUID   = "
+            f"{booking_result['transactionUID']}"
+        )
+        print(
+            f"bookingId        = "
+            f"{booking_result['bookingId']}"
+        )
+        print(
+            f"numericBookingId = "
+            f"{booking_result['numericBookingId']}"
+        )
+        print("========================\n")
+
+        return booking_result
+
+    except Exception as e:
+        print(f"❌ Failed to process booking response: {e}")
+        return None
+
 # --- MAIN EXECUTION ---
 def main():
     print("🚀 CRON JOB STARTED: Checking Seat Availability")
@@ -686,6 +751,45 @@ def main():
          if ENABLE_BOOKING:
            print("\n⚠️ ENABLE_BOOKING=True")
            print("Live booking request is enabled.")
+           try:
+
+              response = cffi_requests.post(
+                booking_url,
+                headers=booking_headers,
+                data=booking_data,
+                impersonate="chrome",
+                timeout=15,
+            )
+
+              print(
+                f"Booking HTTP status: "
+                f"{response.status_code}"
+            )
+
+              if response.status_code == 200:
+
+                booking_result = process_booking_response(
+                    response
+                )
+
+                if booking_result:
+                    print(
+                        "✅ Booking transaction created."
+                    )
+
+              else:
+
+                print(
+                    "❌ Booking request failed:"
+                )
+                print(response.text[:2000])
+
+           except Exception as e:
+
+            print(
+                f"❌ Booking request error: {e}"
+            )
+
         # DO NOT add the live request yet.
          else:
           print("\n🚫 ENABLE_BOOKING=False")
