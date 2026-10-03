@@ -2,27 +2,6 @@
   {
     "venue_code": "INTO",
     "theatre": "INOX: The Marina Mall, OMR",
-    "session_id": "91200",
-    "date": "20261003",
-    "url": "https://in.bookmyshow.com/movies/chen/seat-layout/ET00515520/INTO/91200/20261003",
-    "name": "Baththa 60rs",
-    "show_time": "7:25 PM",
-    "seat_count": 2,
-    "require_adjacent": true,
-    "pending_rows": [],
-    "row_preferences": {
-      "N": [],
-      "O": []
-    },
-    "message_thread_id": 218,
-    "status": "closed",
-    "closed_at": 1791043441,
-    "closed_at_formatted": "03/10/26 09:34 PM",
-    "deletes_at_formatted": "17/10/26 09:34 PM"
-  },
-  {
-    "venue_code": "INTO",
-    "theatre": "INOX: The Marina Mall, OMR",
     "session_id": "91261",
     "date": "20261005",
     "url": "https://in.bookmyshow.com/movies/chen/seat-layout/ET00518039/INTO/91261/20261005",
