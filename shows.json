@@ -1,6 +1,7 @@
 [
   {
     "venue_code": "INTO",
+    "event_code":"ET00518039",
     "theatre": "INOX: The Marina Mall, OMR",
     "session_id": "91261",
     "date": "20261005",
@@ -26,6 +27,8 @@
   },
   {
     "venue_code": "RAKK",
+        "event_code":"ET00516268",
+
     "theatre": "Rakki Cinemas: OMR, Kelambakkam",
     "session_id": "4407",
     "date": "20261004",
