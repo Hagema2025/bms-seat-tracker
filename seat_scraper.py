@@ -451,18 +451,18 @@ def main():
         # print(str_data)
         current_avail = parse_layout(str_data)
 
-        print("\n=== BOOKING MAPPING DEBUG ===")
+        # print("\n=== BOOKING MAPPING DEBUG ===")
 
-        for row, row_data in current_avail.items():
-          for seat in row_data["seats"]:
-             print(
-            f"{row}{seat['num']} -> "
-            f"row_index={seat['row_index']} "
-            f"grid_idx={seat['idx']} "
-            f"booking_position={seat['idx'] + 1}"
-        )
+        # for row, row_data in current_avail.items():
+        #   for seat in row_data["seats"]:
+        #      print(
+        #     f"{row}{seat['num']} -> "
+        #     f"row_index={seat['row_index']} "
+        #     f"grid_idx={seat['idx']} "
+        #     f"booking_position={seat['idx'] + 1}"
+        # )
 
-        print("=============================\n")
+        # print("=============================\n")
         
         current_valid_seats = set()
         row_prefs = show.get("row_preferences", {})
@@ -476,6 +476,43 @@ def main():
                     current_valid_seats.add(f"{row}-{s['num']}")
 
         is_match, top_5_matches, current_all_matches = find_matching_seats(current_avail, show)
+
+        # --- DEBUG TOP MATCHING SEATS + BMS MAPPING ---
+        if is_match:
+           print("\n=== TOP MATCH BOOKING MAPPING ===")
+
+           for match in top_5_matches:
+                 print(f"\n🎯 {match}")
+
+        # Example match:
+        # "Row E: 16, 17"
+                 try:
+                    row_part, seats_part = match.split(":", 1)
+                    row = row_part.replace("Row ", "").strip()
+
+                    seat_numbers = [
+                s.strip()
+                for s in seats_part.split(",")
+            ]
+
+                    selected_names = [
+                f"{row}{num}"
+                for num in seat_numbers
+            ]
+
+                    print(f"   Seats: {selected_names}")
+
+                    selected_seats = build_selected_seats(
+                current_avail,
+                selected_names
+            )
+
+                    print(f"   selectedSeats: {selected_seats}")
+
+                 except Exception as e:
+                     print(f"   ⚠️ Mapping failed: {e}")
+
+           print("===============================\n")
         
         # --- NON-SILENT INITIALIZATION FOR FIRST RUN ---
         if state_key not in state: 
