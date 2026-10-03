@@ -14,7 +14,11 @@
       "N": [],
       "O": []
     },
-    "message_thread_id": 218
+    "message_thread_id": 218,
+    "status": "closed",
+    "closed_at": 1791043441,
+    "closed_at_formatted": "03/10/26 09:34 PM",
+    "deletes_at_formatted": "17/10/26 09:34 PM"
   },
   {
     "venue_code": "INTO",
