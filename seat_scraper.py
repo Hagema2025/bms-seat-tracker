@@ -176,41 +176,117 @@ def fetch_seat_layout(session_id, venue_code, show_name, max_retries=3):
     
 
 def parse_layout(str_data):
-    if not str_data: return {}
+    if not str_data:
+        return {}
+
     parts = str_data.split("||")
     rows_data = parts[1] if len(parts) > 1 else parts[0]
+
     available_seats_by_row = {}
-    
+
     for row_str in rows_data.split("|"):
-        if not row_str or ":" not in row_str: continue
+        if not row_str or ":" not in row_str:
+            continue
+
         elements = row_str.split(":")
-        
-        row_letter = elements[1] 
+
+        if len(elements) < 3:
+            continue
+
+        # Example:
+        # 20:U:A121+16:A122+17:...
+        #
+        # 20 = BMS row index
+        # U  = display row
+        row_index = elements[0]
+        row_letter = elements[1]
         seats = elements[2:]
-        
+
         avail_seats = []
+
         for grid_idx, seat in enumerate(seats):
-            if len(seat) >= 4 and seat[1] == '1': 
-                
+
+            if len(seat) >= 4 and seat[1] == "1":
+
                 raw_seat_num = seat[2:]
-                
+
                 if "+" in raw_seat_num:
                     display_num = raw_seat_num.split("+")[1]
                 else:
                     display_num = raw_seat_num
-                    
+
                 try:
                     clean_num = str(int(display_num))
                 except ValueError:
                     clean_num = display_num.lstrip("0") or display_num
-                
-                avail_seats.append({"num": clean_num, "idx": grid_idx})
-                
+
+                avail_seats.append({
+                    "num": clean_num,
+                    "idx": grid_idx,
+                    "row_index": row_index,
+                    "raw_token": seat,
+                })
+
         if avail_seats:
-            available_seats_by_row[row_letter] = {"width": len(seats), "seats": avail_seats}
-            
+            available_seats_by_row[row_letter] = {
+                "width": len(seats),
+                "row_index": row_index,
+                "seats": avail_seats
+            }
+
     return available_seats_by_row
 
+def build_selected_seats(available_by_row, selected_seat_names):
+    """
+    Convert seats such as:
+        ["U16", "U17"]
+
+    into BMS selectedSeats format:
+
+        |2|20|21|0000000001|2|20|22|0000000001
+
+    based on the actual parsed row index and grid index.
+    """
+
+    selected_parts = []
+
+    for seat_name in selected_seat_names:
+
+        if len(seat_name) < 2:
+            raise ValueError(f"Invalid seat name: {seat_name}")
+
+        row = seat_name[0]
+        seat_number = seat_name[1:]
+
+        if row not in available_by_row:
+            raise ValueError(
+                f"Row {row} not found in current seat layout"
+            )
+
+        row_data = available_by_row[row]
+
+        matching_seat = next(
+            (
+                seat
+                for seat in row_data["seats"]
+                if seat["num"] == seat_number
+            ),
+            None
+        )
+
+        if matching_seat is None:
+            raise ValueError(
+                f"Seat {seat_name} not found or unavailable"
+            )
+
+        row_index = matching_seat["row_index"]
+        grid_idx = matching_seat["idx"]
+
+        selected_parts.append(
+            f"|2|{row_index}|{grid_idx + 1}|0000000001"
+        )
+
+    return "".join(selected_parts)
 
 def find_matching_seats(available_by_row, show_reqs):
     seat_count = show_reqs.get("seat_count", 1)
@@ -371,7 +447,22 @@ def main():
                 print(f"   -> ⚠️ Could not parse date/time: {e}. Checking anyway...")
 
         str_data = fetch_seat_layout(s_id, v_code, s_name)
+        # print("RAW SEAT DATA:")
+        # print(str_data)
         current_avail = parse_layout(str_data)
+
+        print("\n=== BOOKING MAPPING DEBUG ===")
+
+        for row, row_data in current_avail.items():
+          for seat in row_data["seats"]:
+             print(
+            f"{row}{seat['num']} -> "
+            f"row_index={seat['row_index']} "
+            f"grid_idx={seat['idx']} "
+            f"booking_position={seat['idx'] + 1}"
+        )
+
+        print("=============================\n")
         
         current_valid_seats = set()
         row_prefs = show.get("row_preferences", {})
