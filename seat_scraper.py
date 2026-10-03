@@ -10,6 +10,7 @@ from curl_cffi import requests as cffi_requests
 # --- CONFIGURATION ---
 SHOWS_FILE = "shows.json"
 STATE_FILE = "state.json"
+ENABLE_BOOKING = False
 
 TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
 TG_GROUP_CHAT_ID = os.environ.get("TG_GROUP_CHAT_ID", "YOUR_CHAT_ID_HERE") 
@@ -474,6 +475,28 @@ def build_booking_payload(show, match_seats):
 
     return payload
 
+def build_booking_request(booking_payload):
+    """
+    Prepare the BMS booking request.
+
+    This only prepares the request.
+    It does NOT send anything.
+    """
+
+    url = (
+        "https://services-in.bookmyshow.com/"
+        "doTrans.aspx"
+        f"?_={int(time.time() * 1000)}"
+    )
+
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": POST_HEADERS["User-Agent"],
+        "Accept-Encoding": "gzip, deflate",
+    }
+
+    return url, headers, booking_payload
+
 # --- MAIN EXECUTION ---
 def main():
     print("🚀 CRON JOB STARTED: Checking Seat Availability")
@@ -641,7 +664,32 @@ def main():
          booking_payload = build_booking_payload(
         show,
         best_match["seats"]
+
+         
     )
+
+         booking_url, booking_headers, booking_data = build_booking_request(
+        booking_payload
+    )
+
+         print("\nBooking request:")
+         print(f"URL = {booking_url}")
+         print("Method = POST")
+         print("Content-Type = application/x-www-form-urlencoded")
+
+         print("\nBooking data:")
+         for key, value in booking_data.items():
+           if key == "sessionId":
+            value = "[REDACTED]"
+           print(f"{key} = {value}")
+
+         if ENABLE_BOOKING:
+           print("\n⚠️ ENABLE_BOOKING=True")
+           print("Live booking request is enabled.")
+        # DO NOT add the live request yet.
+         else:
+          print("\n🚫 ENABLE_BOOKING=False")
+          print("No booking request sent.")
 
          print("\nselectedSeats:")
          print(booking_payload["selectedSeats"])
