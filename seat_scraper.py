@@ -49,19 +49,33 @@ def get_booking_token(show_url, session):
     # 1. Load the actual seat-layout page
     # ------------------------------------------------------------
     response = session.get(
-        show_url,
-        headers={
-            "User-Agent": (
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/154.0.0.0 Safari/537.36"
-            ),
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        },
-        timeout=20,
-    )
+    show_url,
+    headers={
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/154.0.0.0 Safari/537.36"
+        ),
+        "Accept": (
+            "text/html,application/xhtml+xml,"
+            "application/xml;q=0.9,image/avif,image/webp,"
+            "image/apng,*/*;q=0.8"
+        ),
+        "Accept-Language": "en-IN,en;q=0.9",
+        "Referer": "https://in.bookmyshow.com/",
+    },
+    timeout=20,
+)
 
-    response.raise_for_status()
+    print(f"   -> BMS page HTTP: {response.status_code}")
+
+    if response.status_code != 200:
+     print(f"   -> Final URL: {response.url}")
+     print(f"   -> Content-Type: {response.headers.get('content-type')}")
+     print(f"   -> Response preview: {response.text[:300]}")
+     raise RuntimeError(
+        f"BMS seat-layout page returned HTTP {response.status_code}"
+    )
 
     html_text = response.text
 
