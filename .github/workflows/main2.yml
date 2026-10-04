@@ -55,6 +55,9 @@ jobs:
           NTFY_ERROR_TOPIC: ${{ vars.NTFY_ERROR_TOPIC }}
           NTFY_SEAT_TOPIC: ${{ vars.NTFY_SEAT_TOPIC }}
           NTFY_URL: ${{ vars.NTFY_URL }}
+          BMS_ID: ${{ vars.BMS_ID }}
+          BMS_EMAIL: ${{ vars.BMS_EMAIL }}
+          BMS_MOBILE: ${{ vars.BMS_MOBILE }}
         run: python -u seat_scraper.py
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
