@@ -6,6 +6,11 @@ import requests
 import random  
 from datetime import datetime
 from curl_cffi import requests as cffi_requests
+import base64
+import io
+import qrcode
+from urllib.parse import urljoin
+import re
 
 # --- CONFIGURATION ---
 SHOWS_FILE = "shows.json"
@@ -17,6 +22,123 @@ TG_GROUP_CHAT_ID = os.environ.get("TG_GROUP_CHAT_ID", "YOUR_CHAT_ID_HERE")
 NTFY_URL = os.environ.get("NTFY_URL", "https://ntfy.sh").strip()
 NTFY_ERROR_TOPIC = os.environ.get("NTFY_ERROR_TOPIC", "").strip()
 NTFY_SEAT_TOPIC = os.environ.get("NTFY_SEAT_TOPIC", "").strip()
+
+BMS_ID = os.environ.get("BMS_ID", "")
+BMS_EMAIL = os.environ.get("BMS_EMAIL", "")
+BMS_MOBILE = os.environ.get("BMS_MOBILE", "")
+
+
+BMS_BASE_URL = "https://in.bookmyshow.com"
+
+
+def get_booking_token(show_url, session):
+    """
+    Discover the current BookMyShow seat-layout JS bundle and
+    extract the booking token used by /api/v2/mobile/booking/movies.
+
+    Returns:
+        str: booking token
+
+    Raises:
+        RuntimeError: if bundle or token cannot be found
+    """
+
+    print("🔎 Discovering current BMS booking bundle...")
+
+    # ------------------------------------------------------------
+    # 1. Load the actual seat-layout page
+    # ------------------------------------------------------------
+    response = session.get(
+        show_url,
+        headers={
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/154.0.0.0 Safari/537.36"
+            ),
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        },
+        timeout=20,
+    )
+
+    response.raise_for_status()
+
+    html_text = response.text
+
+    # ------------------------------------------------------------
+    # 2. Find app-seatlayout-movies.<hash>.js
+    # ------------------------------------------------------------
+    bundle_matches = re.findall(
+        r'<script[^>]+src=["\']([^"\']*app-seatlayout-movies[^"\']*\.js)["\']',
+        html_text,
+        re.IGNORECASE,
+    )
+
+    if not bundle_matches:
+        # Fallback: sometimes the script URL appears elsewhere
+        bundle_matches = re.findall(
+            r'["\']([^"\']*app-seatlayout-movies[^"\']*\.js)["\']',
+            html_text,
+            re.IGNORECASE,
+        )
+
+    if not bundle_matches:
+        raise RuntimeError(
+            "Could not find app-seatlayout-movies JS bundle"
+        )
+
+    bundle_url = urljoin(BMS_BASE_URL, bundle_matches[0])
+
+    print(f"   -> Bundle found: {bundle_url}")
+
+    # ------------------------------------------------------------
+    # 3. Download the current bundle
+    # ------------------------------------------------------------
+    js_response = session.get(
+        bundle_url,
+        headers={
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/154.0.0.0 Safari/537.36"
+            ),
+            "Accept": "*/*",
+            "Referer": show_url,
+        },
+        timeout=20,
+    )
+
+    js_response.raise_for_status()
+
+    js = js_response.text
+
+    # ------------------------------------------------------------
+    # 4. Find the token specifically near the booking payload
+    #
+    # We do NOT simply search for `token:` because the bundle
+    # contains many unrelated token fields.
+    # ------------------------------------------------------------
+    booking_block = re.search(
+        r'bmsId\s*:\s*[^,]+,\s*'
+        r'token\s*:\s*["\']([^"\']+)["\']\s*,\s*'
+        r'seatLayoutType',
+        js,
+        re.DOTALL,
+    )
+
+    if not booking_block:
+        raise RuntimeError(
+            "Could not extract booking token from app-seatlayout-movies bundle"
+        )
+
+    token = booking_block.group(1)
+
+    if not token:
+        raise RuntimeError("Extracted booking token is empty")
+
+    print("   -> ✅ Booking token discovered")
+
+    return token
 
 
 if not TG_BOT_TOKEN or not TG_GROUP_CHAT_ID:
@@ -449,50 +571,59 @@ def find_matching_seats(available_by_row, show_reqs):
             top_matches
         )
 
-def build_booking_payload(show, match_seats):
+def build_booking_payload(show, match_seats,booking_token):
     """
-    Build the BMS booking payload from the actual selected seat objects.
+    Build the current BMS WEB booking payload.
 
-    DRY-RUN ONLY:
-    This function only creates the payload.
-    It does NOT send any request.
+    Uses the actual physical seat objects so couple seats
+    with duplicate display numbers are handled correctly.
     """
 
     selected_seats = build_selected_seats_from_objects(match_seats)
 
     payload = {
         "appCode": "WEB",
-        "venueCode": show.get("venue_code", ""),
+        "bmsId": BMS_ID,
+        "companyCode": show.get("company_code", "AGS"),
         "eventCode": show.get("event_code", ""),
-        "sessionId": show.get("session_id", ""),
-        "numberOfTickets": str(len(match_seats)),
+        "numberOfTickets": len(match_seats),
+        "offerData": {
+            "offerSelected": False
+        },
         "seatLayoutType": "Y",
         "selectedSeats": selected_seats,
+        "sessionId": str(show.get("session_id", "")),
         "ticketCategory": "0001",
-        "companyCode": "AGS",
-        "offerData": "offerSelected=false",
+        "token": booking_token,
+        "venueCode": show.get("venue_code", "")
     }
 
     return payload
-
 def build_booking_request(booking_payload):
     """
-    Prepare the BMS booking request.
+    Build the current BMS web booking request.
 
     This only prepares the request.
     It does NOT send anything.
     """
 
-    url = (
-        "https://services-in.bookmyshow.com/"
-        "doTrans.aspx"
-        f"?_={int(time.time() * 1000)}"
-    )
+    url = "https://in.bookmyshow.com/api/v2/mobile/booking/movies"
 
     headers = {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "User-Agent": POST_HEADERS["User-Agent"],
-        "Accept-Encoding": "gzip, deflate",
+        "Accept": "application/json, text/plain, */*",
+        "Content-Type": "application/json",
+        "Origin": "https://in.bookmyshow.com",
+        "Referer": "https://in.bookmyshow.com/",
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/154.0.0.0 Safari/537.36"
+        ),
+        "X-App-Code": "WEB",
+        "X-Platform": "WEB",
+        "X-Platform-Code": "WEB",
+        "X-Region-Code": "CHEN",
+        "X-Region-Slug": "chennai",
     }
 
     return url, headers, booking_payload
@@ -724,14 +855,19 @@ def main():
             f"grid_idx={seat['idx']}, "
             f"booking_position={seat['idx'] + 1})"
         )
+         booking_token = None
 
-    # Build payload
-         booking_payload = build_booking_payload(
-        show,
-        best_match["seats"]
-
-         
+         if ENABLE_BOOKING:
+             booking_token = get_booking_token(
+        show["url"],
+        cffi_requests
     )
+
+         booking_payload = build_booking_payload(
+    show,
+    best_match["seats"],
+    booking_token or ""
+)
 
          booking_url, booking_headers, booking_data = build_booking_request(
         booking_payload
@@ -803,7 +939,7 @@ def main():
          for key, value in booking_payload.items():
 
         # Never print session credentials
-            if key == "sessionId":
+            if key in {"sessionId", "token", "bmsId"}:
              value = "[REDACTED]"
 
             print(f"{key} = {value}")
