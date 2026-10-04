@@ -6,155 +6,16 @@ import requests
 import random  
 from datetime import datetime
 from curl_cffi import requests as cffi_requests
-import base64
-import io
-import qrcode
-from urllib.parse import urljoin
-import re
 
 # --- CONFIGURATION ---
 SHOWS_FILE = "shows.json"
 STATE_FILE = "state.json"
-ENABLE_BOOKING = True
 
 TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
 TG_GROUP_CHAT_ID = os.environ.get("TG_GROUP_CHAT_ID", "YOUR_CHAT_ID_HERE") 
 NTFY_URL = os.environ.get("NTFY_URL", "https://ntfy.sh").strip()
 NTFY_ERROR_TOPIC = os.environ.get("NTFY_ERROR_TOPIC", "").strip()
 NTFY_SEAT_TOPIC = os.environ.get("NTFY_SEAT_TOPIC", "").strip()
-
-BMS_ID = os.environ.get("BMS_ID", "")
-BMS_EMAIL = os.environ.get("BMS_EMAIL", "")
-BMS_MOBILE = os.environ.get("BMS_MOBILE", "")
-
-
-BMS_BASE_URL = "https://in.bookmyshow.com"
-
-
-def get_booking_token(show_url, session):
-    """
-    Discover the current BookMyShow seat-layout JS bundle and
-    extract the booking token used by /api/v2/mobile/booking/movies.
-
-    Returns:
-        str: booking token
-
-    Raises:
-        RuntimeError: if bundle or token cannot be found
-    """
-
-    print("🔎 Discovering current BMS booking bundle...")
-
-    # ------------------------------------------------------------
-    # 1. Load the actual seat-layout page
-    # ------------------------------------------------------------
-    
-    response = session.get(
-    show_url,
-    headers={
-        "User-Agent": (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/154.0.0.0 Safari/537.36"
-        ),
-        "Accept": (
-            "text/html,application/xhtml+xml,"
-            "application/xml;q=0.9,image/avif,image/webp,"
-            "image/apng,*/*;q=0.8"
-        ),
-        "Accept-Language": "en-IN,en;q=0.9",
-        "Referer": "https://in.bookmyshow.com/",
-        "Upgrade-Insecure-Requests": "1",
-    },
-    timeout=20,
-)
-
-    print(f"   -> BMS page HTTP: {response.status_code}")
-
-    if response.status_code != 200:
-     print(f"   -> Final URL: {response.url}")
-     print(f"   -> Content-Type: {response.headers.get('content-type')}")
-     print(f"   -> Response preview: {response.text[:300]}")
-     raise RuntimeError(
-        f"BMS seat-layout page returned HTTP {response.status_code}"
-    )
-
-    html_text = response.text
-
-    # ------------------------------------------------------------
-    # 2. Find app-seatlayout-movies.<hash>.js
-    # ------------------------------------------------------------
-    bundle_matches = re.findall(
-        r'<script[^>]+src=["\']([^"\']*app-seatlayout-movies[^"\']*\.js)["\']',
-        html_text,
-        re.IGNORECASE,
-    )
-
-    if not bundle_matches:
-        # Fallback: sometimes the script URL appears elsewhere
-        bundle_matches = re.findall(
-            r'["\']([^"\']*app-seatlayout-movies[^"\']*\.js)["\']',
-            html_text,
-            re.IGNORECASE,
-        )
-
-    if not bundle_matches:
-        raise RuntimeError(
-            "Could not find app-seatlayout-movies JS bundle"
-        )
-
-    bundle_url = urljoin(BMS_BASE_URL, bundle_matches[0])
-
-    print(f"   -> Bundle found: {bundle_url}")
-
-    # ------------------------------------------------------------
-    # 3. Download the current bundle
-    # ------------------------------------------------------------
-    js_response = session.get(
-        bundle_url,
-        headers={
-            "User-Agent": (
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/154.0.0.0 Safari/537.36"
-            ),
-            "Accept": "*/*",
-            "Referer": show_url,
-        },
-        timeout=20,
-    )
-
-    js_response.raise_for_status()
-
-    js = js_response.text
-
-    # ------------------------------------------------------------
-    # 4. Find the token specifically near the booking payload
-    #
-    # We do NOT simply search for `token:` because the bundle
-    # contains many unrelated token fields.
-    # ------------------------------------------------------------
-    booking_block = re.search(
-        r'bmsId\s*:\s*[^,]+,\s*'
-        r'token\s*:\s*["\']([^"\']+)["\']\s*,\s*'
-        r'seatLayoutType',
-        js,
-        re.DOTALL,
-    )
-
-    if not booking_block:
-        raise RuntimeError(
-            "Could not extract booking token from app-seatlayout-movies bundle"
-        )
-
-    token = booking_block.group(1)
-
-    if not token:
-        raise RuntimeError("Extracted booking token is empty")
-
-    print("   -> ✅ Booking token discovered")
-
-    return token
 
 
 if not TG_BOT_TOKEN or not TG_GROUP_CHAT_ID:
@@ -315,139 +176,41 @@ def fetch_seat_layout(session_id, venue_code, show_name, max_retries=3):
     
 
 def parse_layout(str_data):
-    if not str_data:
-        return {}
-
+    if not str_data: return {}
     parts = str_data.split("||")
     rows_data = parts[1] if len(parts) > 1 else parts[0]
-
     available_seats_by_row = {}
-
+    
     for row_str in rows_data.split("|"):
-        if not row_str or ":" not in row_str:
-            continue
-
+        if not row_str or ":" not in row_str: continue
         elements = row_str.split(":")
-
-        if len(elements) < 3:
-            continue
-
-        # Example:
-        # 20:U:A121+16:A122+17:...
-        #
-        # 20 = BMS row index
-        # U  = display row
-        row_index = elements[0]
-        row_letter = elements[1]
+        
+        row_letter = elements[1] 
         seats = elements[2:]
-
+        
         avail_seats = []
-
         for grid_idx, seat in enumerate(seats):
-
-            if len(seat) >= 4 and seat[1] == "1":
-
+            if len(seat) >= 4 and seat[1] == '1': 
+                
                 raw_seat_num = seat[2:]
-
+                
                 if "+" in raw_seat_num:
                     display_num = raw_seat_num.split("+")[1]
                 else:
                     display_num = raw_seat_num
-
+                    
                 try:
                     clean_num = str(int(display_num))
                 except ValueError:
                     clean_num = display_num.lstrip("0") or display_num
-
-                avail_seats.append({
-                    "num": clean_num,
-                    "idx": grid_idx,
-                    "row_index": row_index,
-                    "raw_token": seat,
-                })
-
+                
+                avail_seats.append({"num": clean_num, "idx": grid_idx})
+                
         if avail_seats:
-            available_seats_by_row[row_letter] = {
-                "width": len(seats),
-                "row_index": row_index,
-                "seats": avail_seats
-            }
-
+            available_seats_by_row[row_letter] = {"width": len(seats), "seats": avail_seats}
+            
     return available_seats_by_row
 
-def build_selected_seats(available_by_row, selected_seat_names):
-    """
-    Convert seats such as:
-        ["U16", "U17"]
-
-    into BMS selectedSeats format:
-
-        |2|20|21|0000000001|2|20|22|0000000001
-
-    based on the actual parsed row index and grid index.
-    """
-
-    selected_parts = []
-
-    for seat_name in selected_seat_names:
-
-        if len(seat_name) < 2:
-            raise ValueError(f"Invalid seat name: {seat_name}")
-
-        row = seat_name[0]
-        seat_number = seat_name[1:]
-
-        if row not in available_by_row:
-            raise ValueError(
-                f"Row {row} not found in current seat layout"
-            )
-
-        row_data = available_by_row[row]
-
-        matching_seat = next(
-            (
-                seat
-                for seat in row_data["seats"]
-                if seat["num"] == seat_number
-            ),
-            None
-        )
-
-        if matching_seat is None:
-            raise ValueError(
-                f"Seat {seat_name} not found or unavailable"
-            )
-
-        row_index = matching_seat["row_index"]
-        grid_idx = matching_seat["idx"]
-
-        selected_parts.append(
-            f"|2|{row_index}|{grid_idx + 1}|0000000001"
-        )
-
-    return "".join(selected_parts)
-
-def build_selected_seats_from_objects(match_seats):
-    """
-    Build BMS selectedSeats directly from the actual parsed
-    seat objects.
-
-    This is important for couple rows where two physical seats
-    can have the same display number.
-    """
-
-    selected_parts = []
-
-    for seat in match_seats:
-
-        row_index = seat["row_index"]
-        grid_idx = seat["idx"]
-
-        selected_parts.append(
-            f"|2|{row_index}|{grid_idx + 1}|0000000001"
-        )
-
-    return "".join(selected_parts)
 
 def find_matching_seats(available_by_row, show_reqs):
     seat_count = show_reqs.get("seat_count", 1)
@@ -456,258 +219,50 @@ def find_matching_seats(available_by_row, show_reqs):
     any_row = len(row_prefs) == 0
 
     valid_seats_pool = {}
-
     for row, row_data in available_by_row.items():
-        if not any_row and row not in row_prefs:
-            continue
-
+        if not any_row and row not in row_prefs: continue
         allowed_seats = row_prefs.get(row, [])
         seat_objs = row_data["seats"]
+        valid = [s for s in seat_objs if s["num"] in allowed_seats] if allowed_seats else seat_objs
+        if valid: valid_seats_pool[row] = {"width": row_data["width"], "seats": valid}
 
-        valid = (
-            [s for s in seat_objs if s["num"] in allowed_seats]
-            if allowed_seats
-            else seat_objs
-        )
+    if not valid_seats_pool: return False, [], []
 
-        if valid:
-            valid_seats_pool[row] = {
-                "width": row_data["width"],
-                "seats": valid
-            }
-
-    if not valid_seats_pool:
-        return False, [], [], []
-
-    # ==========================================================
-    # ADJACENT SEATS
-    # ==========================================================
     if req_adj:
-
         ranked_matches = []
-
         for row, row_data in valid_seats_pool.items():
-
-            seat_objs = row_data["seats"]
-            row_center = row_data["width"] / 2.0
-
+            seat_objs, row_center = row_data["seats"], row_data["width"] / 2.0
             for i in range(len(seat_objs) - seat_count + 1):
-
-                window = seat_objs[i:i + seat_count]
-
-                # Must be physically adjacent in the raw grid
-                if all(
-                    window[j]["idx"] - window[j - 1]["idx"] == 1
-                    for j in range(1, seat_count)
-                ):
-
-                    block_center = sum(
-                        s["idx"] for s in window
-                    ) / seat_count
-
+                window = seat_objs[i : i + seat_count]
+                if all(window[j]["idx"] - window[j-1]["idx"] == 1 for j in range(1, seat_count)):
+                    block_center = sum(s["idx"] for s in window) / seat_count
                     ranked_matches.append({
                         "score": abs(row_center - block_center),
-                        "row": row,
-                        "seats": window,
-                        "text": (
-                            f"Row {row}: "
-                            f"{', '.join(s['num'] for s in window)}"
-                        )
+                        "text": f"Row {row}: {', '.join([s['num'] for s in window])}"
                     })
-
-        if not ranked_matches:
-            return False, [], [], []
-
+        
+        if not ranked_matches: return False, [], []
+        
         ranked_matches.sort(key=lambda x: x["score"])
-
-        top_matches = ranked_matches[:5]
-
-        top_5_matches = [
-            m["text"]
-            for m in top_matches
-        ]
-
-        all_matches_text = [
-            m["text"]
-            for m in ranked_matches
-        ]
-
-        return (
-            True,
-            top_5_matches,
-            all_matches_text,
-            top_matches
-        )
-
-    # ==========================================================
-    # NON-ADJACENT
-    # ==========================================================
+        
+        all_matches_text = [m["text"] for m in ranked_matches]
+        top_5_matches = all_matches_text[:5]
+        
+        return True, top_5_matches, all_matches_text
+    
     else:
-
         all_valid_seats = []
-
         for row, row_data in valid_seats_pool.items():
+            for s in row_data["seats"]:
+                all_valid_seats.append(f"{row}-{s['num']}")
+        
+        if len(all_valid_seats) >= seat_count:
+            found_seats = all_valid_seats[:seat_count]
+            match_text = f"Scattered Seats: {', '.join(found_seats)}"
+            return True, [match_text], [match_text]
+            
+        return False, [], []
 
-            row_center = row_data["width"] / 2.0
-
-            for seat in row_data["seats"]:
-
-                all_valid_seats.append({
-                    "score": abs(
-                        row_center - seat["idx"]
-                    ),
-                    "row": row,
-                    "seats": [seat],
-                    "text": f"Row {row}: {seat['num']}"
-                })
-
-        if not all_valid_seats:
-            return False, [], [], []
-
-        all_valid_seats.sort(
-            key=lambda x: x["score"]
-        )
-
-        top_matches = all_valid_seats[:5]
-
-        top_5_matches = [
-            m["text"]
-            for m in top_matches
-        ]
-
-        all_matches_text = [
-            m["text"]
-            for m in all_valid_seats
-        ]
-
-        return (
-            True,
-            top_5_matches,
-            all_matches_text,
-            top_matches
-        )
-
-def build_booking_payload(show, match_seats,booking_token):
-    """
-    Build the current BMS WEB booking payload.
-
-    Uses the actual physical seat objects so couple seats
-    with duplicate display numbers are handled correctly.
-    """
-
-    selected_seats = build_selected_seats_from_objects(match_seats)
-
-    payload = {
-        "appCode": "WEB",
-        "bmsId": BMS_ID,
-        "companyCode": show.get("company_code", "AGS"),
-        "eventCode": show.get("event_code", ""),
-        "numberOfTickets": len(match_seats),
-        "offerData": {
-            "offerSelected": False
-        },
-        "seatLayoutType": "Y",
-        "selectedSeats": selected_seats,
-        "sessionId": str(show.get("session_id", "")),
-        "ticketCategory": "0001",
-        "token": booking_token,
-        "venueCode": show.get("venue_code", "")
-    }
-
-    return payload
-def build_booking_request(booking_payload):
-    """
-    Build the current BMS web booking request.
-
-    This only prepares the request.
-    It does NOT send anything.
-    """
-
-    url = "https://in.bookmyshow.com/api/v2/mobile/booking/movies"
-
-    headers = {
-        "Accept": "application/json, text/plain, */*",
-        "Content-Type": "application/json",
-        "Origin": "https://in.bookmyshow.com",
-        "Referer": "https://in.bookmyshow.com/",
-        "User-Agent": (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/154.0.0.0 Safari/537.36"
-        ),
-        "X-App-Code": "WEB",
-        "X-Platform": "WEB",
-        "X-Platform-Code": "WEB",
-        "X-Region-Code": "CHEN",
-        "X-Region-Slug": "chennai",
-    }
-
-    return url, headers, booking_payload
-
-def parse_booking_response(response_data):
-    """
-    Parse the successful BMS booking response.
-
-    No payment or authorization is performed here.
-    """
-
-    if not isinstance(response_data, dict):
-        raise ValueError("Invalid booking response")
-
-    transaction_id = response_data.get("transactionId")
-    transaction_uid = response_data.get("transactionUID")
-    booking_id = response_data.get("bookingId")
-    numeric_booking_id = response_data.get("numericBookingId")
-
-    if not transaction_id or not transaction_uid or not booking_id:
-        raise ValueError(
-            f"Incomplete booking response: {response_data}"
-        )
-
-    return {
-        "transactionId": transaction_id,
-        "transactionUID": transaction_uid,
-        "bookingId": booking_id,
-        "numericBookingId": numeric_booking_id,
-    }
-
-def process_booking_response(response):
-    """
-    Process the HTTP response returned by BMS.
-    """
-
-    try:
-        response_data = response.json()
-
-        print("\n=== BOOKING RESPONSE ===")
-        print(response_data)
-
-        booking_result = parse_booking_response(response_data)
-
-        print("\n=== BOOKING RESPONSE PARSED ===")
-        print(
-            f"transactionId    = "
-            f"{booking_result['transactionId']}"
-        )
-        print(
-            f"transactionUID   = "
-            f"{booking_result['transactionUID']}"
-        )
-        print(
-            f"bookingId        = "
-            f"{booking_result['bookingId']}"
-        )
-        print(
-            f"numericBookingId = "
-            f"{booking_result['numericBookingId']}"
-        )
-        print("========================\n")
-
-        return booking_result
-
-    except Exception as e:
-        print(f"❌ Failed to process booking response: {e}")
-        return None
 
 # --- MAIN EXECUTION ---
 def main():
@@ -734,7 +289,6 @@ def main():
         thread_id = show.get("message_thread_id")
         s_id = show.get("session_id")
         v_code = show.get("venue_code")
-        event_code = show.get("event_code", "")
         theatre = show.get("theatre")
 
         # --- 1. 14-DAY PASSIVE CLEANUP FOR CLOSED SHOWS ---
@@ -817,22 +371,7 @@ def main():
                 print(f"   -> ⚠️ Could not parse date/time: {e}. Checking anyway...")
 
         str_data = fetch_seat_layout(s_id, v_code, s_name)
-        # print("RAW SEAT DATA:")
-        # print(str_data)
         current_avail = parse_layout(str_data)
-
-        # print("\n=== BOOKING MAPPING DEBUG ===")
-
-        # for row, row_data in current_avail.items():
-        #   for seat in row_data["seats"]:
-        #      print(
-        #     f"{row}{seat['num']} -> "
-        #     f"row_index={seat['row_index']} "
-        #     f"grid_idx={seat['idx']} "
-        #     f"booking_position={seat['idx'] + 1}"
-        # )
-
-        # print("=============================\n")
         
         current_valid_seats = set()
         row_prefs = show.get("row_preferences", {})
@@ -845,124 +384,7 @@ def main():
                 if not allowed_seats or s["num"] in allowed_seats:
                     current_valid_seats.add(f"{row}-{s['num']}")
 
-        is_match, top_5_matches, current_all_matches, ranked_match_objects = find_matching_seats(
-    current_avail, show
-)
-
-        # --- DEBUG TOP MATCHING SEATS + BMS MAPPING ---
-        # --- DRY-RUN BOOKING PAYLOAD ---
-        if is_match and ranked_match_objects:
-         print("\n" + "=" * 60)
-         print("🎟️ DRY-RUN BOOKING PAYLOAD")
-         print("=" * 60)
-
-    # Best-ranked seat combination
-         best_match = ranked_match_objects[0]
-
-         print(f"🎯 Selected match: {best_match['text']}")
-
-         print("\nPhysical seats:")
-
-         for seat in best_match["seats"]:
-           print(
-            f"   Row {best_match['row']} "
-            f"Seat {seat['num']} "
-            f"(row_index={seat['row_index']}, "
-            f"grid_idx={seat['idx']}, "
-            f"booking_position={seat['idx'] + 1})"
-        )
-         booking_token = None
-
-         if ENABLE_BOOKING:
-             session = cffi_requests.Session(impersonate="chrome")
-             booking_token = get_booking_token(
-        show["url"],
-        session
-    )
-
-         booking_payload = build_booking_payload(
-    show,
-    best_match["seats"],
-    booking_token or ""
-)
-
-         booking_url, booking_headers, booking_data = build_booking_request(
-        booking_payload
-    )
-
-         print("\nBooking request:")
-         print(f"URL = {booking_url}")
-         print("Method = POST")
-         print("Content-Type = application/x-www-form-urlencoded")
-
-         print("\nBooking data:")
-         for key, value in booking_data.items():
-           if key == "sessionId":
-            value = "[REDACTED]"
-           print(f"{key} = {value}")
-
-         if ENABLE_BOOKING:
-           print("\n⚠️ ENABLE_BOOKING=True")
-           print("Live booking request is enabled.")
-           try:
-
-              response = cffi_requests.post(
-                booking_url,
-                headers=booking_headers,
-                data=booking_data,
-                impersonate="chrome",
-                timeout=15,
-            )
-
-              print(
-                f"Booking HTTP status: "
-                f"{response.status_code}"
-            )
-
-              if response.status_code == 200:
-
-                booking_result = process_booking_response(
-                    response
-                )
-
-                if booking_result:
-                    print(
-                        "✅ Booking transaction created."
-                    )
-
-              else:
-
-                print(
-                    "❌ Booking request failed:"
-                )
-                print(response.text[:2000])
-
-           except Exception as e:
-
-            print(
-                f"❌ Booking request error: {e}"
-            )
-
-        # DO NOT add the live request yet.
-         else:
-          print("\n🚫 ENABLE_BOOKING=False")
-          print("No booking request sent.")
-
-         print("\nselectedSeats:")
-         print(booking_payload["selectedSeats"])
-
-         print("\nPayload:")
-
-         for key, value in booking_payload.items():
-
-        # Never print session credentials
-            if key in {"sessionId", "token", "bmsId"}:
-             value = "[REDACTED]"
-
-            print(f"{key} = {value}")
-
-         print("\n🚫 DRY RUN ONLY — NO BOOKING REQUEST SENT")
-         print("=" * 60 + "\n")
+        is_match, top_5_matches, current_all_matches = find_matching_seats(current_avail, show)
         
         # --- NON-SILENT INITIALIZATION FOR FIRST RUN ---
         if state_key not in state: 
