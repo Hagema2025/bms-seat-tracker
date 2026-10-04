@@ -48,6 +48,7 @@ def get_booking_token(show_url, session):
     # ------------------------------------------------------------
     # 1. Load the actual seat-layout page
     # ------------------------------------------------------------
+    
     response = session.get(
     show_url,
     headers={
@@ -63,6 +64,7 @@ def get_booking_token(show_url, session):
         ),
         "Accept-Language": "en-IN,en;q=0.9",
         "Referer": "https://in.bookmyshow.com/",
+        "Upgrade-Insecure-Requests": "1",
     },
     timeout=20,
 )
@@ -872,9 +874,10 @@ def main():
          booking_token = None
 
          if ENABLE_BOOKING:
+             session = cffi_requests.Session(impersonate="chrome")
              booking_token = get_booking_token(
         show["url"],
-        cffi_requests
+        session
     )
 
          booking_payload = build_booking_payload(
