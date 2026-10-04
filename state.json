@@ -5,14 +5,9 @@
   },
   "RAKK_4407_232": {
     "known_seats": [
-      "C-16",
       "C-4",
-      "C-17",
       "C-15"
     ],
-    "all_matches": [
-      "Row C: 15, 16",
-      "Row C: 16, 17"
-    ]
+    "all_matches": []
   }
 }
