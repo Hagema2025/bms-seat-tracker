@@ -1,34 +1,7 @@
 [
   {
-    "venue_code": "INTO",
-    "event_code":"ET00518039",
-    "theatre": "INOX: The Marina Mall, OMR",
-    "session_id": "91261",
-    "date": "20261005",
-    "url": "https://in.bookmyshow.com/movies/chen/seat-layout/ET00518039/INTO/91261/20261005",
-    "name": "Dorothy 60rs",
-    "show_time": "10:35 PM",
-    "seat_count": 2,
-    "require_adjacent": true,
-    "pending_rows": [],
-    "row_preferences": {
-      "K": [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7"
-      ],
-      "I": []
-    },
-    "message_thread_id": 224
-  },
-  {
     "venue_code": "RAKK",
-        "event_code":"ET00516268",
-
+    "event_code": "ET00516268",
     "theatre": "Rakki Cinemas: OMR, Kelambakkam",
     "session_id": "4407",
     "date": "20261004",
