@@ -15,7 +15,7 @@ import re
 # --- CONFIGURATION ---
 SHOWS_FILE = "shows.json"
 STATE_FILE = "state.json"
-ENABLE_BOOKING = False
+ENABLE_BOOKING = True
 
 TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
 TG_GROUP_CHAT_ID = os.environ.get("TG_GROUP_CHAT_ID", "YOUR_CHAT_ID_HERE") 
