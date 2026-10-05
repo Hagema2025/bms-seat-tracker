@@ -76,6 +76,10 @@
       ],
       "L": []
     },
-    "message_thread_id": 256
+    "message_thread_id": 256,
+    "status": "closed",
+    "closed_at": 1791224174,
+    "closed_at_formatted": "05/10/26 11:46 PM",
+    "deletes_at_formatted": "06/10/26 11:46 PM"
   }
 ]
