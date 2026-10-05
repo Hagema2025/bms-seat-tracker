@@ -20,42 +20,6 @@
     ],
     "expired_notified": true
   },
-  "INTO_91238_252": {
-    "known_seats": [
-      "L-3",
-      "M-19",
-      "L-4",
-      "L-1",
-      "M-1",
-      "M-4",
-      "M-8",
-      "M-2",
-      "L-2",
-      "M-5",
-      "M-6",
-      "M-7",
-      "M-3",
-      "M-18",
-      "M-20",
-      "L-5"
-    ],
-    "all_matches": [
-      "Row M: 7, 8",
-      "Row M: 6, 7",
-      "Row M: 5, 6",
-      "Row M: 18, 19",
-      "Row L: 4, 5",
-      "Row M: 4, 5",
-      "Row M: 19, 20",
-      "Row L: 3, 4",
-      "Row M: 3, 4",
-      "Row L: 2, 3",
-      "Row M: 2, 3",
-      "Row L: 1, 2",
-      "Row M: 1, 2"
-    ],
-    "expired_notified": true
-  },
   "INTO_91259_256": {
     "known_seats": [
       "L-16",
