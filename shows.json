@@ -47,7 +47,11 @@
       ],
       "M": []
     },
-    "message_thread_id": 252
+    "message_thread_id": 252,
+    "status": "closed",
+    "closed_at": 1791224160,
+    "closed_at_formatted": "05/10/26 11:46 PM",
+    "deletes_at_formatted": "06/10/26 11:46 PM"
   },
   {
     "venue_code": "INTO",
