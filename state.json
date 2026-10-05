@@ -36,7 +36,8 @@
       "Row M: 2, 3",
       "Row L: 1, 2",
       "Row M: 1, 2"
-    ]
+    ],
+    "expired_notified": true
   },
   "INTO_91259_256": {
     "known_seats": [],
