@@ -74,6 +74,7 @@
       "Row K: 2, 3",
       "Row L: 2, 3",
       "Row L: 1, 2"
-    ]
+    ],
+    "expired_notified": true
   }
 }
