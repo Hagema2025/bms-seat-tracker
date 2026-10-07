@@ -85,5 +85,29 @@
     "closed_at": 1791224174,
     "closed_at_formatted": "05/10/26 11:46 PM",
     "deletes_at_formatted": "06/10/26 11:46 PM"
+  },
+  {
+    "venue_code": "ACON",
+    "theatre": "AGS Cinemas OMR: Navlur",
+    "session_id": "47898",
+    "date": "20261008",
+    "url": "https://in.bookmyshow.com/movies/chennai/seat-layout/ET00515520/ACON/47898/20261008",
+    "name": "Battha 60rs",
+    "show_time": "10:20 PM",
+    "seat_count": 2,
+    "require_adjacent": true,
+    "pending_rows": [],
+    "row_preferences": {
+      "U": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "V": [],
+      "W": []
+    },
+    "message_thread_id": 276
   }
 ]
