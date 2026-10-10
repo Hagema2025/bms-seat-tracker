@@ -37,23 +37,25 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global pull.rebase true
 
-      - name: Install Cloudflare WARP (Fast & Safe)
+      - name: Install and Setup Cloudflare WARP
         run: |
-          # 1. Get OS codename
-          CODENAME=$(lsb_release -cs)
-          
-          # 2. Find and download the newest .deb file directly
-          DEB_PATH=$(curl -fsSL "https://pkg.cloudflareclient.com/dists/${CODENAME}/main/binary-amd64/Packages" | grep '^Filename:' | head -n 1 | awk '{print $2}')
-          curl -fsSL -o warp.deb "https://pkg.cloudflareclient.com/$DEB_PATH"
-          
-          # 3. Install directly. If dependencies are missing, update the cache FIRST, then fix them.
-          sudo dpkg -i warp.deb || { sudo apt-get update && sudo apt-get install -f -y; }
-          
-          # 4. Connect
+          curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
+          sudo apt-get update
+          sudo apt-get install cloudflare-warp -y
+
+
+
+
+
+
+
+
+
           warp-cli --accept-tos registration new
           warp-cli --accept-tos mode proxy
           warp-cli --accept-tos connect
-          sleep 2
+          sleep 3
       - name: Run Scraper Loop
         env:
           TG_BOT_TOKEN: ${{ vars.TG_BOT_TOKEN }}
