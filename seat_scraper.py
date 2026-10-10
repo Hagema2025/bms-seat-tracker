@@ -208,21 +208,29 @@ def parse_layout(str_data):
         
         avail_seats = []
         for grid_idx, seat in enumerate(seats):
-            if len(seat) >= 4 and seat[1] == '1': 
-                
+            if len(seat) >= 4: 
+                status_code = seat[1]
                 raw_seat_num = seat[2:]
                 
-                if "+" in raw_seat_num:
-                    display_num = raw_seat_num.split("+")[1]
-                else:
-                    display_num = raw_seat_num
-                    
-                try:
-                    clean_num = str(int(display_num))
-                except ValueError:
-                    clean_num = display_num.lstrip("0") or display_num
+                # --- 🕵️ SECRET STATUS DEBUGGER ---
+                # '1' is Available, '0' is usually Sold. 
+                # Let's catch whatever else they are using (Blocked, Held in Cart, Quota)
+                if status_code not in ['1', '0', ' ']: # ' ' is sometimes used for blank aisles
+                    print(f"   🕵️ SECRET STATUS: Row {row_letter} Seat {raw_seat_num} uses Code: '{status_code}'")
+                # ----------------------------------
                 
-                avail_seats.append({"num": clean_num, "idx": grid_idx})
+                if status_code == '1':
+                    if "+" in raw_seat_num:
+                        display_num = raw_seat_num.split("+")[1]
+                    else:
+                        display_num = raw_seat_num
+                        
+                    try:
+                        clean_num = str(int(display_num))
+                    except ValueError:
+                        clean_num = display_num.lstrip("0") or display_num
+                    
+                    avail_seats.append({"num": clean_num, "idx": grid_idx})
                 
         if avail_seats:
             available_seats_by_row[row_letter] = {"width": len(seats), "seats": avail_seats}
