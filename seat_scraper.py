@@ -265,10 +265,11 @@ def find_matching_seats(available_by_row, show_reqs):
 
 
 # --- MAIN EXECUTION ---
+# --- MAIN EXECUTION ---
 def main():
     print("🚀 CRON JOB STARTED: Checking Seat Availability")
     state = load_json(STATE_FILE, {})
-    shows = load_json(SHOWS_FILE, [])
+    shows = load_json(SHOWS_FILE, {})  # <-- Changed default to dictionary {}
     
     if not shows:
         print("No shows in shows.json. Exiting...")
@@ -278,11 +279,11 @@ def main():
     FOURTEEN_DAYS_SECONDS = 14 * 86400
     ist_now = datetime.now(ZoneInfo("Asia/Kolkata"))
     
-    surviving_shows = []
     shows_updated = False
     state_updated = False
 
-    for idx, show in enumerate(shows):
+    # <-- Changed to iterate over dictionary keys and values
+    for uid, show in list(shows.items()): 
         status = show.get("status")
         closed_at = show.get("closed_at", 0)
         s_name = show.get("name", "Unknown")
@@ -324,14 +325,13 @@ def main():
                     print(f"⚠️ Error cleaning residual state for '{s_name}': {e}")
 
                 print(f"🧹 Removing closed show '{s_name}' permanently from shows.json.")
+                del shows[uid]  # <-- Delete directly from dictionary
                 shows_updated = True
                 continue
             else:
-                surviving_shows.append(show)
                 continue
 
         # --- 2. ACTIVE SHOW PROCESSING ---
-        surviving_shows.append(show)
         state_key = f"{v_code}_{s_id}_{thread_id or ''}"
         
         print(f"Checking '{s_name}' (Session: {s_id})...")
@@ -350,12 +350,11 @@ def main():
                         print(f"   -> ⏰ Showtime crossed! Sending clear button to Telegram.")
                         formatted_scheduled = show_dt.strftime("%d/%m/%Y %I:%M %p")
                         formatted_current = ist_now.strftime("%d/%m/%Y %I:%M %p")
-                        uid = f"{str(v_code).strip().upper()}-{str(s_id).strip()}"
                         
                         send_expired_alert_with_button(
                             s_name, 
                             thread_id, 
-                            uid, 
+                            uid, # <-- Pass the dictionary key (UID) here so buttons work
                             formatted_scheduled,
                             formatted_current
                         )
@@ -438,7 +437,6 @@ def main():
 
         # --- SEND ALERTS BASED ON SCENARIO ---
         
-        # SCENARIO 1: BOTH lost and new seats at the exact same time (Short & Neat)
         if lost_combinations and new_combinations:
             print(f"   -> 🔄 SIMULTANEOUS SEAT UPDATE for {s_name}!")
             
@@ -455,11 +453,10 @@ def main():
             send_ntfy_alert(s_name, theatre, show_time_display, "🔄 STATUS: Seats Lost & Unlocked simultaneously!")
             state_changed = True
 
-        # SCENARIO 2: ONLY seats were lost
         elif lost_combinations:
             print(f"   -> 🔴 SEATS BOOKED/LOST for {s_name}!")
             lost_list = list(lost_combinations)
-            lost_to_show = lost_list[:5] # Capped at Top 5
+            lost_to_show = lost_list[:5]
             lost_text = "\n".join([f"• ❌ {m}" for m in lost_to_show])
             
             if len(lost_list) > 5:
@@ -473,7 +470,6 @@ def main():
                 f"➖➖➖➖➖➖➖➖➖➖\n\n"
                 f"{still_avail_text}"
             )
-            # Only show action links if there are actually seats left to book
             if current_all_matches:
                 msg += f"\n\n{action_links}"
                 
@@ -481,7 +477,6 @@ def main():
             send_ntfy_alert(s_name, theatre, show_time_display, "💔 STATUS: Seats Booked/Lost!")
             state_changed = True
 
-        # SCENARIO 3: ONLY new seats became available
         elif is_match and new_combinations:
             print(f"   -> 🟢 UNBLOCK/INITIAL AVAILABILITY DETECTED for {s_name}!")
             
@@ -509,12 +504,12 @@ def main():
             state[state_key]["all_matches"] = current_all_matches
             state_updated = True
 
-    # Save state and updated shows list if any items were purged or modified
+    # <-- Save directly from the shows dictionary
     if state_updated:
         save_json(STATE_FILE, state)
         
     if shows_updated:
-        save_json(SHOWS_FILE, surviving_shows)
+        save_json(SHOWS_FILE, shows) 
 
     print("✅ CRON JOB FINISHED. Exiting.\n")
 
