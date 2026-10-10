@@ -4,7 +4,7 @@ import json
 from zoneinfo import ZoneInfo
 import requests
 import random  
-from datetime import datetime
+from datetime import datetime,timedelta
 from curl_cffi import requests as cffi_requests
 
 # --- CONFIGURATION ---
@@ -97,7 +97,7 @@ def send_expired_alert_with_button(show_name, thread_id, uid, scheduled_time, cu
     url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
     
     msg_text = (
-        f"⏰ **Showtime Reached!**\n\n"
+        f"⏰ **30mins of show already passed!**\n\n"
         f"🎬 **Show:** '{show_name}'\n"
         f"📅 **Scheduled Time:** {scheduled_time}\n"
         f"🕒 **Crossed At:** {current_time}\n\n"
@@ -110,7 +110,7 @@ def send_expired_alert_with_button(show_name, thread_id, uid, scheduled_time, cu
         "parse_mode": "Markdown",
         "reply_markup": {
             "inline_keyboard": [
-                [{"text": "Close Topic", "callback_data": f"delshow_{uid}"}],
+                # [{"text": "Close Topic", "callback_data": f"delshow_{uid}"}],
                 [{"text": "Delete Topic", "callback_data": f"delshowperm_{uid}"}]
             ]
         }
@@ -355,24 +355,32 @@ def main():
         print(f"Checking '{s_name}' (Session: {s_id})...")
 
         # --- EXPIRATION CHECK ---
+        # --- EXPIRATION & RUNNING STATUS CHECK ---
         date_str = show.get("date")      
         time_str = show.get("show_time")  
+        is_show_started = False
         
         if date_str and time_str:
             try:
                 show_datetime_str = f"{date_str} {time_str.upper()}"
                 show_dt = datetime.strptime(show_datetime_str, "%Y%m%d %I:%M %p").replace(tzinfo=ZoneInfo("Asia/Kolkata"))
                 
+                # Check if show already started
                 if ist_now >= show_dt:
+                    is_show_started = True
+
+                # Stop tracking only after 30 minutes past show start
+                cutoff_dt = show_dt + timedelta(minutes=30)
+                if ist_now >= cutoff_dt:
                     if not state.get(state_key, {}).get("expired_notified"):
-                        print(f"   -> ⏰ Showtime crossed! Sending clear button to Telegram.")
+                        print(f"   -> ⏰ 30 mins past showtime crossed! Sending clear button to Telegram.")
                         formatted_scheduled = show_dt.strftime("%d/%m/%Y %I:%M %p")
                         formatted_current = ist_now.strftime("%d/%m/%Y %I:%M %p")
                         
                         send_expired_alert_with_button(
                             s_name, 
                             thread_id, 
-                            uid, # <-- Pass the dictionary key (UID) here so buttons work
+                            uid,
                             formatted_scheduled,
                             formatted_current
                         )
@@ -382,11 +390,14 @@ def main():
                         state[state_key]["expired_notified"] = True
                         save_json(STATE_FILE, state)
                         
-                    print(f"   -> ⏰ Movie started. Paused tracking pending manual clear.")
+                    print(f"   -> ⏰ Show ended grace period (+30 mins). Tracking paused.")
                     continue  
             except Exception as e:
                 print(f"   -> ⚠️ Could not parse date/time: {e}. Checking anyway...")
 
+        # Banner to inject if show is running
+        started_banner = "⚠️ **Note: Show already started!**\n\n" if is_show_started else ""
+        ntfy_started_prefix = "[SHOW STARTED] " if is_show_started else ""
         str_data,error_reason = fetch_seat_layout(s_id, v_code, s_name)
         show_time_display = show.get("show_time", "Unknown Time")
         
@@ -498,6 +509,7 @@ def main():
             
             msg = (
                 f"🔄 **SEATS UPDATED!**\n\n"
+                f"{started_banner}"
                 f"🎬 **{s_name}**\n\n"
                 f"❌ **Lost:** {len(lost_combinations)} seat combo(s)\n"
                 f"🆕 **New:** {len(new_combinations)} seat combo(s)\n\n"
@@ -506,7 +518,7 @@ def main():
                 f"{action_links}"
             )
             send_telegram_alert(msg, thread_id)
-            send_ntfy_alert(s_name, theatre, show_time_display, "🔄 STATUS: Seats Lost & Unlocked simultaneously!")
+            send_ntfy_alert(s_name, theatre, show_time_display, f"{ntfy_started_prefix}🔄 STATUS: Seats Lost & Unlocked simultaneously!")
             state_changed = True
 
         elif lost_combinations:
@@ -521,6 +533,7 @@ def main():
             
             msg = (
                 f"💔 **SEATS BOOKED!**\n\n"
+                f"{started_banner}"
                 f"🎬 **Show:** {s_name}\n\n"
                 f"Just Taken:\n{lost_text}\n\n"
                 f"➖➖➖➖➖➖➖➖➖➖\n\n"
@@ -530,7 +543,7 @@ def main():
                 msg += f"\n\n{action_links}"
                 
             send_telegram_alert(msg, thread_id)
-            send_ntfy_alert(s_name, theatre, show_time_display, "💔 STATUS: Seats Booked/Lost!")
+            send_ntfy_alert(s_name, theatre, show_time_display, f"{ntfy_started_prefix}💔 STATUS: Seats Booked/Lost!")
             state_changed = True
 
         elif is_match and new_combinations:
@@ -538,13 +551,14 @@ def main():
             
             msg = (
                 f"🚨 **SEATS AVAILABLE NOW!**\n\n"
+                f"{started_banner}"
                 f"🎬 **Show:** {s_name}\n"
                 f"🆕 **Available:** {len(newly_unblocked_raw)} seat(s) unblocked\n\n"
                 f"{still_avail_text}\n\n"
                 f"{action_links}"
             )
             send_telegram_alert(msg, thread_id)
-            send_ntfy_alert(s_name, theatre, show_time_display, "🚨 STATUS: New Seats Unlocked!")
+            send_ntfy_alert(s_name, theatre, show_time_display, f"{ntfy_started_prefix}🚨 STATUS: New Seats Unlocked!")
             state_changed = True
             
         if not state_changed and current_valid_seats != previous_seats:
