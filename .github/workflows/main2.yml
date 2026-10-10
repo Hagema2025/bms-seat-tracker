@@ -37,16 +37,25 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global pull.rebase true
 
-      - name: Install and Setup Cloudflare WARP
+      - name: Install Cloudflare WARP (Ultra-Fast)
         run: |
-          curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
-          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
-          sudo apt-get update
-          sudo apt-get install cloudflare-warp -y
+          # 1. Get the GitHub Runner's OS codename (e.g., jammy or noble)
+          CODENAME=$(lsb_release -cs)
+          
+          # 2. Instantly read Cloudflare's index and find the path to the newest .deb file
+          DEB_PATH=$(curl -fsSL "https://pkg.cloudflareclient.com/dists/${CODENAME}/main/binary-amd64/Packages" | grep '^Filename:' | head -n 1 | awk '{print $2}')
+          
+          # 3. Download that exact file directly
+          curl -fsSL -o warp.deb "https://pkg.cloudflareclient.com/$DEB_PATH"
+          
+          # 4. Install it directly, completely bypassing apt-get update
+          sudo dpkg -i warp.deb || sudo apt-get install -f -y
+          
+          # 5. Connect
           warp-cli --accept-tos registration new
           warp-cli --accept-tos mode proxy
           warp-cli --accept-tos connect
-          sleep 3
+          sleep 2
 
       - name: Run Scraper Loop
         env:
