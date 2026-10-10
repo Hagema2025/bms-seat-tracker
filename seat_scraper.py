@@ -165,6 +165,7 @@ def fetch_seat_layout(session_id, venue_code, show_name, max_retries=3):
     payload = f"strParam4=&strParam5=Y&strParam6=&strParam7=N&strParam1={session_id}&strParam2=WEB&strParam3=&strVenueCode={venue_code}&lngTransactionIdentifier=0&strAppCode=MOBAND2&strFormat=json&strCommand=GETSEATLAYOUT"
     
     time.sleep(random.uniform(1.0, 2.5))
+    last_reason = "Unknown Error"
 
     for attempt in range(1, max_retries + 1):
         try:
@@ -173,29 +174,24 @@ def fetch_seat_layout(session_id, venue_code, show_name, max_retries=3):
             if resp.status_code == 200:
                 bms_data = resp.json().get("BookMyShow", {})
                 str_data = bms_data.get("strData", "")
-                
-                # ✅ FIX: Check if BookMyShow returned an empty layout or an internal error
                 if str_data:
-                    return str_data
+                    return str_data, None
                 else:
-                    print(f"   ⚠️ BMS returned HTTP 200 but seat layout is empty/broken for {session_id} (Attempt {attempt}/{max_retries})")
-            else:
-                print(f"   ⚠️ Fetch HTTP {resp.status_code} for session {session_id} (Attempt {attempt}/{max_retries})")
-            if resp.status_code in [403, 429]:
+                    last_reason = "Cinema Connectivity Issue (Error #5)"
+                    print(f"   ⚠️ BMS HTTP 200 but layout empty for {session_id} (Attempt {attempt}/{max_retries})")
+            elif resp.status_code in [403, 429]:
+                last_reason = f"Cloudflare Rate Limit / Block (HTTP {resp.status_code})"
                 time.sleep(attempt * 3)
             else:
+                last_reason = f"BMS Server Error (HTTP {resp.status_code})"
                 time.sleep(2)
 
         except Exception as e:
-            print(f"   ⚠️ Fetch error: {e} (Attempt {attempt}/{max_retries})")
+            last_reason = f"Network Timeout / Exception: {e}"
             time.sleep(2)
             
-    print(f"   ❌ Failed to fetch layout for {session_id} after {max_retries} attempts.")
-    
-    # send_ntfy_error(show_name)
-    
-    return ""
-    
+    print(f"   ❌ Failed to fetch layout for {session_id}: {last_reason}")
+    return "", last_reason    
 
 def parse_layout(str_data):
     if not str_data: return {}
@@ -391,7 +387,7 @@ def main():
             except Exception as e:
                 print(f"   -> ⚠️ Could not parse date/time: {e}. Checking anyway...")
 
-        str_data = fetch_seat_layout(s_id, v_code, s_name)
+        str_data,error_reason = fetch_seat_layout(s_id, v_code, s_name)
         show_time_display = show.get("show_time", "Unknown Time")
         
         if state_key not in state:
@@ -401,7 +397,7 @@ def main():
         if not str_data:
             # SERVER IS DOWN
             if not state[state_key].get("serverfailed"):
-                print(f"   -> ❌ Server unreachable. Sending error alerts.")
+                f"⚠️ **Seat Scraper Error**\nShow: '{s_name}'\nReason: `{error_reason}`",
                 send_ntfy_error(s_name)
                 send_telegram_alert(
                     f"⚠️ **Seat Scraper Error**\nFailed to fetch seat layout for '{s_name}'. The cinema server is down (Error #5).", 
@@ -411,7 +407,7 @@ def main():
                 state[state_key]["serverfailed"] = True
                 state_updated = True
             else:
-                print(f"   -> ⚠️ Server still unreachable. Suppressing duplicate alert.")
+                print(f"   -> ⚠️ Still failing ({error_reason}). Duplicate suppressed.")
             
             continue # Skip the rest of the loop for this show since we have no data
             
