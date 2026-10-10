@@ -408,7 +408,7 @@ def main():
         if not str_data:
             # SERVER IS DOWN
             if not state[state_key].get("serverfailed"):
-                f"⚠️ **Seat Scraper Error**\nShow: '{s_name}'\nReason: `{error_reason}`",
+                # f"⚠️ **Seat Scraper Error**\nShow: '{s_name}'\nReason: `{error_reason}`",
                 send_ntfy_error(s_name)
                 send_telegram_alert(
                     f"⚠️ **Seat Scraper Error**\nFailed to fetch seat layout for '{s_name}'. The cinema server is down (Error #5).", 
