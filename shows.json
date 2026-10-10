@@ -1,5 +1,5 @@
-[
-  {
+{
+  "INTO-91261": {
     "venue_code": "INTO",
     "theatre": "INOX: The Marina Mall, OMR",
     "session_id": "91261",
@@ -28,7 +28,7 @@
     "closed_at_formatted": "05/10/26 11:46 PM",
     "deletes_at_formatted": "06/10/26 11:46 PM"
   },
-  {
+  "INTO-91238": {
     "venue_code": "INTO",
     "theatre": "INOX: The Marina Mall, OMR",
     "session_id": "91238",
@@ -57,7 +57,7 @@
     "closed_at_formatted": "05/10/26 11:46 PM",
     "deletes_at_formatted": "06/10/26 11:46 PM"
   },
-  {
+  "INTO-91259": {
     "venue_code": "INTO",
     "theatre": "INOX: The Marina Mall, OMR",
     "session_id": "91259",
@@ -86,7 +86,7 @@
     "closed_at_formatted": "05/10/26 11:46 PM",
     "deletes_at_formatted": "06/10/26 11:46 PM"
   },
-  {
+  "ACON-47898": {
     "venue_code": "ACON",
     "theatre": "AGS Cinemas OMR: Navlur",
     "session_id": "47898",
@@ -110,7 +110,7 @@
     },
     "message_thread_id": 276
   },
-  {
+  "INTO-91256": {
     "venue_code": "INTO",
     "theatre": "INOX: The Marina Mall, OMR",
     "session_id": "91256",
@@ -134,5 +134,22 @@
       "M": []
     },
     "message_thread_id": 280
+  },
+  "20261011012058": {
+    "venue_code": "INTO",
+    "theatre": "INOX: The Marina Mall, OMR",
+    "session_id": "91678",
+    "date": "20261016",
+    "url": "https://in.bookmyshow.com/movies/chennai/seat-layout/ET00518674/INTO/91678/20261016",
+    "name": "Jailer 60rs",
+    "show_time": "7:55 PM",
+    "seat_count": 2,
+    "require_adjacent": true,
+    "pending_rows": [],
+    "row_preferences": {
+      "N": [],
+      "O": []
+    },
+    "message_thread_id": 286
   }
-]
+}
