@@ -39,14 +39,13 @@ jobs:
 
       - name: Install and Setup Cloudflare WARP
         run: |
-          curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
-          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
-          sudo apt-get update
-          sudo apt-get install cloudflare-warp -y
+          curl -fsSL -o warp.deb https://pkg.cloudflareclient.com/pool/main/c/cloudflare-warp/cloudflare-warp_latest_amd64.deb || true
+          # Fallback if latest tag isn't direct, install via dpkg without apt-get update:
+          sudo dpkg -i warp.deb || sudo apt-get install -f -y
           warp-cli --accept-tos registration new
           warp-cli --accept-tos mode proxy
           warp-cli --accept-tos connect
-          sleep 5
+          sleep 3
 
       - name: Run Scraper Loop
         env:
