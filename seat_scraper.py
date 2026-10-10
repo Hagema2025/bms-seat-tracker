@@ -68,12 +68,28 @@ def load_json(filepath, default_val):
 def save_json(filepath, data):
     with open(filepath, "w") as f: json.dump(data, f, indent=2)
 
-def send_telegram_alert(message, thread_id=None):
+def send_telegram_alert(message, thread_id=None, pin=False):
     url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
     payload = {"chat_id": TG_GROUP_CHAT_ID, "text": message, "parse_mode": "Markdown"}
     if thread_id: payload["message_thread_id"] = thread_id
+    
     try: 
-        requests.post(url, json=payload, timeout=10)
+        response = requests.post(url, json=payload, timeout=10)
+        
+        # If the message sent successfully and pin=True is passed
+        if response.status_code == 200 and pin:
+            msg_id = response.json().get("result", {}).get("message_id")
+            
+            if msg_id:
+                pin_url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/pinChatMessage"
+                pin_payload = {
+                    "chat_id": TG_GROUP_CHAT_ID,
+                    "message_id": msg_id,
+                    "disable_notification": False  # Change to True to pin without a sound
+                }
+                requests.post(pin_url, json=pin_payload, timeout=10)
+                print("   📌 Pinned message successfully!")
+                
     except Exception as e: 
         print(f"⚠️ Telegram alert failed: {e}")
 
@@ -132,7 +148,7 @@ def send_ntfy_error(show_name):
     
     url = f"{NTFY_URL}/{NTFY_ERROR_TOPIC}"
     headers = {
-        "Title": "⚠️ Seat Scraper Fetch Failed",
+        "Title": " Seat Scraper Fetch Failed",
         "Priority": "high",
         "Tags": "warning,rotating_light"
     }
@@ -176,7 +192,7 @@ def fetch_seat_layout(session_id, venue_code, show_name, max_retries=3):
             
     print(f"   ❌ Failed to fetch layout for {session_id} after {max_retries} attempts.")
     
-    send_ntfy_error(show_name)
+    # send_ntfy_error(show_name)
     
     return ""
     
@@ -376,6 +392,44 @@ def main():
                 print(f"   -> ⚠️ Could not parse date/time: {e}. Checking anyway...")
 
         str_data = fetch_seat_layout(s_id, v_code, s_name)
+        show_time_display = show.get("show_time", "Unknown Time")
+        
+        if state_key not in state:
+            state[state_key] = {}
+
+        # --- SERVER CONNECTION TRACKER ---
+        if not str_data:
+            # SERVER IS DOWN
+            if not state[state_key].get("serverfailed"):
+                print(f"   -> ❌ Server unreachable. Sending error alerts.")
+                send_ntfy_error(s_name)
+                send_telegram_alert(
+                    f"⚠️ **Seat Scraper Error**\nFailed to fetch seat layout for '{s_name}'. The cinema server is down (Error #5).", 
+                    thread_id,
+                    pin=True
+                )
+                state[state_key]["serverfailed"] = True
+                state_updated = True
+            else:
+                print(f"   -> ⚠️ Server still unreachable. Suppressing duplicate alert.")
+            
+            continue # Skip the rest of the loop for this show since we have no data
+            
+        else:
+            # SERVER IS UP
+            if state[state_key].get("serverfailed"):
+                print(f"   -> ✅ Server recovered! Sending success alert.")
+                send_telegram_alert(
+                    f"✅ **Server Restored**\nThe cinema server for '{s_name}' is back online. Seat layout is reachable again!", 
+                    thread_id,
+                    pin=True
+                )
+                send_ntfy_alert(s_name, theatre, show_time_display, "✅ STATUS: Cinema server is back online!")
+                
+                state[state_key]["serverfailed"] = False
+                state_updated = True
+
+        # Proceed with normal parsing if we got data
         current_avail = parse_layout(str_data)
         
         current_valid_seats = set()
