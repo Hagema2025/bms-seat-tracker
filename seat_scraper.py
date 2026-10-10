@@ -155,10 +155,16 @@ def fetch_seat_layout(session_id, venue_code, show_name, max_retries=3):
             resp = cffi_requests.post(url, headers=POST_HEADERS, data=payload, impersonate="chrome", timeout=15)
             
             if resp.status_code == 200:
-                return resp.json().get("BookMyShow", {}).get("strData", "")
-            
-            print(f"   ⚠️ Fetch HTTP {resp.status_code} for session {session_id} (Attempt {attempt}/{max_retries})")
-            
+                bms_data = resp.json().get("BookMyShow", {})
+                str_data = bms_data.get("strData", "")
+                
+                # ✅ FIX: Check if BookMyShow returned an empty layout or an internal error
+                if str_data:
+                    return str_data
+                else:
+                    print(f"   ⚠️ BMS returned HTTP 200 but seat layout is empty/broken for {session_id} (Attempt {attempt}/{max_retries})")
+            else:
+                print(f"   ⚠️ Fetch HTTP {resp.status_code} for session {session_id} (Attempt {attempt}/{max_retries})")
             if resp.status_code in [403, 429]:
                 time.sleep(attempt * 3)
             else:
