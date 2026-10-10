@@ -151,5 +151,22 @@
       "O": []
     },
     "message_thread_id": 286
+  },
+  "20261011012257": {
+    "venue_code": "INTO",
+    "theatre": "INOX: The Marina Mall, OMR",
+    "session_id": "91679",
+    "date": "20261016",
+    "url": "https://in.bookmyshow.com/movies/chennai/seat-layout/ET00518674/INTO/91679/20261016",
+    "name": "jailer 60rs",
+    "show_time": "11:40 PM",
+    "seat_count": 2,
+    "require_adjacent": true,
+    "pending_rows": [],
+    "row_preferences": {
+      "N": [],
+      "O": []
+    },
+    "message_thread_id": 290
   }
 }
