@@ -68,6 +68,7 @@
     "all_matches": [
       "Row A: 9, 8",
       "Row A: 10, 9"
-    ]
+    ],
+    "expired_notified": true
   }
 }
