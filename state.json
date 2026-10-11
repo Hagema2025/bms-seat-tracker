@@ -82,13 +82,8 @@
   "CBMC_14232_298": {
     "known_seats": [
       "A-4",
-      "A-10",
-      "A-9",
       "A-8"
     ],
-    "all_matches": [
-      "Row A: 9, 8",
-      "Row A: 10, 9"
-    ]
+    "all_matches": []
   }
 }
