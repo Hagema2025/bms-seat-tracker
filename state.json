@@ -12,7 +12,7 @@
       "Row O: 28, 29",
       "Row O: 7, 8"
     ],
-    "serverfailed": false
+    "serverfailed": true
   },
   "INTO_91679_290": {
     "known_seats": [
@@ -31,7 +31,7 @@
       "Row O: 36, 37",
       "Row O: 7, 8"
     ],
-    "serverfailed": false
+    "serverfailed": true
   },
   "CBMC_14232_298": {
     "known_seats": [
