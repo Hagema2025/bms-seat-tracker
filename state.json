@@ -6,16 +6,13 @@
   },
   "INTO_91679_290": {
     "known_seats": [
-      "O-8",
       "N-20",
-      "O-37",
-      "O-7",
       "O-36",
+      "O-37",
       "N-6"
     ],
     "all_matches": [
-      "Row O: 36, 37",
-      "Row O: 7, 8"
+      "Row O: 36, 37"
     ],
     "serverfailed": false
   },
