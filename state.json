@@ -1,12 +1,9 @@
 {
   "INTO_91678_286": {
     "known_seats": [
-      "O-8",
-      "O-7"
+      "O-26"
     ],
-    "all_matches": [
-      "Row O: 7, 8"
-    ],
+    "all_matches": [],
     "serverfailed": false
   },
   "INTO_91679_290": {
