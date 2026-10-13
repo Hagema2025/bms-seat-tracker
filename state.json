@@ -7,13 +7,8 @@
     "serverfailed": false
   },
   "INTO_91679_290": {
-    "known_seats": [
-      "O-37",
-      "O-36"
-    ],
-    "all_matches": [
-      "Row O: 36, 37"
-    ],
+    "known_seats": [],
+    "all_matches": [],
     "serverfailed": false
   },
   "CBMC_14232_298": {
