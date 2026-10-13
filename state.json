@@ -1,6 +1,8 @@
 {
   "INTO_91678_286": {
-    "known_seats": [],
+    "known_seats": [
+      "O-26"
+    ],
     "all_matches": [],
     "serverfailed": false
   },
