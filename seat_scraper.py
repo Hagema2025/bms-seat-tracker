@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 
 import requests
 from curl_cffi import requests as cffi_requests
-from DrissionPage import ChromiumOptions, ChromiumPage
+#from DrissionPage import ChromiumOptions, ChromiumPage
 
 # ==============================================================================
 # ⚙️ SECURE CONFIGURATION & ENVIRONMENT VARIABLES
