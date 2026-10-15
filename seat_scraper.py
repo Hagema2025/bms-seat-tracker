@@ -111,6 +111,7 @@ def extract_tokens(event_code, venue_code, session_id, date_str):
      return tokens
     except:
      print("sorry")
+     tokens = {"x-token": None, "bmsId": None, "cf_clearance": None}
      if not tokens["x-token"]: 
         print("   -> ⚠️ Applying fallback guest authentication token.")
         tokens["x-token"] = "67x1xa33b4x422b361ba"
