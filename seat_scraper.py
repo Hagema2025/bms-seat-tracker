@@ -69,7 +69,6 @@ def extract_tokens(event_code, venue_code, session_id, date_str):
     Deploys DrissionPage to interactively bypass Cloudflare Turnstile JavaScript 
     challenges, establish regional cookies, and extract required authentication tokens.
     """
-
  try:
     print("   -> 🕵️ Booting headless Chromium to resolve Cloudflare Turnstile...")
     co = ChromiumOptions()
