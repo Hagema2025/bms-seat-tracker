@@ -64,7 +64,7 @@ CINEMA_CHAIN_URLS = {
 # 🔐 HYBRID CHECKOUT PIPELINE (DRISSIONPAGE + FAST HTTP)
 # ==============================================================================
 
-def extract_tokens(event_code, venue_code, session_id):
+def extract_tokens(event_code, venue_code, session_id, date_str):
     """
     Deploys DrissionPage to interactively bypass Cloudflare Turnstile JavaScript 
     challenges, establish regional cookies, and extract required authentication tokens.
@@ -78,7 +78,8 @@ def extract_tokens(event_code, venue_code, session_id):
     page.get("https://in.bookmyshow.com/explore/home/chennai")
     time.sleep(6.5) # Wait for initial Cloudflare clearance and regional mapping
     
-    layout_url = f"https://in.bookmyshow.com/movies/chen/seat-layout/{event_code}/{venue_code}/{session_id}/"
+    # 🔥 ADDED date_str HERE SO IT LOADS THE PROPER SEAT MAP
+    layout_url = f"https://in.bookmyshow.com/movies/chen/seat-layout/{event_code}/{venue_code}/{session_id}/{date_str}"
     print(f"   -> 🌐 Navigating to dynamic layout endpoint: {layout_url}")
     page.get(layout_url)
     time.sleep(4.5) # Allow DOM to settle and localStorage to populate the x-token
@@ -107,7 +108,6 @@ def extract_tokens(event_code, venue_code, session_id):
 
     page.quit()
     return tokens
-
 def format_seat_string(seat_objs):
     """
     Compiles the target seat objects into BookMyShow's proprietary pipe-separated 
