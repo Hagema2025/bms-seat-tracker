@@ -69,6 +69,8 @@ def extract_tokens(event_code, venue_code, session_id, date_str):
     Deploys DrissionPage to interactively bypass Cloudflare Turnstile JavaScript 
     challenges, establish regional cookies, and extract required authentication tokens.
     """
+
+ try:
     print("   -> 🕵️ Booting headless Chromium to resolve Cloudflare Turnstile...")
     co = ChromiumOptions()
     co.headless(False) # Must be headed initially to avoid aggressive generic bot filtering
@@ -108,6 +110,12 @@ def extract_tokens(event_code, venue_code, session_id, date_str):
 
     page.quit()
     return tokens
+ except:
+     print("sorry")
+     if not tokens["x-token"]: 
+        print("   -> ⚠️ Applying fallback guest authentication token.")
+        tokens["x-token"] = "67x1xa33b4x422b361ba"
+     return tokens
 def format_seat_string(seat_objs):
     """
     Compiles the target seat objects into BookMyShow's proprietary pipe-separated 
