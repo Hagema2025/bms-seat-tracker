@@ -18,8 +18,8 @@ SHOWS_FILE = "shows.json"
 STATE_FILE = "state.json"
 
 # Credentials & API Keys
-TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "8589028594:AAHI8UckuN8pkj_88zq4MtrqfmM7DcLTopM")
-TG_GROUP_CHAT_ID = os.environ.get("TG_GROUP_CHAT_ID", "-1004465933759") 
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN")
+TG_GROUP_CHAT_ID = os.environ.get("TG_GROUP_CHAT_ID") 
 NTFY_URL = os.environ.get("NTFY_URL", "https://ntfy.sh").strip()
 NTFY_ERROR_TOPIC = os.environ.get("NTFY_ERROR_TOPIC", "").strip()
 NTFY_SEAT_TOPIC = os.environ.get("NTFY_SEAT_TOPIC", "").strip()
