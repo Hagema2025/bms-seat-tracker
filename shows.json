@@ -72,6 +72,8 @@
     "seat_count": 1,
     "require_adjacent": true,
     "row_preferences": {},
-    "message_thread_id": 512
+    "message_thread_id": 512,
+        "companyCode": "INOX",
+    "event_code": "ET00483565"
   }
 }
