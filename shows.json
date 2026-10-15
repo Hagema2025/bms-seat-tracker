@@ -15,8 +15,8 @@
       "O": []
     },
     "message_thread_id": 286,
-        "companyCode":"INOX",
-    "event_code":"ET00518674"
+    "companyCode": "INOX",
+    "event_code": "ET00518674"
   },
   "20261011012257": {
     "venue_code": "INTO",
@@ -34,8 +34,8 @@
       "O": []
     },
     "message_thread_id": 290,
-    "companyCode":"INOX",
-    "event_code":"ET00518674"
+    "companyCode": "INOX",
+    "event_code": "ET00518674"
   },
   "20261011023549": {
     "venue_code": "CBMC",
@@ -60,5 +60,18 @@
       "A": []
     },
     "message_thread_id": 298
+  },
+  "20261016020941": {
+    "venue_code": "INTO",
+    "theatre": "INOX: The Marina Mall, OMR",
+    "session_id": "91752",
+    "date": "20261016",
+    "url": "https://in.bookmyshow.com/movies/chen/seat-layout/ET00483565/INTO/91752/20261016",
+    "name": "Ranabali",
+    "show_time": "7:30 PM",
+    "seat_count": 1,
+    "require_adjacent": true,
+    "row_preferences": {},
+    "message_thread_id": 512
   }
 }
