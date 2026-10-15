@@ -481,7 +481,8 @@ def find_matching_seats(available_by_row, show_reqs):
         
         if len(all_valid_seats) >= seat_count:
             found_seats = all_valid_seats[:seat_count]
-            match_text = f"Scattered Sequence: {', '.join([f'{s['row']}-{s['num']}' for s in found_seats])}"
+            # ✅ CORRECT (Double quotes for the inner f-string, single quotes for the dict keys)
+            match_text = f"Scattered Sequence: {', '.join([f\"{s['row']}-{s['num']}\" for s in found_seats])}"
             return True, [match_text], [match_text], [found_seats]
             
         return False, [], [], []
