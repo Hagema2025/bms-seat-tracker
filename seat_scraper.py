@@ -69,47 +69,47 @@ def extract_tokens(event_code, venue_code, session_id, date_str):
     Deploys DrissionPage to interactively bypass Cloudflare Turnstile JavaScript 
     challenges, establish regional cookies, and extract required authentication tokens.
     """
- try:
-    print("   -> 🕵️ Booting headless Chromium to resolve Cloudflare Turnstile...")
-    co = ChromiumOptions()
-    co.headless(False) # Must be headed initially to avoid aggressive generic bot filtering
-    page = ChromiumPage(co)
+    try:
+     print("   -> 🕵️ Booting headless Chromium to resolve Cloudflare Turnstile...")
+     co = ChromiumOptions()
+     co.headless(False) # Must be headed initially to avoid aggressive generic bot filtering
+     page = ChromiumPage(co)
     
-    print("   -> 🌍 Injecting regional context cookie (Chennai)...")
-    page.get("https://in.bookmyshow.com/explore/home/chennai")
-    time.sleep(6.5) # Wait for initial Cloudflare clearance and regional mapping
+     print("   -> 🌍 Injecting regional context cookie (Chennai)...")
+     page.get("https://in.bookmyshow.com/explore/home/chennai")
+     time.sleep(6.5) # Wait for initial Cloudflare clearance and regional mapping
     
     # 🔥 ADDED date_str HERE SO IT LOADS THE PROPER SEAT MAP
-    layout_url = f"https://in.bookmyshow.com/movies/chen/seat-layout/{event_code}/{venue_code}/{session_id}/{date_str}"
-    print(f"   -> 🌐 Navigating to dynamic layout endpoint: {layout_url}")
-    page.get(layout_url)
-    time.sleep(4.5) # Allow DOM to settle and localStorage to populate the x-token
+     layout_url = f"https://in.bookmyshow.com/movies/chen/seat-layout/{event_code}/{venue_code}/{session_id}/{date_str}"
+     print(f"   -> 🌐 Navigating to dynamic layout endpoint: {layout_url}")
+     page.get(layout_url)
+     time.sleep(4.5) # Allow DOM to settle and localStorage to populate the x-token
     
-    tokens = {"x-token": None, "bmsId": None, "cf_clearance": None}
+     tokens = {"x-token": None, "bmsId": None, "cf_clearance": None}
     
     # Extract operational cookies
-    for cookie in page.cookies():
+     for cookie in page.cookies():
         if cookie.get("name") == "cf_clearance": 
             tokens["cf_clearance"] = cookie.get("value")
         elif cookie.get("name") == "bmsId": 
             tokens["bmsId"] = cookie.get("value")
     
     # Extract proprietary authentication token from local storage
-    try:
+     try:
         local_token = page.run_js("return window.localStorage.getItem('token');")
         if local_token: 
             tokens["x-token"] = local_token
-    except Exception as parse_err: 
+     except Exception as parse_err: 
         print(f"   -> ⚠️ Failed to extract token from local storage: {parse_err}")
         
     # Fallback to standard guest token if dynamic extraction fails
-    if not tokens["x-token"]: 
+     if not tokens["x-token"]: 
         print("   -> ⚠️ Applying fallback guest authentication token.")
         tokens["x-token"] = "67x1xa33b4x422b361ba"
 
-    page.quit()
-    return tokens
- except:
+     page.quit()
+     return tokens
+    except:
      print("sorry")
      if not tokens["x-token"]: 
         print("   -> ⚠️ Applying fallback guest authentication token.")
