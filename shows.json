@@ -14,7 +14,9 @@
       "N": [],
       "O": []
     },
-    "message_thread_id": 286
+    "message_thread_id": 286,
+        "companyCode":"INOX",
+    "event_code":"ET00518674"
   },
   "20261011012257": {
     "venue_code": "INTO",
@@ -31,7 +33,9 @@
       "N": [],
       "O": []
     },
-    "message_thread_id": 290
+    "message_thread_id": 290,
+    "companyCode":"INOX",
+    "event_code":"ET00518674"
   },
   "20261011023549": {
     "venue_code": "CBMC",
