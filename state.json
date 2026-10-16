@@ -23,6 +23,7 @@
         "expired_notified": true
     },
     "INTO_91752_512": {
-        "serverfailed": false
+        "serverfailed": false,
+        "expired_notified": true
     }
 }
