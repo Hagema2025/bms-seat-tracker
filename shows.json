@@ -60,20 +60,5 @@
       "A": []
     },
     "message_thread_id": 298
-  },
-  "20261016020941": {
-    "venue_code": "INTO",
-    "theatre": "INOX: The Marina Mall, OMR",
-    "session_id": "91752",
-    "date": "20261016",
-    "url": "https://in.bookmyshow.com/movies/chen/seat-layout/ET00483565/INTO/91752/20261016",
-    "name": "Ranabali",
-    "show_time": "7:30 PM",
-    "seat_count": 1,
-    "require_adjacent": true,
-    "row_preferences": {},
-    "message_thread_id": 512,
-        "companyCode": "INOX",
-    "event_code": "ET00483565"
   }
 }
