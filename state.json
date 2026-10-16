@@ -3,18 +3,5 @@
     "known_seats": [],
     "all_matches": [],
     "serverfailed": true
-  },
-  "CBMC_14232_298": {
-    "known_seats": [
-      "A-9",
-      "A-10",
-      "A-8",
-      "A-4"
-    ],
-    "all_matches": [
-      "Row A: 9, 8",
-      "Row A: 10, 9"
-    ],
-    "expired_notified": true
   }
 }
