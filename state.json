@@ -1,19 +1,15 @@
 {
     "INTO_91788_962": {
-        "last_checked_ist": "2026-10-17 11:56:05 AM",
+        "last_checked_ist": "2026-10-17 12:01:37 PM",
         "serverfailed": false
     },
     "INTO_91778_966": {
-        "last_checked_ist": "2026-10-17 11:56:05 AM",
+        "last_checked_ist": "2026-10-17 12:01:37 PM",
         "known_seats": [
-            "C-1",
-            "B-9",
             "B-12",
-            "J-11"
+            "C-1"
         ],
         "all_matches": [
-            "Row B: 9",
-            "Row J: 11",
             "Row B: 12",
             "Row C: 1"
         ]
