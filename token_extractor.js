@@ -18,22 +18,27 @@ const dateStr = args[3];
             '--disable-blink-features=AutomationControlled'
         ]
     });
-
-    try {
+try {
         const page = await browser.newPage();
         
+        // 1. Force the exact User-Agent we will use in Python
+        await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+
         // Establish Chennai region context
         await page.goto('https://in.bookmyshow.com/explore/home/chennai', { 
             waitUntil: 'networkidle2', 
             timeout: 30000 
         });
 
-        // Navigate to the specific layout to trigger any specific session cookies
+        // Navigate to the specific layout
         const layoutUrl = `https://in.bookmyshow.com/movies/chen/seat-layout/${eventCode}/${venueCode}/${sessionId}/${dateStr}`;
         await page.goto(layoutUrl, { 
             waitUntil: 'networkidle2', 
             timeout: 30000 
         });
+
+        // 2. CRITICAL: Wait 8 seconds for Cloudflare Turnstile to finish and set cookies
+        await new Promise(r => setTimeout(r, 8000));
 
         // Extract cookies
         const cookies = await page.cookies();
