@@ -78,14 +78,18 @@ def extract_tokens(event_code, venue_code, session_id, date_str):
     
     print("   -> 🌍 Establishing region context (Chennai)...")
     try:
-        session.get("https://in.bookmyshow.com/explore/home/chennai", timeout=10)
+        resp=session.get("https://in.bookmyshow.com/explore/home/chennai", timeout=10)
+        print(f"DEBUG Response Status: {resp.status_code}")
+        print(f"DEBUG Response Body: {resp.text}") # <--- This will tell you exactly why it failed
     except Exception as e:
         print(f"   -> ⚠️ Failed to reach homepage: {e}")
     
     layout_url = f"https://in.bookmyshow.com/movies/chen/seat-layout/{event_code}/{venue_code}/{session_id}/{date_str}"
     print(f"   -> 🌐 Navigating to dynamic layout endpoint: {layout_url}")
     try:
-        session.get(layout_url, timeout=10)
+        resp=session.get(layout_url, timeout=10)
+        print(f"DEBUG Response Status: {resp.status_code}")
+        print(f"DEBUG Response Body: {resp.text}") # <--- This will tell you exactly why it failed
     except Exception as e:
         print(f"   -> ⚠️ Failed to reach layout page: {e}")
     
@@ -123,6 +127,8 @@ def run_auto_checkout(tokens, session, e_code, v_code, s_id, seat_objs, company_
     
     print(f"   -> 🔒 Executing inventory lock on selected array (Category: {primary_category})...")
     resp = session.post(lock_url, json=lock_payload, headers=lock_headers)
+    print(f"DEBUG Response Status: {resp.status_code}")
+    print(f"DEBUG Response Body: {resp.text}") # <--- This will tell you exactly why it failed
     if resp.status_code != 200:
         print(f"   -> ❌ Lock acquisition failed. Gateway returned HTTP {resp.status_code}")
         return None
