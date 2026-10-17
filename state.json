@@ -12,6 +12,8 @@
             "Row K: 14",
             "Row K: 15",
             "Row K: 16"
-        ]
+        ],
+        "serverfailed": true,
+        "error_msg_id": 1048
     }
 }
