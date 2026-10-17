@@ -17,15 +17,15 @@ SHOWS_FILE = "shows.json"
 STATE_FILE = "state.json"
 
 # Credentials & API Keys
-TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "8589028594:AAHI8UckuN8pkj_88zq4MtrqfmM7DcLTopMs")
-TG_GROUP_CHAT_ID = os.environ.get("TG_GROUP_CHAT_ID", "-1004465933759") 
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN")
+TG_GROUP_CHAT_ID = os.environ.get("TG_GROUP_CHAT_ID") 
 NTFY_URL = os.environ.get("NTFY_URL", "https://ntfy.sh").strip()
 NTFY_ERROR_TOPIC = os.environ.get("NTFY_ERROR_TOPIC", "").strip()
 NTFY_SEAT_TOPIC = os.environ.get("NTFY_SEAT_TOPIC", "").strip()
 
 # User details for the checkout pipeline binding
-USER_EMAIL = os.environ.get("BMS_EMAIL", "your_email@gmail.com")
-USER_PHONE = os.environ.get("BMS_MOBILE", "9876543210")
+USER_EMAIL = os.environ.get("BMS_EMAIL")
+USER_PHONE = os.environ.get("BMS_MOBILE")
 
 if not TG_BOT_TOKEN or not TG_GROUP_CHAT_ID:
     print("❌ CRITICAL ERROR: Telegram bot token or chat ID is missing. Execution halted.")
