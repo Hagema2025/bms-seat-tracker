@@ -71,46 +71,57 @@ VENUE_TO_COMPANY = {
 # ==============================================================================
 # 🔐 FAST HTTP CHECKOUT PIPELINE (CURL_CFFI)
 # ==============================================================================
+import subprocess
+
+# ... (keep your other imports) ...
 
 def extract_tokens(event_code, venue_code, session_id, date_str):
-    print("   -> 🕵️ Booting curl_cffi to attempt Cloudflare bypass...")
-    session = cffi_requests.Session(impersonate="chrome120")
-    session.headers.update({
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.9",
-    "Sec-Ch-Ua": '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
-    "Sec-Ch-Ua-Mobile": "?0",
-    "Sec-Ch-Ua-Platform": '"Windows"',
-    "Sec-Fetch-Dest": "document",
-    "Sec-Fetch-Mode": "navigate",
-    "Sec-Fetch-Site": "none",
-    "Sec-Fetch-User": "?1",
-    "Upgrade-Insecure-Requests": "1"
-})
+    print("   -> 🕵️ Booting Puppeteer stealth to attempt Cloudflare bypass...")
     
-    print("   -> 🌍 Establishing region context (Chennai)...")
     try:
-        resp=session.get("https://in.bookmyshow.com/explore/home/chennai", timeout=10)
-        print(f"DEBUG Response Status: {resp.status_code}")
-        print(f"DEBUG Response Body: {resp.text}") # <--- This will tell you exactly why it failed
+        # Call the Node.js script
+        result = subprocess.run(
+            ["node", "token_extractor.js", event_code, venue_code, session_id, date_str],
+            capture_output=True,
+            text=True,
+            timeout=45 # Give Puppeteer enough time to solve CF JS challenges
+        )
+        
+        # Parse the JSON output from Node.js
+        output = result.stdout.strip()
+        tokens = json.loads(output)
+        
+        if "error" in tokens:
+            print(f"   -> ⚠️ Puppeteer encountered an error: {tokens['error']}")
+            return None, None
+
+        # Build the ultra-fast curl_cffi session for the rest of the pipeline
+        session = cffi_requests.Session(impersonate="chrome120")
+        session.headers.update({
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Upgrade-Insecure-Requests": "1"
+        })
+        
+        # Inject the Puppeteer-derived cookies into the cffi session
+        if tokens.get("cf_clearance"):
+            session.cookies.set("cf_clearance", tokens["cf_clearance"], domain=".bookmyshow.com")
+        if tokens.get("bmsId"):
+            session.cookies.set("bmsId", tokens["bmsId"], domain=".bookmyshow.com")
+            
+        print(f"   -> 📊 Status -> bmsId: {bool(tokens.get('bmsId'))}, cf_clearance: {bool(tokens.get('cf_clearance'))}")
+        
+        return tokens, session
+
+    except subprocess.TimeoutExpired:
+        print("   -> ❌ Puppeteer extraction timed out.")
+        return None, None
+    except json.JSONDecodeError:
+        print(f"   -> ❌ Failed to parse Puppeteer output. Raw output: {result.stdout}")
+        return None, None
     except Exception as e:
-        print(f"   -> ⚠️ Failed to reach homepage: {e}")
-    
-    layout_url = f"https://in.bookmyshow.com/movies/chen/seat-layout/{event_code}/{venue_code}/{session_id}/{date_str}"
-    print(f"   -> 🌐 Navigating to dynamic layout endpoint: {layout_url}")
-    try:
-        resp=session.get(layout_url, timeout=10)
-        print(f"DEBUG Response Status: {resp.status_code}")
-        print(f"DEBUG Response Body: {resp.text}") # <--- This will tell you exactly why it failed
-    except Exception as e:
-        print(f"   -> ⚠️ Failed to reach layout page: {e}")
-    
-    tokens = {"x-token": "67x1xa33b4x422b361ba"}
-    tokens["cf_clearance"] = session.cookies.get("cf_clearance")
-    tokens["bmsId"] = session.cookies.get("bmsId")
-    
-    print(f"   -> 📊 Status -> bmsId: {bool(tokens['bmsId'])}, cf_clearance: {bool(tokens['cf_clearance'])}")
-    return tokens, session
+        print(f"   -> ⚠️ Unexpected token extraction failure: {e}")
+        return None, None
 
 def format_seat_string(seat_objs):
     formatted = f"|{len(seat_objs)}|"
