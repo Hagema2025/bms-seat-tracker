@@ -1,35 +1,29 @@
 {
     "INTO_91788_962": {
-        "last_checked_ist": "2026-10-17 12:26:01 PM",
+        "last_checked_ist": "2026-10-17 12:31:45 PM",
         "serverfailed": false
     },
     "INTO_91778_966": {
-        "last_checked_ist": "2026-10-17 12:26:01 PM",
+        "last_checked_ist": "2026-10-17 12:31:45 PM",
         "known_seats": [
-            "K-11",
-            "C-1",
-            "J-11",
-            "K-15",
-            "K-4",
-            "K-16",
             "K-12",
-            "K-14",
-            "J-4",
             "K-9",
-            "B-12",
-            "B-11",
-            "K-10",
-            "K-13"
+            "K-13",
+            "C-1",
+            "K-11",
+            "K-14",
+            "K-16",
+            "K-4",
+            "K-15",
+            "J-11",
+            "K-10"
         ],
         "all_matches": [
             "Row K: 9",
             "Row K: 10",
-            "Row B: 11",
             "Row J: 11",
             "Row K: 11",
-            "Row B: 12",
             "Row K: 12",
-            "Row J: 4",
             "Row K: 4",
             "Row K: 13",
             "Row K: 14",
