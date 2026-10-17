@@ -1,6 +1,6 @@
 {
     "INTO_91793_1024": {
-        "last_checked_ist": "2026-10-18 01:06:20 AM",
+        "last_checked_ist": "2026-10-18 01:16:32 AM",
         "known_seats": [
             "K-14",
             "K-15",
@@ -13,7 +13,6 @@
             "Row K: 15",
             "Row K: 16"
         ],
-        "serverfailed": true,
-        "error_msg_id": 1048
+        "serverfailed": false
     }
 }
