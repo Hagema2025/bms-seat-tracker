@@ -34,6 +34,22 @@ jobs:
           
       - name: Install Python Dependencies
         run: pip install requests curl-cffi
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Node Dependencies (Puppeteer Stealth)
+        run: npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
+
+      # (Optional but recommended) Install system dependencies required by Puppeteer/Chrome 
+      # if you run into missing library errors during the stealth browser boot.
+      - name: Install Puppeteer System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 \
+          libxi6 libxtst6 libnss3 libcups2 libxss1 libxrandr2 libasound2 libatk1.0-0 \
+          libatk-bridge2.0-0 libpangocairo-1.0-0 libgtk-3-0
 
       - name: Configure Git User for Python Script
         run: |
