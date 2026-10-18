@@ -4,6 +4,7 @@
         "known_seats": [],
         "all_matches": [],
         "serverfailed": true,
-        "error_msg_id": 1055
+        "error_msg_id": 1055,
+        "expired_notified": true
     }
 }
