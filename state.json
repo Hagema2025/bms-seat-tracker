@@ -1,12 +1,10 @@
 {
     "INTO_91817_1058": {
-        "last_checked_ist": "2026-10-20 03:11:38 AM",
-        "serverfailed": true,
-        "first_failed_time": "03:17:02 AM",
-        "failure_count": 1
+        "last_checked_ist": "2026-10-20 03:21:41 AM",
+        "serverfailed": false
     },
     "INTO_91817_1064": {
-        "last_checked_ist": "2026-10-20 03:17:02 AM",
+        "last_checked_ist": "2026-10-20 03:21:41 AM",
         "known_seats": [
             "M-40",
             "L-10",
