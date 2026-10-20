@@ -3,7 +3,7 @@
         "last_checked_ist": "2026-10-20 10:26:24 AM",
         "serverfailed": true,
         "first_failed_time": "10:32:28 AM",
-        "failure_count": 38
+        "failure_count": 39
     },
     "INTO_91817_1064": {
         "last_checked_ist": "2026-10-20 10:26:24 AM",
@@ -11,6 +11,6 @@
         "all_matches": [],
         "serverfailed": true,
         "first_failed_time": "10:32:28 AM",
-        "failure_count": 38
+        "failure_count": 39
     }
 }
