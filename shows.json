@@ -1,18 +1,1 @@
-{
-  "20261019224713": {
-    "event_code": "ET00518674",
-    "venue_code": "INTO",
-    "theatre": "INOX: The Marina Mall, OMR",
-    "session_id": "91817",
-    "date": "20261020",
-    "url": "https://in.bookmyshow.com/movies/chen/seat-layout/ET00518674/INTO/91817/20261020",
-    "name": "Jailer 2",
-    "show_time": "4:15 PM",
-    "seat_count": 1,
-    "require_adjacent": true,
-    "row_preferences": {},
-    "message_thread_id": 1064,
-    "summary_msg_id": 1066,
-    "status_msg_id": 1067
-  }
-}
+{}
