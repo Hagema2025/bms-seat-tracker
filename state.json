@@ -1,11 +1,19 @@
 {
     "INTO_92025_1080": {
-        "last_checked_ist": "2026-10-23 09:26:30 PM",
+        "last_checked_ist": "2026-10-23 09:36:24 PM",
         "known_seats": [
+            "K-6",
+            "K-13",
+            "K-5",
+            "K-4",
             "K-7"
         ],
         "all_matches": [
-            "Row K: 7"
+            "Row K: 7",
+            "Row K: 6",
+            "Row K: 5",
+            "Row K: 4",
+            "Row K: 13"
         ]
     }
 }
