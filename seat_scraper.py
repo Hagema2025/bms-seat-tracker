@@ -676,7 +676,7 @@ def main():
                 msg = (f"🚨 **TARGET ACQUIRED!**\n\n{started_banner}🎬 **Feature:** {s_name}\n"
                        f"🆕 **Volume:** {len(newly_unblocked_raw)} seats unblocked\n\n"
                        f"{still_avail_text}\n\n{action_links}")
-                send_telegram_alert(msg, thread_id, pin=True)
+                send_telegram_alert(msg, thread_id)
 
             elif trigger_type == "FLUX":
                 send_ntfy_push(
