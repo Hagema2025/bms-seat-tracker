@@ -1,1 +1,26 @@
-{}
+{
+  "20261023130410": {
+    "event_code": "ET00496545",
+    "venue_code": "INTO",
+    "theatre": "INOX: The Marina Mall, OMR",
+    "session_id": "92025",
+    "date": "20261023",
+    "url": "https://in.bookmyshow.com/movies/chen/seat-layout/ET00496545/INTO/92025/20261023",
+    "name": "Clay face 60rs",
+    "show_time": "10:30 PM",
+    "seat_count": 1,
+    "require_adjacent": true,
+    "pending_rows": [],
+    "row_preferences": {
+      "J": [
+        "1",
+        "2",
+        "3"
+      ],
+      "K": []
+    },
+    "message_thread_id": 1080,
+    "summary_msg_id": 1082,
+    "status_msg_id": 1083
+  }
+}
