@@ -339,7 +339,6 @@ def send_expired_alert_with_button(show_name, thread_id, uid, scheduled_time, cu
     try: requests.post(url, json=payload, timeout=10)
     except Exception: pass
 
-MAX_LOG_LINES = 8   # keeps the Telegram message short
 
 def now_ist_str():
     return datetime.now(ZoneInfo("Asia/Kolkata")).strftime("%I:%M:%S %p")
@@ -350,16 +349,18 @@ def short_reason(reason):
     text = re.sub(r"\b\d{4,}\b", "N", text)   # 15001 -> N, but HTTP 503 stays
     return text[:80]
 
+MAX_LOG_LINES = 4   # error lines shown for the current outage
+
 def record_failure(fs, reason):
-    """Run-length log: same reason as the last entry -> count+1, else new entry."""
+    """Same reason as the last entry -> count+1, else a new entry."""
     log = fs.setdefault("fail_log", [])
     reason = short_reason(reason)
+    fs["fail_total"] = fs.get("fail_total", 0) + 1     # this line was missing
     if log and log[-1]["reason"] == reason:
         log[-1]["count"] += 1
     else:
         log.append({"reason": reason, "since": now_ist_str(), "count": 1})
-    del log[:-MAX_LOG_LINES]   # keep only the newest entries
-
+    del log[:-MAX_LOG_LINES]
 def format_fail_log(log):
     return "\n".join(f"• `{e['reason']}` — {e['since']} — ×{e['count']}" for e in log)
 
