@@ -3,19 +3,24 @@ name: Continuous 6-Hour Scraper
 on:
   workflow_dispatch:
   repository_dispatch:
-    types: [trigger-scraper] 
-  # Uncomment the lines below if you just want GitHub to do it automatically every 6 hours without needing your API!
+    types: [trigger-scraper]
+  # Uncomment to let GitHub run it automatically every 6 hours:
   # schedule:
   #   - cron: '0 */6 * * *'
 
 permissions:
   contents: write
 
+# Only one run at a time; a newer trigger kills old one
+concurrency:
+  group: bms-scraper
+  cancel-in-progress: true
+
 jobs:
   poll-bms:
     runs-on: ubuntu-latest
-    timeout-minutes: 360 
-    
+    timeout-minutes: 5
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -24,71 +29,89 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      # - name: Install System Dependencies (Xvfb & Chromium)
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install xvfb chromium-browser -y
-          
+          cache: 'pip'
+          cache-dependency-path: requirements.txt   # file must contain: requests, curl-cffi
+
       - name: Install Python Dependencies
-        run: pip install requests curl-cffi
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+        run: pip install -r requirements.txt
 
-      - name: Install Node Dependencies (Puppeteer Stealth)
-        run: npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
+      # ------------------------------------------------------------------
+      # [DISABLED] Puppeteer / Node: only needed for auto-checkout
+      # (token_extractor.js). Uncomment together with AUTO_CHECKOUT in the
+      # Python script if you ever re-enable it.
+      # ------------------------------------------------------------------
+      # - name: Setup Node.js
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: '20'
+      #
+      # - name: Cache Puppeteer browser + npm
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       ~/.npm
+      #       ~/.cache/puppeteer
+      #     key: puppeteer-${{ runner.os }}-v1
+      #
+      # - name: Install Node Dependencies (Puppeteer Stealth)
+      #   run: npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
+      #
+      # - name: Install Puppeteer System Dependencies
+      #   run: |
+      #     sudo apt-get install -y --no-install-recommends \
+      #       libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 libxi6 libxtst6 \
+      #       libnss3 libcups2 libxss1 libxrandr2 libasound2t64 libatk1.0-0 \
+      #       libatk-bridge2.0-0 libpangocairo-1.0-0 libgtk-3-0 \
+      #     || (sudo apt-get update && sudo apt-get install -y --no-install-recommends \
+      #       libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 libxi6 libxtst6 \
+      #       libnss3 libcups2 libxss1 libxrandr2 libasound2t64 libatk1.0-0 \
+      #       libatk-bridge2.0-0 libpangocairo-1.0-0 libgtk-3-0)
 
-      # (Optional but recommended) Install system dependencies required by Puppeteer/Chrome 
-      # if you run into missing library errors during the stealth browser boot.
-      - name: Install Puppeteer System Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 \
-          libxi6 libxtst6 libnss3 libcups2 libxss1 libxrandr2 libasound2t64 libatk1.0-0 \
-          libatk-bridge2.0-0 libpangocairo-1.0-0 libgtk-3-0
+      # ------------------------------------------------------------------
+      # [DISABLED] Cloudflare WARP: the scraper never routed traffic through
+      # its proxy (127.0.0.1:40000), so it did nothing but add minutes and a
+      # failure point.
+      # ------------------------------------------------------------------
+      # - name: Install and Setup Cloudflare WARP
+      #   run: |
+      #     curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
+      #     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
+      #     sudo apt-get update
+      #     sudo apt-get install cloudflare-warp -y
+      #     warp-cli --accept-tos registration new
+      #     warp-cli --accept-tos mode proxy
+      #     warp-cli --accept-tos connect
+      #     sleep 3
 
-      - name: Configure Git User for Python Script
+      - name: Configure Git
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global pull.rebase true
 
-      - name: Install and Setup Cloudflare WARP
-        run: |
-          curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
-          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
-          sudo apt-get update
-          sudo apt-get install cloudflare-warp -y
-
-
-
-
-
-
-
-
-
-          warp-cli --accept-tos registration new
-          warp-cli --accept-tos mode proxy
-          warp-cli --accept-tos connect
-          sleep 3
       - name: Run Scraper Loop
+        timeout-minutes: 3   # ends before the 3-min job limit so the commit step still runs
         env:
           TG_BOT_TOKEN: ${{ vars.TG_BOT_TOKEN }}
           TG_GROUP_CHAT_ID: ${{ vars.TG_GROUP_CHAT_ID }}
           NTFY_ERROR_TOPIC: ${{ vars.NTFY_ERROR_TOPIC }}
           NTFY_SEAT_TOPIC: ${{ vars.NTFY_SEAT_TOPIC }}
           NTFY_URL: ${{ vars.NTFY_URL }}
-          BMS_ID: ${{ vars.BMS_ID }}
-          BMS_EMAIL: ${{ vars.BMS_EMAIL }}
-          BMS_MOBILE: ${{ vars.BMS_MOBILE }}
+          # [DISABLED - auto-checkout]
+          # BMS_ID: ${{ vars.BMS_ID }}
+          # BMS_EMAIL: ${{ vars.BMS_EMAIL }}
+          # BMS_MOBILE: ${{ vars.BMS_MOBILE }}
         run: python -u seat_scraper.py
-      - name: Commit and push changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "🤖 Auto-update state.json"
-          file_pattern: "state.json"
+
+      - name: Commit and push state.json
+        if: always()
+        run: |
+          git add state.json
+          if git diff --cached --quiet; then
+            echo "No state changes."
+            exit 0
+          fi
+          git commit -m "🤖 Auto-update state.json"
+          git push origin "HEAD:${{ github.ref_name }}"
