@@ -1,64 +1,55 @@
 {
     "INTO_92075_1100": {
-        "last_checked_ist": "2026-10-24 03:05:39 AM",
+        "last_checked_ist": "2026-10-24 03:15:51 AM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": true,
-        "first_failed_time": "03:11:40 AM",
-        "first_failed_full": "2026-10-24 03:11:40 AM",
-        "first_failed_ts": 1792791700.362193,
-        "fail_log": [
+        "serverfailed": false,
+        "outages": [
             {
-                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
-                "since": "03:11:40 AM",
-                "count": 1
+                "n": 1,
+                "start": "2026-10-24 03:11:40 AM",
+                "end": "2026-10-24 03:16:28 AM",
+                "mins": 4.8
             }
-        ],
-        "fail_total": 1
+        ]
     },
     "INTO_92083_1106": {
-        "last_checked_ist": "2026-10-24 03:05:39 AM",
+        "last_checked_ist": "2026-10-24 03:15:51 AM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": true,
-        "first_failed_time": "03:12:32 AM",
-        "first_failed_full": "2026-10-24 03:12:32 AM",
-        "first_failed_ts": 1792791752.5870929,
-        "fail_log": [
+        "serverfailed": false,
+        "outages": [
             {
-                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
-                "since": "03:12:32 AM",
-                "count": 1
+                "n": 1,
+                "start": "2026-10-24 03:12:32 AM",
+                "end": "2026-10-24 03:16:31 AM",
+                "mins": 4.0
             }
-        ],
-        "fail_total": 1
+        ]
     },
     "INTO_92123_1112": {
-        "last_checked_ist": "2026-10-24 03:05:39 AM",
+        "last_checked_ist": "2026-10-24 03:15:51 AM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": true,
-        "first_failed_time": "03:13:24 AM",
-        "first_failed_full": "2026-10-24 03:13:24 AM",
-        "first_failed_ts": 1792791804.1552563,
-        "fail_log": [
+        "serverfailed": false,
+        "outages": [
             {
-                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
-                "since": "03:13:24 AM",
-                "count": 1
+                "n": 1,
+                "start": "2026-10-24 03:13:24 AM",
+                "end": "2026-10-24 03:16:34 AM",
+                "mins": 3.2
             }
-        ],
-        "fail_total": 1
+        ]
     },
     "INTO_91965_1118": {
-        "last_checked_ist": "2026-10-24 03:05:39 AM",
+        "last_checked_ist": "2026-10-24 03:15:51 AM",
         "known_seats": [
-            "L-38",
             "M-5",
-            "M-28",
-            "L-17",
             "K-40",
-            "M-4"
+            "M-28",
+            "M-4",
+            "L-38",
+            "L-17"
         ],
         "all_matches": [
             "Row M: 4, 5"
