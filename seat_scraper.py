@@ -339,6 +339,28 @@ def send_expired_alert_with_button(show_name, thread_id, uid, scheduled_time, cu
     try: requests.post(url, json=payload, timeout=10)
     except Exception: pass
 
+MAX_LOG_LINES = 8   # keeps the Telegram message short
+
+def now_ist_str():
+    return datetime.now(ZoneInfo("Asia/Kolkata")).strftime("%I:%M:%S %p")
+
+def short_reason(reason):
+    # strip characters that break Telegram Markdown, and cap the length
+    return str(reason).replace("`", "'").replace("\n", " ")[:80]
+
+def record_failure(fs, reason):
+    """Run-length log: same reason as the last entry -> count+1, else new entry."""
+    log = fs.setdefault("fail_log", [])
+    reason = short_reason(reason)
+    if log and log[-1]["reason"] == reason:
+        log[-1]["count"] += 1
+    else:
+        log.append({"reason": reason, "since": now_ist_str(), "count": 1})
+    del log[:-MAX_LOG_LINES]   # keep only the newest entries
+
+def format_fail_log(log):
+    return "\n".join(f"• `{e['reason']}` — {e['since']} — ×{e['count']}" for e in log)
+
 # ==============================================================================
 # 📡 TELEMETRY & DATA PARSING ENGINE
 # ==============================================================================
@@ -535,50 +557,41 @@ def main():
         if state_key not in state: state[state_key] = {}
 
         if not str_data:
-            if not state[state_key].get("serverfailed", False):
-                # First time failing: update status card and save state
-                fail_time_str = ist_now.strftime("%I:%M:%S %p")
-                state[state_key]["serverfailed"] = True
-                state[state_key]["first_failed_time"] = fail_time_str
-                state[state_key]["failure_count"] = 1
-                state_updated = True
-                status_msg_id = show.get("status_msg_id")
-                if status_msg_id:
-                    error_text = (
-                        f"🔴 **Live Status:** `Upstream Disconnect`\n"
-                        f"• _Outage Began: {fail_time_str}_\n"
-                        f"• _Status: Remote server unreachable. Retrying..._"
-                    )
-                    edit_telegram_message(status_msg_id, error_text, thread_id)
-                print(f"    -> ⚠️ Upstream disconnect detected for '{s_name}'. Status card updated to red.")
-            else:
-                # Already failed: no spam, no edits
-                state[state_key]["failure_count"] = state[state_key].get("failure_count", 1) + 1
-                state_updated = True
-                print(f"   -> ⚠️ Server still down for '{s_name}'. Suppressing duplicate alert.")
+            fs = state[state_key]
+            if not fs.get("serverfailed", False):
+                fs["serverfailed"] = True
+                fs["first_failed_time"] = now_ist_str()
+                fs["fail_log"] = []
+            record_failure(fs, error_reason or "Unknown error")
+            state_updated = True
 
+            status_msg_id = show.get("status_msg_id")
+            if status_msg_id:
+                edit_telegram_message(status_msg_id, (
+                    f"🔴 **Live Status:** `Upstream Disconnect`\n"
+                    f"• _Outage Began: {fs['first_failed_time']}_\n\n"
+                    f"{format_fail_log(fs['fail_log'])}"
+                ), thread_id)
+            print(f"   -> ⚠️ Fetch failed for '{s_name}': {error_reason}")
             continue
         else:
             # Server is responding successfully
-            if state[state_key].get("serverfailed", False):
-                start_fail_time = state[state_key].get("first_failed_time", "Unknown")
-                fail_count = state[state_key].get("failure_count", 1)
-                recovery_time_str = ist_now.strftime("%I:%M:%S %p")
-
-                state[state_key]["serverfailed"] = False
-                state[state_key].pop("first_failed_time", None)
-                state[state_key].pop("failure_count", None)
-                state_updated = True
+            fs = state[state_key]
+            if fs.get("serverfailed", False):
+                recovery_time_str = now_ist_str()
                 status_msg_id = show.get("status_msg_id")
                 if status_msg_id:
-                    success_text = (
+                    edit_telegram_message(status_msg_id, (
                         f"🟢 **Live Status:** `Operational (Restored)`\n"
-                        f"• _Outage Began: {start_fail_time}_\n"
-                        f"• _Recovered At: {recovery_time_str}_\n"
-                        f"• _Skipped Cycles: {fail_count}_"
-                    )
-                    edit_telegram_message(status_msg_id, success_text, thread_id)
+                        f"• _Outage Began: {fs.get('first_failed_time', 'Unknown')}_\n"
+                        f"• _Recovered At: {recovery_time_str}_\n\n"
+                        f"{format_fail_log(fs.get('fail_log', []))}"
+                    ), thread_id)
 
+                fs["serverfailed"] = False
+                for k in ("first_failed_time", "fail_log", "failure_count"):
+                    fs.pop(k, None)
+                state_updated = True
                 print(f"    -> ✅ Upstream restored for '{s_name}'. Status card updated to green.")
 
         current_avail = parse_layout(str_data)
