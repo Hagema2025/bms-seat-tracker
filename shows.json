@@ -22,5 +22,29 @@
     "message_thread_id": 1100,
     "summary_msg_id": 1102,
     "status_msg_id": 1103
+  },
+  "20261023235404": {
+    "event_code": "ET00509047",
+    "venue_code": "INTO",
+    "theatre": "INOX: The Marina Mall, OMR",
+    "session_id": "92083",
+    "date": "20261024",
+    "url": "https://in.bookmyshow.com/movies/CHEN/seat-layout/ET00509047/INTO/92083/20261024",
+    "name": "418 60rs",
+    "show_time": "10:00 AM",
+    "seat_count": 1,
+    "require_adjacent": true,
+    "pending_rows": [],
+    "row_preferences": {
+      "J": [
+        "4",
+        "5",
+        "6"
+      ],
+      "K": []
+    },
+    "message_thread_id": 1106,
+    "summary_msg_id": 1108,
+    "status_msg_id": 1109
   }
 }
