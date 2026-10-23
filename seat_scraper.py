@@ -363,6 +363,31 @@ def record_failure(fs, reason):
 def format_fail_log(log):
     return "\n".join(f"• `{e['reason']}` — {e['since']} — ×{e['count']}" for e in log)
 
+
+FULL_FMT = "%Y-%m-%d %I:%M:%S %p"
+
+def fmt_mins(mins):
+    mins = int(round(mins))
+    if mins < 1:
+        return "<1 min"
+    h, m = divmod(mins, 60)
+    return f"{h} hr {m} min" if h else f"{mins} min"
+
+def build_status_card(fs, header):
+    outages = fs.get("outages", [])
+    if outages:
+        avg = sum(o["mins"] for o in outages) / len(outages)
+        prev = (f"📊 Previous: {len(outages)} outage{'s' if len(outages) != 1 else ''}"
+                f" · avg {fmt_mins(avg)}")
+    else:
+        prev = "📊 Previous: none"
+    log = fs.get("fail_log", [])
+    hidden = fs.get("fail_total", 0) - sum(e["count"] for e in log)
+    lines = [header, prev]
+    if hidden > 0:
+        lines.append(f"_…{hidden} earlier errors_")
+    lines += [f"• `{e['reason']}` — {e['since']} — ×{e['count']}" for e in log]
+    return "\n".join(lines)[:3900]
 # ==============================================================================
 # 📡 TELEMETRY & DATA PARSING ENGINE
 # ==============================================================================
@@ -565,39 +590,44 @@ def main():
             if not fs.get("serverfailed", False):
                 fs["serverfailed"] = True
                 fs["first_failed_time"] = now_ist_str()
+                fs["first_failed_full"] = datetime.now(ZoneInfo("Asia/Kolkata")).strftime(FULL_FMT)
+                fs["first_failed_ts"] = time.time()
                 fs["fail_log"] = []
+                fs["fail_total"] = 0
             record_failure(fs, error_reason or "Unknown error")
             state_updated = True
+            save_json(STATE_FILE, state)
 
             status_msg_id = show.get("status_msg_id")
             if status_msg_id:
-                edit_telegram_message(status_msg_id, (
-                    f"🔴 **Live Status:** `Upstream Disconnect`\n"
-                    f"• _Outage Began: {fs['first_failed_time']}_\n\n"
-                    f"{format_fail_log(fs['fail_log'])}"
-                ), thread_id)
+                header = f"🔴 **Outage #{len(fs.get('outages', [])) + 1}** — began {fs['first_failed_time']}"
+                edit_telegram_message(status_msg_id, build_status_card(fs, header), thread_id)
             print(f"   -> ⚠️ Fetch failed for '{s_name}': {error_reason}")
             continue
         else:
-            # Server is responding successfully
             fs = state[state_key]
             if fs.get("serverfailed", False):
-                recovery_time_str = now_ist_str()
+                dur_mins = (time.time() - fs.get("first_failed_ts", time.time())) / 60
+                n = len(fs.get("outages", [])) + 1
+
                 status_msg_id = show.get("status_msg_id")
                 if status_msg_id:
-                    edit_telegram_message(status_msg_id, (
-                        f"🟢 **Live Status:** `Operational (Restored)`\n"
-                        f"• _Outage Began: {fs.get('first_failed_time', 'Unknown')}_\n"
-                        f"• _Recovered At: {recovery_time_str}_\n\n"
-                        f"{format_fail_log(fs.get('fail_log', []))}"
-                    ), thread_id)
+                    header = f"🟢 **Restored** — outage #{n} lasted {fmt_mins(dur_mins)} (at {now_ist_str()})"
+                    edit_telegram_message(status_msg_id, build_status_card(fs, header), thread_id)
 
+                # Save the finished outage, then clear the live data
+                fs.setdefault("outages", []).append({
+                    "n": n,
+                    "start": fs.get("first_failed_full", "?"),
+                    "end": datetime.now(ZoneInfo("Asia/Kolkata")).strftime(FULL_FMT),
+                    "mins": round(dur_mins, 1),
+                })
                 fs["serverfailed"] = False
-                for k in ("first_failed_time", "fail_log", "failure_count"):
+                for k in ("first_failed_time", "first_failed_full", "first_failed_ts",
+                          "fail_log", "fail_total", "failure_count"):
                     fs.pop(k, None)
                 state_updated = True
                 print(f"    -> ✅ Upstream restored for '{s_name}'. Status card updated to green.")
-
         current_avail = parse_layout(str_data)
         current_valid_seats = set()
         row_prefs = show.get("row_preferences", {})
