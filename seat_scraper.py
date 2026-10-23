@@ -384,7 +384,7 @@ def build_status_card(fs, header):
         prev = "📊 Previous: none"
     log = fs.get("fail_log", [])
     hidden = fs.get("fail_total", 0) - sum(e["count"] for e in log)
-    lines = [header, prev]
+    lines = [prev,header]
     if hidden > 0:
         lines.append(f"_…{hidden} earlier errors_")
     lines += [f"• `{e['reason']}` — {e['since']} — ×{e['count']}" for e in log]
