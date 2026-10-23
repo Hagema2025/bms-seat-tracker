@@ -344,9 +344,11 @@ MAX_LOG_LINES = 8   # keeps the Telegram message short
 def now_ist_str():
     return datetime.now(ZoneInfo("Asia/Kolkata")).strftime("%I:%M:%S %p")
 
+
 def short_reason(reason):
-    # strip characters that break Telegram Markdown, and cap the length
-    return str(reason).replace("`", "'").replace("\n", " ")[:80]
+    text = str(reason).replace("`", "'").replace("\n", " ")
+    text = re.sub(r"\b\d{4,}\b", "N", text)   # 15001 -> N, but HTTP 503 stays
+    return text[:80]
 
 def record_failure(fs, reason):
     """Run-length log: same reason as the last entry -> count+1, else new entry."""
@@ -364,12 +366,12 @@ def format_fail_log(log):
 # ==============================================================================
 # 📡 TELEMETRY & DATA PARSING ENGINE
 # ==============================================================================
+RETRY_DELAYS = [1.5, 2.5, 3]   # seconds to wait after attempt 1, 2, 3
 
 def fetch_seat_layout(session_id, venue_code, show_name, max_retries=3):
     url = f"https://services-in.bookmyshow.com/doTrans.aspx?_={int(time.time() * 1000)}"
     payload = f"strParam4=&strParam5=Y&strParam6=&strParam7=N&strParam1={session_id}&strParam2=WEB&strParam3=&strVenueCode={venue_code}&lngTransactionIdentifier=0&strAppCode=MOBAND2&strFormat=json&strCommand=GETSEATLAYOUT"
 
-    # Delay before each poll. Lowering it speeds up alerts but raises 403/429 risk.
     time.sleep(random.uniform(1.0, 2.5))
     last_reason = "Unknown Origin Error"
 
@@ -388,10 +390,12 @@ def fetch_seat_layout(session_id, venue_code, show_name, max_retries=3):
         except Exception as e:
             last_reason = f"Socket Exception: {e}"
 
-        time.sleep(attempt * 3)
+        if attempt < max_retries:
+            time.sleep(RETRY_DELAYS[min(attempt - 1, len(RETRY_DELAYS) - 1)])
 
     print(f"   ❌ Final telemetry extraction failure for {session_id}: {last_reason}")
     return "", last_reason
+
 
 def parse_layout(str_data):
     if not str_data: return {}
