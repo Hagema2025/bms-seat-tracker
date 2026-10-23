@@ -26,6 +26,16 @@ NTFY_URL = os.environ.get("NTFY_URL", "https://ntfy.sh").strip() or "https://ntf
 NTFY_ERROR_TOPIC = os.environ.get("NTFY_ERROR_TOPIC", "").strip()
 NTFY_SEAT_TOPIC = os.environ.get("NTFY_SEAT_TOPIC", "").strip()
 
+
+# Seat status codes (slot[1]):
+#   0 = space/aisle, 2 = booked, 1 = bookable,
+#   7 = handicap (bookable), 8 = handicap caretaker (bookable)
+# Anything NOT listed in NOT_BOOKABLE_CODES counts as bookable.
+SPACE_CODE = "0"
+NOT_BOOKABLE_CODES = {"0", "2"}
+KNOWN_CODES = {"0", "1", "2", "7", "8"}
+_unknown_codes = set()    # unknown codes already warned about
+
 # [DISABLED - auto-checkout] user details for the checkout pipeline binding
 # USER_EMAIL = os.environ.get("BMS_EMAIL")
 # USER_PHONE = os.environ.get("BMS_MOBILE")
@@ -319,8 +329,12 @@ def edit_telegram_message(message_id, new_text, thread_id=None):
         "text": new_text,
         "parse_mode": "Markdown"
     }
-    try: requests.post(url, json=payload, timeout=10)
-    except Exception: pass
+    try:
+        r = requests.post(url, json=payload, timeout=10)
+        if r.status_code != 200 and "not modified" not in r.text:
+            print(f"   -> ⚠️ Telegram edit failed: {r.text[:200]}")
+    except Exception as e:
+        print(f"   -> ⚠️ Telegram edit error: {e}")
 
 def send_expired_alert_with_button(show_name, thread_id, uid, scheduled_time, current_time):
     url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
@@ -389,6 +403,44 @@ def build_status_card(fs, header):
         lines.append(f"_…{hidden} earlier errors_")
     lines += [f"• `{e['reason']}` — {e['since']} — ×{e['count']}" for e in log]
     return "\n".join(lines)[:3900]
+
+def slot_number(slot):
+    """Display seat number (string) of a slot, or None if the slot is too short to be a seat."""
+    if len(slot) < 4:
+        return None
+    raw = slot[2:]
+    disp = raw.split("+")[1] if "+" in raw else raw
+    try:
+        return str(int(disp))
+    except ValueError:
+        return disp.lstrip("0") or disp
+
+def count_seats(str_data):
+    """Venue-wide (bookable, total) seat counts. Spaces are skipped, a couple seat counts once."""
+    if not str_data:
+        return 0, 0
+    parts = str_data.split("||")
+    rows_data = parts[1] if len(parts) > 1 else parts[0]
+    avail = total = 0
+    for row_str in rows_data.split("|"):
+        if not row_str or ":" not in row_str:
+            continue
+        units = []        # [display_no, all_slots_bookable]
+        prev_no = None
+        for slot in row_str.split(":")[2:]:
+            no = slot_number(slot)
+            if no is None or no == "0" or slot[1] == SPACE_CODE:   # short slot or space
+                prev_no = None
+                continue
+            ok = slot[1] not in NOT_BOOKABLE_CODES
+            if prev_no == no:                # second half of a couple seat
+                units[-1][1] = units[-1][1] and ok
+            else:
+                units.append([no, ok])
+            prev_no = no
+        total += len(units)
+        avail += sum(1 for _, ok in units if ok)
+    return avail, total
 # ==============================================================================
 # 📡 TELEMETRY & DATA PARSING ENGINE
 # ==============================================================================
@@ -447,12 +499,16 @@ def parse_layout(str_data):
 
         avail_seats = []
         for grid_idx, seat in enumerate(seats):
-            if len(seat) >= 4 and seat[1] == '1':
-                raw_seat_num = seat[2:]
-                display_num = raw_seat_num.split("+")[1] if "+" in raw_seat_num else raw_seat_num
-                try: clean_num = str(int(display_num))
-                except ValueError: clean_num = display_num.lstrip("0") or display_num
-                avail_seats.append({"num": clean_num, "idx": grid_idx})
+            no = slot_number(seat)
+            if no is None or no == "0":
+                continue                      # short slot or space
+            code = seat[1]
+            if code in NOT_BOOKABLE_CODES:
+                continue                      # space (0) / booked (2)
+            if code not in KNOWN_CODES and code not in _unknown_codes:
+                _unknown_codes.add(code)
+                print(f"   ⚠️ Unknown seat status code '{code}' (slot {seat!r}) - treated as bookable")
+            avail_seats.append({"num": no, "idx": grid_idx})
 
         if avail_seats:
             available_seats_by_row[row_letter] = {"category": category_code, "width": len(seats), "seats": avail_seats}
@@ -580,8 +636,7 @@ def main():
             except Exception as dt_err:
                 print(f"   -> ⚠️ Date parsing anomaly bypass: {dt_err}")
 
-        started_banner = "⚠️ **NOTICE: Presentation Already Commenced!**\n\n" if is_show_started else ""
-
+        started_banner = "⚠️ **NOTICE: Presentation Already Commenced!**\n" if is_show_started else ""
         str_data, error_reason = fetch_seat_layout(s_id, v_code, s_name)
 
         if state_key not in state: state[state_key] = {}
@@ -629,7 +684,9 @@ def main():
                     fs.pop(k, None)
                 state_updated = True
                 print(f"    -> ✅ Upstream restored for '{s_name}'. Status card updated to green.")
+        _unknown_codes.clear()            # collect unknown status codes for THIS show only
         current_avail = parse_layout(str_data)
+        unknown_codes_now = sorted(_unknown_codes)
         current_valid_seats = set()
         row_prefs = show.get("row_preferences", {})
         any_row = len(row_prefs) == 0
@@ -654,102 +711,77 @@ def main():
         lost_combinations = previous_all_matches - set(current_all_matches)
 
         state_changed = False
-        still_avail_text = "🚫 **Inventory Exhausted.**"
+                # ---------------- ALERT CONTENT ----------------
+        avail_cnt, total_cnt = count_seats(str_data)
+        seats_line = f"**Seats:** {avail_cnt} bookable in {total_cnt}"
+        total_matches = len(current_all_matches)
+        new_n, lost_n = len(new_combinations), len(lost_combinations)
+        sep = "➖➖➖➖➖➖➖➖➖➖"
 
         if current_all_matches:
-            top_5_still = "\n".join([f"• ✅ {m}" for m in current_all_matches[:5]])
-            still_avail_text = f"🎯 **Top Viable Matches:**\n{top_5_still}"
-            if len(current_all_matches) > 5: still_avail_text += f"\n*...and {len(current_all_matches) - 5} subsequent configurations.*"
+            top_lines = "\n".join(f"• ✅ {m}" for m in current_all_matches[:5])
+            matches_text = f"🎯 **Top Viable Matches ({total_matches}):**\n{top_lines}"
+            if total_matches > 5:
+                matches_text += f"\n...and {total_matches - 5} more match{'es' if total_matches - 5 != 1 else ''}"
+        else:
+            matches_text = "🚫 **Inventory Exhausted.**"
 
         bms_url = f"https://in.bookmyshow.com/booktickets/{v_code}/{s_id}"
         bms_link = f"[BMS Application]({bms_url})"
         chain_url = CINEMA_CHAIN_URLS.get(v_code)
-
         if chain_url:
             chain_label = 'PVR Terminal' if 'pvr' in str(chain_url).lower() else 'INOX Terminal'
             action_links = f"🔗 {bms_link}  |  [{chain_label}]({chain_url})"
         else:
             action_links = f"🔗 {bms_link}"
+        links = f"\n{action_links}" if current_all_matches else ""
+        code_note = ""
+        if unknown_codes_now:
+            shown = ", ".join(f"`{c if c.isalnum() else '?'}`" for c in unknown_codes_now)
+            code_note = f"\n⚠️ New seat status code appeared: {shown} — considered bookable"
+        top_seats = " | ".join(current_all_matches[:3])
 
-        trigger_type = None
-        if is_match and new_combinations:
-            trigger_type = "NEW"
-            print(f"   -> 🟢 PRIMARY TRIGGER EXECUTED: Availability detected for {s_name}!")
-        elif lost_combinations and new_combinations:
-            trigger_type = "FLUX"
-            print(f"   -> 🔄 SYMMETRIC FLUX: Inventory simultaneously secured and released for {s_name}.")
-        elif lost_combinations:
-            trigger_type = "LOST"
-            print(f"   -> 🔴 NEGATIVE FLUX: Target matches acquired by competing sessions.")
+        # ---------------- SEND ----------------
+        if new_n and not lost_n:
+            print(f"   -> 🟢 NEW MATCHES: {new_n} released for {s_name}")
+            send_ntfy_push(f"NEW MATCHES: {s_name}",
+                           f"{new_n} blocks released. Seats {avail_cnt}/{total_cnt}. Best: {top_seats}",
+                           click_url=bms_url)
+            msg = (f"🚨 **NEW MATCHES**\n{started_banner}🎬 **Feature:** {s_name}\n"
+                   f"{seats_line}\n"
+                   f"🆕 **Newly Released:** {new_n} blocks\n"
+                   f"{sep}\n{matches_text}{links}{code_note}")
+            send_telegram_alert(msg, thread_id)
 
-        if trigger_type:
-            top_seats = ", ".join(current_all_matches[:3]) or "none"
+        elif new_n and lost_n:
+            print(f"   -> 🔄 NEW AND LOST for {s_name}")
+            send_ntfy_push(f"NEW AND LOST: {s_name}",
+                           f"{new_n} new, {lost_n} taken. Seats {avail_cnt}/{total_cnt}. Best: {top_seats}",
+                           click_url=bms_url)
+            msg = (f"🔄 **NEW AND LOST MATCHES**\n{started_banner}🎬 **{s_name}**\n"
+                   f"{seats_line}\n"
+                   f"🆕 **Newly Released:** {new_n} blocks\n"
+                   f"❌ **Secured by Others:** {lost_n} blocks\n"
+                   f"{sep}\n{matches_text}{links}{code_note}")
+            send_telegram_alert(msg, thread_id)
 
-            # ------------------------------------------------------------------
-            # [DISABLED] 🔥 UNIVERSAL AUTO-CHECKOUT
-            # Blocked by Cloudflare on GitHub runner IPs. To re-enable:
-            #   1. uncomment the checkout functions + imports + USER_EMAIL/PHONE
-            #   2. set AUTO_CHECKOUT = True
-            #   3. uncomment this block and add the final_upi_link /
-            #      locked_seats_text variables back into the messages below
-            # ------------------------------------------------------------------
-            # final_upi_link = None
-            # locked_seats_text = ""
-            # if AUTO_CHECKOUT and is_match and current_raw_lists:
-            #     top_best_seat_combo = current_raw_lists[0]
-            #     if e_code and date_str:
-            #         try:
-            #             tokens, active_session = extract_tokens(e_code, v_code, s_id, date_str)
-            #             if not tokens or not active_session:
-            #                 print("   -> Token extraction failed, skipping auto-checkout.")
-            #             else:
-            #                 final_upi_link = run_auto_checkout(
-            #                     tokens, active_session, e_code, v_code, s_id, top_best_seat_combo, c_code
-            #                 )
-            #                 if final_upi_link:
-            #                     seat_names_str = ", ".join([f"{s['row']}-{s['num']}" for s in top_best_seat_combo])
-            #                     locked_seats_text = f"🎟️ **AUTO-LOCKED SEATS:** `{seat_names_str}`\n\n"
-            #         except Exception as ex:
-            #             print(f"   -> ⚠️ Automated checkout phase aborted: {ex}")
-            #     else:
-            #         print("   -> ⚠️ Auto-checkout constraint: Missing 'event_code' or 'date'.")
+        elif lost_n:
+            print(f"   -> 💔 LOST MATCHES for {s_name}")
+            # Telegram only: no phone buzz when there's nothing to grab
+            msg = (f"💔 **LOST MATCHES**\n{started_banner}🎬 **Feature:** {s_name}\n"
+                   f"{seats_line}\n"
+                   f"❌ **Secured by Others:** {lost_n} blocks\n"
+                   f"{sep}\n{matches_text}{links}{code_note}")
+            send_telegram_alert(msg, thread_id)
 
-            if trigger_type == "NEW":
-                # Phone push first: fastest path to you
-                send_ntfy_push(
-                    f"SEATS OPEN: {s_name}",
-                    f"{len(newly_unblocked_raw)} seats unblocked. Best: {top_seats}",
-                    click_url=bms_url,
-                )
-                msg = (f"🚨 **TARGET ACQUIRED!**\n\n{started_banner}🎬 **Feature:** {s_name}\n"
-                       f"🆕 **Volume:** {len(newly_unblocked_raw)} seats unblocked\n\n"
-                       f"{still_avail_text}\n\n{action_links}")
-                send_telegram_alert(msg, thread_id)
+        # ---------------- SNAPSHOT (every run, so later comparisons stay accurate) ----------------
+        # state[state_key]["last_checked_ist"] = ist_now.strftime("%Y-%m-%d %I:%M:%S %p")
+        # state[state_key]["known_seats"] = list(current_valid_seats)
+        # state[state_key]["all_matches"] = current_all_matches
+        # state_updated = True
+        # save_json(STATE_FILE, state)
 
-            elif trigger_type == "FLUX":
-                send_ntfy_push(
-                    f"SEATS SHIFTED: {s_name}",
-                    f"{len(new_combinations)} new blocks released. Best: {top_seats}",
-                    click_url=bms_url,
-                )
-                msg = (f"🔄 **INVENTORY SHIFT**\n\n{started_banner}🎬 **{s_name}**\n\n"
-                       f"❌ **Secured by Others:** {len(lost_combinations)} blocks\n"
-                       f"🆕 **Newly Released:** {len(new_combinations)} blocks\n\n"
-                       f"➖➖➖➖➖➖➖➖➖➖\n\n{still_avail_text}\n\n{action_links}")
-                send_telegram_alert(msg, thread_id)
-
-            elif trigger_type == "LOST":
-                # Telegram only: no phone buzz when there's nothing to grab
-                lost_list = list(lost_combinations)
-                lost_text = "\n".join([f"• ❌ {m}" for m in lost_list[:5]])
-                if len(lost_list) > 5: lost_text += f"\n*...and {len(lost_list) - 5} subsequent configurations.*"
-                msg = (f"💔 **TARGETS COMPROMISED**\n\n{started_banner}🎬 **Feature:** {s_name}\n\n"
-                       f"Just Acquired By Others:\n{lost_text}\n\n"
-                       f"➖➖➖➖➖➖➖➖➖➖\n\n{still_avail_text}")
-                if current_all_matches: msg += f"\n\n{action_links}"
-                send_telegram_alert(msg, thread_id)
-
-            state_changed = True
+        state_changed = True
 
         # Always record the exact time the status was last checked/polled
         state[state_key]["last_checked_ist"] = ist_now.strftime("%Y-%m-%d %I:%M:%S %p")
