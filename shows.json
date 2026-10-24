@@ -1,24 +1,4 @@
 {
-  "20261024130302": {
-    "event_code": "ET00496545",
-    "venue_code": "TVHP",
-    "theatre": "The Vijay Park Multiplex: Injambakkam ECR 4K Atmos",
-    "session_id": "26115",
-    "date": "20261024",
-    "url": "https://in.bookmyshow.com/movies/chen/seat-layout/ET00496545/TVHP/26115/20261024",
-    "name": "clayface 60rs",
-    "show_time": "11:15 PM",
-    "seat_count": 2,
-    "require_adjacent": true,
-    "pending_rows": [],
-    "row_preferences": {
-      "L": []
-    },
-    "message_thread_id": 1195,
-    "summary_msg_id": 1197,
-    "status_msg_id": 1198,
-    "category_msg_id": 1199
-  },
   "20261024130440": {
     "event_code": "ET00496545",
     "venue_code": "CBMC",
