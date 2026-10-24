@@ -14,7 +14,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 PRIME (A): Open (bookings seen)\n     157 free \u00b7 48 booked \u00b7 since 24 Oct 01:05 PM\n\ud83d\ude48 CLASSIC (B): Hidden (no bookings yet)\n     20 free \u00b7 0 booked \u00b7 since 24 Oct 01:05 PM",
-        "last_checked_ist": "2026-10-24 06:15:52 PM",
+        "last_checked_ist": "2026-10-24 06:20:48 PM",
         "known_seats": [],
         "all_matches": []
     },
@@ -33,27 +33,19 @@
                 "at": "24 Oct 01:05 PM"
             }
         },
-        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 EXECUTIVE (A): Open (bookings seen)\n     90 free \u00b7 69 booked \u00b7 since 24 Oct 01:05 PM\n\ud83d\udd13 NORMAL (B): Open (bookings seen)\n     10 free \u00b7 7 booked \u00b7 since 24 Oct 01:05 PM",
-        "last_checked_ist": "2026-10-24 06:15:52 PM",
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 EXECUTIVE (A): Open (bookings seen)\n     89 free \u00b7 70 booked \u00b7 since 24 Oct 01:05 PM\n\ud83d\udd13 NORMAL (B): Open (bookings seen)\n     6 free \u00b7 11 booked \u00b7 since 24 Oct 01:05 PM",
+        "last_checked_ist": "2026-10-24 06:20:48 PM",
         "known_seats": [
-            "A-12",
+            "A-13",
+            "A-1",
             "A-3",
             "A-2",
-            "A-5",
-            "A-1",
-            "A-4",
-            "A-13",
             "A-11",
-            "A-10",
-            "A-9"
+            "A-12"
         ],
         "all_matches": [
-            "Row A: 10, 9",
-            "Row A: 11, 10",
             "Row A: 12, 11",
             "Row A: 13, 12",
-            "Row A: 5, 4",
-            "Row A: 4, 3",
             "Row A: 3, 2",
             "Row A: 2, 1"
         ]
@@ -73,8 +65,8 @@
                 "at": "24 Oct 01:10 PM"
             }
         },
-        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     63 free \u00b7 74 booked \u00b7 since 24 Oct 01:10 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 16 booked \u00b7 since 24 Oct 01:10 PM",
-        "last_checked_ist": "2026-10-24 06:15:52 PM",
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     61 free \u00b7 76 booked \u00b7 since 24 Oct 01:10 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 16 booked \u00b7 since 24 Oct 01:10 PM",
+        "last_checked_ist": "2026-10-24 06:20:48 PM",
         "known_seats": [],
         "all_matches": []
     }
