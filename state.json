@@ -14,7 +14,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 PRIME (A): Open (bookings seen)\n     157 free \u00b7 48 booked \u00b7 since 24 Oct 01:05 PM\n\ud83d\ude48 CLASSIC (B): Hidden (no bookings yet)\n     20 free \u00b7 0 booked \u00b7 since 24 Oct 01:05 PM",
-        "last_checked_ist": "2026-10-24 08:25:41 PM",
+        "last_checked_ist": "2026-10-24 08:31:35 PM",
         "known_seats": [],
         "all_matches": []
     },
@@ -33,8 +33,8 @@
                 "at": "24 Oct 01:05 PM"
             }
         },
-        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 EXECUTIVE (A): Open (bookings seen)\n     41 free \u00b7 118 booked \u00b7 since 24 Oct 01:05 PM\n\ud83d\udd13 NORMAL (B): Open (bookings seen)\n     0 free \u00b7 17 booked \u00b7 since 24 Oct 01:05 PM",
-        "last_checked_ist": "2026-10-24 08:25:41 PM",
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 EXECUTIVE (A): Open (bookings seen)\n     40 free \u00b7 119 booked \u00b7 since 24 Oct 01:05 PM\n\ud83d\udd13 NORMAL (B): Open (bookings seen)\n     0 free \u00b7 17 booked \u00b7 since 24 Oct 01:05 PM",
+        "last_checked_ist": "2026-10-24 08:31:35 PM",
         "known_seats": [],
         "all_matches": []
     },
@@ -53,11 +53,9 @@
                 "at": "24 Oct 01:10 PM"
             }
         },
-        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     40 free \u00b7 97 booked \u00b7 since 24 Oct 01:10 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     2 free \u00b7 14 booked \u00b7 since 24 Oct 01:10 PM",
-        "last_checked_ist": "2026-10-24 08:25:41 PM",
-        "known_seats": [
-            "J-2"
-        ],
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     39 free \u00b7 98 booked \u00b7 since 24 Oct 01:10 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 16 booked \u00b7 since 24 Oct 01:10 PM",
+        "last_checked_ist": "2026-10-24 08:31:35 PM",
+        "known_seats": [],
         "all_matches": []
     }
 }
