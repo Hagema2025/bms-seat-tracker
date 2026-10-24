@@ -1,28 +1,4 @@
 {
-  "20261023234759": {
-    "event_code": "ET00517732",
-    "venue_code": "INTO",
-    "theatre": "INOX: The Marina Mall, OMR",
-    "session_id": "92075",
-    "date": "20261024",
-    "url": "https://in.bookmyshow.com/movies/CHEN/seat-layout/ET00517732/INTO/92075/20261024",
-    "name": "Haiku 60rs",
-    "show_time": "1:30 PM",
-    "seat_count": 1,
-    "require_adjacent": true,
-    "pending_rows": [],
-    "row_preferences": {
-      "J": [
-        "1",
-        "2",
-        "3"
-      ],
-      "K": []
-    },
-    "message_thread_id": 1100,
-    "summary_msg_id": 1102,
-    "status_msg_id": 1103
-  },
   "20261023235404": {
     "event_code": "ET00509047",
     "venue_code": "INTO",
