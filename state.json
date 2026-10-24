@@ -1,22 +1,4 @@
 {
-  "MAYJ_241316_1157": {
-    "open_cats": [
-      "A"
-    ],
-    "last_checked_ist": "2026-10-24 12:55:41 PM",
-    "known_seats": [],
-    "all_matches": [],
-    "cat_since": {
-      "A": {
-        "state": "open",
-        "at": "24 Oct 12:55 PM"
-      },
-      "B": {
-        "state": "hidden",
-        "at": "24 Oct 12:55 PM"
-      }
-    }
-  },
   "CBMC_14823_1165": {
     "open_cats": [
       "A",
