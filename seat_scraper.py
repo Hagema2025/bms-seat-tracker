@@ -738,6 +738,7 @@ def main():
 
         is_match, top_5_matches, current_all_matches, current_raw_lists = find_matching_seats(current_avail, show)
         print_status_summary(str_data)
+        print("   -> 🏷️ Categories:", str_data.split("||")[0])
         print(f"   -> 🎯 Matches: {current_all_matches}")
 
         if state_key not in state or "known_seats" not in state[state_key]:
