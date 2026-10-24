@@ -44,5 +44,29 @@
     "summary_msg_id": 1205,
     "status_msg_id": 1206,
     "category_msg_id": 1207
+  },
+  "20261024130617": {
+    "event_code": "ET00496545",
+    "venue_code": "INTO",
+    "theatre": "INOX: The Marina Mall, OMR",
+    "session_id": "92078",
+    "date": "20261024",
+    "url": "https://in.bookmyshow.com/movies/chen/seat-layout/ET00496545/INTO/92078/20261024",
+    "name": "clayface 60rs",
+    "show_time": "10:30 PM",
+    "seat_count": 2,
+    "require_adjacent": true,
+    "pending_rows": [],
+    "row_preferences": {
+      "J": [
+        "1",
+        "2"
+      ],
+      "K": []
+    },
+    "message_thread_id": 1211,
+    "summary_msg_id": 1213,
+    "status_msg_id": 1214,
+    "category_msg_id": 1215
   }
 }
