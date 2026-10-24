@@ -4,50 +4,110 @@
             "A",
             "B"
         ],
-        "last_checked_ist": "2026-10-24 12:50:46 PM",
+        "last_checked_ist": "2026-10-24 12:55:41 PM",
         "known_seats": [],
-        "all_matches": []
+        "all_matches": [],
+        "cat_since": {
+            "A": {
+                "state": "open",
+                "at": "24 Oct 12:55 PM"
+            },
+            "B": {
+                "state": "open",
+                "at": "24 Oct 12:55 PM"
+            }
+        }
     },
     "MAYJ_241320_1151": {
         "open_cats": [
             "A"
         ],
-        "last_checked_ist": "2026-10-24 12:50:46 PM",
+        "last_checked_ist": "2026-10-24 12:55:41 PM",
         "known_seats": [],
-        "all_matches": []
+        "all_matches": [],
+        "cat_since": {
+            "A": {
+                "state": "open",
+                "at": "24 Oct 12:55 PM"
+            },
+            "B": {
+                "state": "hidden",
+                "at": "24 Oct 12:55 PM"
+            }
+        }
     },
     "MAYJ_241316_1157": {
         "open_cats": [
             "A"
         ],
-        "last_checked_ist": "2026-10-24 12:50:46 PM",
+        "last_checked_ist": "2026-10-24 12:55:41 PM",
         "known_seats": [],
-        "all_matches": []
+        "all_matches": [],
+        "cat_since": {
+            "A": {
+                "state": "open",
+                "at": "24 Oct 12:55 PM"
+            },
+            "B": {
+                "state": "hidden",
+                "at": "24 Oct 12:55 PM"
+            }
+        }
     },
     "CBMC_14823_1165": {
         "open_cats": [
             "A",
             "B"
         ],
-        "last_checked_ist": "2026-10-24 12:50:46 PM",
+        "last_checked_ist": "2026-10-24 12:55:41 PM",
         "known_seats": [],
-        "all_matches": []
+        "all_matches": [],
+        "cat_since": {
+            "A": {
+                "state": "open",
+                "at": "24 Oct 12:55 PM"
+            },
+            "B": {
+                "state": "open",
+                "at": "24 Oct 12:55 PM"
+            }
+        }
     },
     "INTO_92078_1171": {
         "open_cats": [
             "A",
             "B"
         ],
-        "last_checked_ist": "2026-10-24 12:50:46 PM",
+        "last_checked_ist": "2026-10-24 12:55:41 PM",
         "known_seats": [],
-        "all_matches": []
+        "all_matches": [],
+        "cat_since": {
+            "A": {
+                "state": "open",
+                "at": "24 Oct 12:55 PM"
+            },
+            "B": {
+                "state": "open",
+                "at": "24 Oct 12:55 PM"
+            }
+        }
     },
     "TVHP_26128_1179": {
         "open_cats": [
             "A"
         ],
-        "last_checked_ist": "2026-10-24 12:50:46 PM",
+        "last_checked_ist": "2026-10-24 12:55:41 PM",
         "known_seats": [],
-        "all_matches": []
+        "all_matches": [],
+        "cat_since": {
+            "A": {
+                "state": "open",
+                "at": "24 Oct 12:55 PM"
+            },
+            "B": {
+                "state": "hidden",
+                "at": "24 Oct 12:55 PM"
+            }
+        }
     }
 }
