@@ -14,7 +14,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 PRIME (A): Open (bookings seen)\n     157 free \u00b7 48 booked \u00b7 since 24 Oct 01:05 PM\n\ud83d\ude48 CLASSIC (B): Hidden (no bookings yet)\n     20 free \u00b7 0 booked \u00b7 since 24 Oct 01:05 PM",
-        "last_checked_ist": "2026-10-24 07:45:49 PM",
+        "last_checked_ist": "2026-10-24 07:50:54 PM",
         "known_seats": [],
         "all_matches": []
     },
@@ -33,10 +33,17 @@
                 "at": "24 Oct 01:05 PM"
             }
         },
-        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 EXECUTIVE (A): Open (bookings seen)\n     67 free \u00b7 92 booked \u00b7 since 24 Oct 01:05 PM\n\ud83d\udd13 NORMAL (B): Open (bookings seen)\n     0 free \u00b7 17 booked \u00b7 since 24 Oct 01:05 PM",
-        "last_checked_ist": "2026-10-24 07:45:49 PM",
-        "known_seats": [],
-        "all_matches": []
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 EXECUTIVE (A): Open (bookings seen)\n     65 free \u00b7 94 booked \u00b7 since 24 Oct 01:05 PM\n\ud83d\udd13 NORMAL (B): Open (bookings seen)\n     3 free \u00b7 14 booked \u00b7 since 24 Oct 01:05 PM",
+        "last_checked_ist": "2026-10-24 07:50:54 PM",
+        "known_seats": [
+            "A-2",
+            "A-3",
+            "A-1"
+        ],
+        "all_matches": [
+            "Row A: 3, 2",
+            "Row A: 2, 1"
+        ]
     },
     "INTO_92078_1211": {
         "open_cats": [
@@ -53,8 +60,8 @@
                 "at": "24 Oct 01:10 PM"
             }
         },
-        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     45 free \u00b7 92 booked \u00b7 since 24 Oct 01:10 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 16 booked \u00b7 since 24 Oct 01:10 PM",
-        "last_checked_ist": "2026-10-24 07:45:49 PM",
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     46 free \u00b7 91 booked \u00b7 since 24 Oct 01:10 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 16 booked \u00b7 since 24 Oct 01:10 PM",
+        "last_checked_ist": "2026-10-24 07:50:54 PM",
         "known_seats": [],
         "all_matches": []
     }
