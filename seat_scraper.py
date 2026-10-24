@@ -395,9 +395,9 @@ def fmt_mins(mins):
 def build_status_card(fs, header):
     outages = fs.get("outages", [])
     if outages:
-        avg = sum(o["mins"] for o in outages) / len(outages)
+        avg_secs = sum(o.get("secs", o["mins"] * 60) for o in outages) / len(outages)
         prev = (f"📊 Previous: {len(outages)} outage{'s' if len(outages) != 1 else ''}"
-                f" · avg {fmt_mins(avg)}")
+                f" · avg {fmt_dur(avg_secs)}")
     else:
         prev = "📊 Previous: none"
     log = fs.get("fail_log", [])
@@ -445,6 +445,16 @@ def count_seats(str_data):
         total += len(units)
         avail += sum(1 for _, ok in units if ok)
     return avail, total
+
+def fmt_dur(secs):
+    secs = int(round(secs))
+    h, rem = divmod(secs, 3600)
+    m, s = divmod(rem, 60)
+    parts = []
+    if h: parts.append(f"{h} hr")
+    if m: parts.append(f"{m} min")
+    if s: parts.append(f"{s} sec")
+    return " ".join(parts) or "0 sec"
 # ==============================================================================
 # 📡 TELEMETRY & DATA PARSING ENGINE
 # ==============================================================================
@@ -672,7 +682,7 @@ def main():
 
                 status_msg_id = show.get("status_msg_id")
                 if status_msg_id:
-                    header = f"🟢 **Restored** — outage #{n} lasted {fmt_mins(dur_mins)} (at {now_ist_str()})"
+                    header = f"🟢 **Restored** — outage #{n} lasted {fmt_dur(dur_mins * 60)} (at {now_ist_str()})"
                     edit_telegram_message(status_msg_id, build_status_card(fs, header), thread_id)
 
                 # Save the finished outage, then clear the live data
@@ -681,6 +691,7 @@ def main():
     "start": fs.get("first_failed_full", "?"),
     "end": datetime.now(ZoneInfo("Asia/Kolkata")).strftime(FULL_FMT),
     "mins": round(dur_mins, 1),
+        "secs": round(dur_mins * 60),
     "total_fails": fs.get("fail_total", 0),
         "reasons": [f"{e['reason']} | {e.get('first', e.get('since', '?'))} -> {e.get('last', e.get('first', e.get('since', '?')))} | x{e['count']}"
                 for e in fs.get("fail_log", [])],
