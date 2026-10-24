@@ -577,7 +577,28 @@ def find_matching_seats(available_by_row, show_reqs):
             return True, [match_text], [match_text], [found_seats]
 
         return False, [], [], []
+    
+from collections import Counter
 
+def print_status_summary(str_data):
+    parts = str_data.split("||")
+    rows_data = parts[1] if len(parts) > 1 else parts[0]
+    counts = Counter()
+    bookable = []
+    for row_str in rows_data.split("|"):
+        if not row_str or ":" not in row_str:
+            continue
+        el = row_str.split(":")
+        row = el[1]
+        for slot in el[2:]:
+            no = slot_number(slot)
+            if no is None or no == "0":
+                continue
+            counts[slot[1]] += 1
+            if slot[1] not in NOT_BOOKABLE_CODES:
+                bookable.append(f"{row}-{no}[{slot}]")
+    print("   -> 🔢 Status codes: " + ", ".join(f"{k}={v}" for k, v in sorted(counts.items())))
+    print("   -> 🪑 Bookable (raw slot): " + " ".join(bookable))
 # ==============================================================================
 # 🚀 CORE EXECUTION ORCHESTRATOR
 # ==============================================================================
@@ -716,6 +737,8 @@ def main():
                     current_valid_seats.add(f"{row}-{s['num']}")
 
         is_match, top_5_matches, current_all_matches, current_raw_lists = find_matching_seats(current_avail, show)
+        print_status_summary(str_data)
+        print(f"   -> 🎯 Matches: {current_all_matches}")
 
         if state_key not in state or "known_seats" not in state[state_key]:
             print(f"   -> ⚡ Initialization cycle mapped for {s_name}. Bypassing delta logic.")
