@@ -14,7 +14,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 PRIME (A): Open (bookings seen)\n     157 free \u00b7 48 booked \u00b7 since 24 Oct 01:05 PM\n\ud83d\ude48 CLASSIC (B): Hidden (no bookings yet)\n     20 free \u00b7 0 booked \u00b7 since 24 Oct 01:05 PM",
-        "last_checked_ist": "2026-10-24 06:01:10 PM",
+        "last_checked_ist": "2026-10-24 06:05:40 PM",
         "known_seats": [],
         "all_matches": []
     },
@@ -33,8 +33,8 @@
                 "at": "24 Oct 01:05 PM"
             }
         },
-        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 EXECUTIVE (A): Open (bookings seen)\n     94 free \u00b7 65 booked \u00b7 since 24 Oct 01:05 PM\n\ud83d\udd13 NORMAL (B): Open (bookings seen)\n     0 free \u00b7 17 booked \u00b7 since 24 Oct 01:05 PM",
-        "last_checked_ist": "2026-10-24 06:01:10 PM",
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 EXECUTIVE (A): Open (bookings seen)\n     95 free \u00b7 64 booked \u00b7 since 24 Oct 01:05 PM\n\ud83d\udd13 NORMAL (B): Open (bookings seen)\n     0 free \u00b7 17 booked \u00b7 since 24 Oct 01:05 PM",
+        "last_checked_ist": "2026-10-24 06:05:40 PM",
         "known_seats": [],
         "all_matches": []
     },
@@ -54,7 +54,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     78 free \u00b7 59 booked \u00b7 since 24 Oct 01:10 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 16 booked \u00b7 since 24 Oct 01:10 PM",
-        "last_checked_ist": "2026-10-24 06:01:10 PM",
+        "last_checked_ist": "2026-10-24 06:05:40 PM",
         "known_seats": [],
         "all_matches": []
     }
