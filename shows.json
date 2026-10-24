@@ -41,5 +41,24 @@
     "message_thread_id": 1151,
     "summary_msg_id": 1153,
     "status_msg_id": 1154
+  },
+  "20261024120944": {
+    "event_code": "ET00522879",
+    "venue_code": "MAYJ",
+    "theatre": "MAYAJAAL Multiplex: ECR, Chennai",
+    "session_id": "241316",
+    "date": "20261025",
+    "url": "https://in.bookmyshow.com/movies/chen/seat-layout/ET00522879/MAYJ/241316/20261025",
+    "name": "418 60rs",
+    "show_time": "5:05 PM",
+    "seat_count": 2,
+    "require_adjacent": true,
+    "pending_rows": [],
+    "row_preferences": {
+      "M": []
+    },
+    "message_thread_id": 1157,
+    "summary_msg_id": 1159,
+    "status_msg_id": 1160
   }
 }
