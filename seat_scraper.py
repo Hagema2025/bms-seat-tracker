@@ -475,6 +475,37 @@ def auto_hidden_cats(str_data, st):
         return set()
     return {c for c in stats if c not in open_cats}
 
+def category_names(str_data):
+    parts = str_data.split("||")
+    names = {}
+    if len(parts) > 1:
+        for c in parts[0].split("|"):
+            f = c.split(":")
+            if len(f) > 1:
+                names[f[1]] = f[0]
+    return names
+
+def build_category_card(str_data, excl, st):
+    stats = category_stats(str_data)
+    names = category_names(str_data)
+    open_cats = set(st.get("open_cats", []))
+    since = st.setdefault("cat_since", {})
+    now = datetime.now(ZoneInfo("Asia/Kolkata")).strftime("%d %b %I:%M %p")
+    lines = ["🏷️ Categories"]
+    for c in sorted(stats):
+        if c in excl:
+            s, icon, label = "hidden", "🙈", "Hidden (no bookings yet)"
+        elif c in open_cats:
+            s, icon, label = "open", "🔓", "Open (bookings seen)"
+        else:
+            s, icon, label = "unknown", "❓", "Unknown (no bookings anywhere yet)"
+        if since.get(c, {}).get("state") != s:
+            since[c] = {"state": s, "at": now}
+        v = stats[c]
+        lines.append(f"{icon} {names.get(c, c)} ({c}): {label}\n"
+                     f"     {v['free']} free · {v['booked']} booked · since {since[c]['at']}")
+    return "\n".join(lines)
+
 def fmt_dur(secs):
     secs = int(round(secs))
     h, rem = divmod(secs, 3600)
@@ -756,6 +787,14 @@ def main():
                 print(f"    -> ✅ Upstream restored for '{s_name}'. Status card updated to green.")
         _unknown_codes.clear()            # collect unknown status codes for THIS show only
         excl = auto_hidden_cats(str_data, state[state_key])
+        st = state[state_key]
+        cat_msg_id = show.get("category_msg_id")
+        card_text = build_category_card(str_data, excl, st)
+        if cat_msg_id and card_text != st.get("cat_text"):
+            edit_telegram_message(cat_msg_id, card_text, thread_id)
+            st["cat_text"] = card_text
+
+
         print(f"   -> 🏷️ Auto-hidden: {sorted(excl)}  stats: {category_stats(str_data)}")
         current_avail = parse_layout(str_data, excl)
         unknown_codes_now = sorted(_unknown_codes)
