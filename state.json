@@ -36,25 +36,6 @@
       }
     }
   },
-  "INTO_92078_1171": {
-    "open_cats": [
-      "A",
-      "B"
-    ],
-    "last_checked_ist": "2026-10-24 12:55:41 PM",
-    "known_seats": [],
-    "all_matches": [],
-    "cat_since": {
-      "A": {
-        "state": "open",
-        "at": "24 Oct 12:55 PM"
-      },
-      "B": {
-        "state": "open",
-        "at": "24 Oct 12:55 PM"
-      }
-    }
-  },
   "TVHP_26128_1179": {
     "open_cats": [
       "A"
