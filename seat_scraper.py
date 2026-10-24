@@ -419,7 +419,7 @@ def slot_number(slot):
     except ValueError:
         return disp.lstrip("0") or disp
 
-def count_seats(str_data):
+def count_seats(str_data, exclude_cats=()):
     """Venue-wide (bookable, total) seat counts. Spaces are skipped, a couple seat counts once."""
     if not str_data:
         return 0, 0
@@ -436,6 +436,9 @@ def count_seats(str_data):
             if no is None or no == "0" or slot[1] == SPACE_CODE:   # short slot or space
                 prev_no = None
                 continue
+            if slot[0] in exclude_cats:
+                prev_no = None
+                continue
             ok = slot[1] not in NOT_BOOKABLE_CODES
             if prev_no == no:                # second half of a couple seat
                 units[-1][1] = units[-1][1] and ok
@@ -445,6 +448,32 @@ def count_seats(str_data):
         total += len(units)
         avail += sum(1 for _, ok in units if ok)
     return avail, total
+
+def category_stats(str_data):
+    rows = str_data.split("||")[-1]
+    stats = {}
+    for row_str in rows.split("|"):
+        if ":" not in row_str:
+            continue
+        for slot in row_str.split(":")[2:]:
+            no = slot_number(slot)
+            if no is None or no == "0":
+                continue
+            c = stats.setdefault(slot[0], {"free": 0, "booked": 0})
+            if slot[1] == "2":
+                c["booked"] += 1
+            elif slot[1] != "0":
+                c["free"] += 1
+    return stats
+
+def auto_hidden_cats(str_data, st):
+    stats = category_stats(str_data)
+    open_cats = set(st.get("open_cats", []))
+    open_cats |= {c for c, v in stats.items() if v["booked"] > 0}
+    st["open_cats"] = sorted(open_cats)
+    if not open_cats:
+        return set()
+    return {c for c in stats if c not in open_cats}
 
 def fmt_dur(secs):
     secs = int(round(secs))
@@ -489,7 +518,7 @@ def fetch_seat_layout(session_id, venue_code, show_name, max_retries=3):
     return "", last_reason
 
 
-def parse_layout(str_data):
+def parse_layout(str_data, exclude_cats=()):
     if not str_data: return {}
     parts = str_data.split("||")
 
@@ -519,6 +548,8 @@ def parse_layout(str_data):
             code = seat[1]
             if code in NOT_BOOKABLE_CODES:
                 continue                      # space (0) / booked (2)
+            if seat[0] in exclude_cats:
+                continue                      # hidden category
             if code not in KNOWN_CODES and code not in _unknown_codes:
                 _unknown_codes.add(code)
                 print(f"   ⚠️ Unknown seat status code '{code}' (slot {seat!r}) - treated as bookable")
@@ -724,7 +755,9 @@ def main():
                 state_updated = True
                 print(f"    -> ✅ Upstream restored for '{s_name}'. Status card updated to green.")
         _unknown_codes.clear()            # collect unknown status codes for THIS show only
-        current_avail = parse_layout(str_data)
+        excl = auto_hidden_cats(str_data, state[state_key])
+        print(f"   -> 🏷️ Auto-hidden: {sorted(excl)}  stats: {category_stats(str_data)}")
+        current_avail = parse_layout(str_data, excl)
         unknown_codes_now = sorted(_unknown_codes)
         current_valid_seats = set()
         row_prefs = show.get("row_preferences", {})
@@ -737,8 +770,8 @@ def main():
                     current_valid_seats.add(f"{row}-{s['num']}")
 
         is_match, top_5_matches, current_all_matches, current_raw_lists = find_matching_seats(current_avail, show)
-        print_status_summary(str_data)
-        print("   -> 🏷️ Categories:", str_data.split("||")[0])
+        # print_status_summary(str_data)
+        # print("   -> 🏷️ Categories:", str_data.split("||")[0])
         print(f"   -> 🎯 Matches: {current_all_matches}")
 
         if state_key not in state or "known_seats" not in state[state_key]:
@@ -754,7 +787,7 @@ def main():
 
         state_changed = False
                 # ---------------- ALERT CONTENT ----------------
-        avail_cnt, total_cnt = count_seats(str_data)
+        avail_cnt, total_cnt = count_seats(str_data, excl)
         seats_line = f"**Seats:** {avail_cnt} bookable in {total_cnt}"
         total_matches = len(current_all_matches)
         new_n, lost_n = len(new_combinations), len(lost_combinations)
