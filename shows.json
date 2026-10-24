@@ -1,29 +1,4 @@
 {
-  "20261024121903": {
-    "event_code": "ET00496545",
-    "venue_code": "CBMC",
-    "theatre": "Cinepolis: BSR Mall, OMR, Thoraipakkam",
-    "session_id": "14823",
-    "date": "20261024",
-    "url": "https://in.bookmyshow.com/movies/chen/seat-layout/ET00496545/CBMC/14823/20261024",
-    "name": "clayface 60rs",
-    "show_time": "11:00 PM",
-    "seat_count": 2,
-    "require_adjacent": true,
-    "pending_rows": [],
-    "row_preferences": {
-      "A": [],
-      "B": [
-        "1",
-        "2",
-        "3",
-        "4"
-      ]
-    },
-    "message_thread_id": 1165,
-    "summary_msg_id": 1167,
-    "status_msg_id": 1168
-  },
   "20261024122128": {
     "event_code": "ET00496545",
     "venue_code": "TVHP",
