@@ -1,1 +1,53 @@
-{}
+{
+    "INTO_92080_1145": {
+        "open_cats": [
+            "A",
+            "B"
+        ],
+        "last_checked_ist": "2026-10-24 12:42:08 PM",
+        "known_seats": [],
+        "all_matches": []
+    },
+    "MAYJ_241320_1151": {
+        "open_cats": [
+            "A"
+        ],
+        "last_checked_ist": "2026-10-24 12:42:08 PM",
+        "known_seats": [],
+        "all_matches": []
+    },
+    "MAYJ_241316_1157": {
+        "open_cats": [
+            "A"
+        ],
+        "last_checked_ist": "2026-10-24 12:42:08 PM",
+        "known_seats": [],
+        "all_matches": []
+    },
+    "CBMC_14823_1165": {
+        "open_cats": [
+            "A",
+            "B"
+        ],
+        "last_checked_ist": "2026-10-24 12:42:08 PM",
+        "known_seats": [],
+        "all_matches": []
+    },
+    "INTO_92078_1171": {
+        "open_cats": [
+            "A",
+            "B"
+        ],
+        "last_checked_ist": "2026-10-24 12:42:08 PM",
+        "known_seats": [],
+        "all_matches": []
+    },
+    "TVHP_26128_1179": {
+        "open_cats": [
+            "A"
+        ],
+        "last_checked_ist": "2026-10-24 12:42:08 PM",
+        "known_seats": [],
+        "all_matches": []
+    }
+}
