@@ -1,6 +1,6 @@
 {
     "INTO_92075_1100": {
-        "last_checked_ist": "2026-10-24 09:50:49 AM",
+        "last_checked_ist": "2026-10-24 09:55:37 AM",
         "known_seats": [],
         "all_matches": [],
         "serverfailed": false,
@@ -14,24 +14,16 @@
         ]
     },
     "INTO_92083_1106": {
-        "last_checked_ist": "2026-10-24 09:50:49 AM",
+        "last_checked_ist": "2026-10-24 09:55:37 AM",
         "known_seats": [
-            "K-15",
-            "J-5",
-            "K-14",
-            "K-13",
-            "K-8",
-            "K-16",
-            "K-7"
+            "K-9",
+            "K-7",
+            "K-8"
         ],
         "all_matches": [
             "Row K: 7",
             "Row K: 8",
-            "Row J: 5",
-            "Row K: 13",
-            "Row K: 14",
-            "Row K: 15",
-            "Row K: 16"
+            "Row K: 9"
         ],
         "serverfailed": false,
         "outages": [
@@ -44,7 +36,7 @@
         ]
     },
     "INTO_92123_1112": {
-        "last_checked_ist": "2026-10-24 09:50:49 AM",
+        "last_checked_ist": "2026-10-24 09:55:37 AM",
         "known_seats": [],
         "all_matches": [],
         "serverfailed": false,
@@ -58,13 +50,13 @@
         ]
     },
     "INTO_91965_1118": {
-        "last_checked_ist": "2026-10-24 09:50:49 AM",
+        "last_checked_ist": "2026-10-24 09:55:37 AM",
         "known_seats": [
-            "M-4",
-            "K-40",
-            "L-38",
             "M-5",
             "M-28",
+            "L-38",
+            "K-40",
+            "M-4",
             "L-17"
         ],
         "all_matches": [
