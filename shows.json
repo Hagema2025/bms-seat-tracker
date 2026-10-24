@@ -1,28 +1,4 @@
 {
-  "20261024120614": {
-    "event_code": "ET00496545",
-    "venue_code": "INTO",
-    "theatre": "INOX: The Marina Mall, OMR",
-    "session_id": "92080",
-    "date": "20261025",
-    "url": "https://in.bookmyshow.com/movies/chennai/seat-layout/ET00496545/INTO/92080/20261025",
-    "name": "Clay face 60rs",
-    "show_time": "4:30 PM",
-    "seat_count": 2,
-    "require_adjacent": true,
-    "pending_rows": [],
-    "row_preferences": {
-      "J": [
-        "1",
-        "2",
-        "3"
-      ],
-      "K": []
-    },
-    "message_thread_id": 1145,
-    "summary_msg_id": 1147,
-    "status_msg_id": 1148
-  },
   "20261024120823": {
     "event_code": "ET00522879",
     "venue_code": "MAYJ",
