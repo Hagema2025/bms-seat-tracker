@@ -363,18 +363,22 @@ def short_reason(reason):
     text = re.sub(r"\b\d{4,}\b", "N", text)   # 15001 -> N, but HTTP 503 stays
     return text[:80]
 
-MAX_LOG_LINES = 4   # error lines shown for the current outage
+MAX_LOG_LINES = 50   # safety cap for what is saved in state.json
+CARD_LINES = 3       # how many latest lines the Telegram card shows
 
 def record_failure(fs, reason):
-    """Same reason as the last entry -> count+1, else a new entry."""
-    log = fs.setdefault("fail_log", [])
+    """Same reason as the previous run -> count+1, else a new line (keeps exact order)."""
     reason = short_reason(reason)
-    fs["fail_total"] = fs.get("fail_total", 0) + 1     # this line was missing
+    now = datetime.now(ZoneInfo("Asia/Kolkata")).strftime(FULL_FMT)
+    fs["fail_total"] = fs.get("fail_total", 0) + 1
+    log = fs.setdefault("fail_log", [])
     if log and log[-1]["reason"] == reason:
         log[-1]["count"] += 1
+        log[-1]["last"] = now
     else:
-        log.append({"reason": reason, "since": now_ist_str(), "count": 1})
+        log.append({"reason": reason, "first": now, "last": now, "count": 1})
     del log[:-MAX_LOG_LINES]
+
 def format_fail_log(log):
     return "\n".join(f"• `{e['reason']}` — {e['since']} — ×{e['count']}" for e in log)
 
@@ -397,13 +401,13 @@ def build_status_card(fs, header):
     else:
         prev = "📊 Previous: none"
     log = fs.get("fail_log", [])
-    hidden = fs.get("fail_total", 0) - sum(e["count"] for e in log)
-    lines = [prev,header]
+    shown = log[-CARD_LINES:]
+    hidden = fs.get("fail_total", 0) - sum(e["count"] for e in shown)
+    lines = [prev, header]
     if hidden > 0:
         lines.append(f"_…{hidden} earlier errors_")
-    lines += [f"• `{e['reason']}` — {e['since']} — ×{e['count']}" for e in log]
+    lines += [f"• `{e['reason']}` — {(e.get('first') or e.get('since') or '')[11:]} — ×{e['count']}" for e in shown]
     return "\n".join(lines)[:3900]
-
 def slot_number(slot):
     """Display seat number (string) of a slot, or None if the slot is too short to be a seat."""
     if len(slot) < 4:
@@ -673,11 +677,14 @@ def main():
 
                 # Save the finished outage, then clear the live data
                 fs.setdefault("outages", []).append({
-                    "n": n,
-                    "start": fs.get("first_failed_full", "?"),
-                    "end": datetime.now(ZoneInfo("Asia/Kolkata")).strftime(FULL_FMT),
-                    "mins": round(dur_mins, 1),
-                })
+    "n": n,
+    "start": fs.get("first_failed_full", "?"),
+    "end": datetime.now(ZoneInfo("Asia/Kolkata")).strftime(FULL_FMT),
+    "mins": round(dur_mins, 1),
+    "total_fails": fs.get("fail_total", 0),
+        "reasons": [f"{e['reason']} | {e.get('first', e.get('since', '?'))} -> {e.get('last', e.get('first', e.get('since', '?')))} | x{e['count']}"
+                for e in fs.get("fail_log", [])],
+})
                 fs["serverfailed"] = False
                 for k in ("first_failed_time", "first_failed_full", "first_failed_ts",
                           "fail_log", "fail_total", "failure_count"):
