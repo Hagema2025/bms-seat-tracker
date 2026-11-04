@@ -1,1 +1,23 @@
-{}
+{
+  "20261104084326": {
+    "event_code": "ET00516631",
+    "venue_code": "INTO",
+    "theatre": "INOX: The Marina Mall, OMR",
+    "session_id": "92582",
+    "date": "20261106",
+    "url": "https://in.bookmyshow.com/movies/chen/seat-layout/ET00516631/INTO/92582/20261106",
+    "name": "Scene 60rs",
+    "show_time": "8:15 PM",
+    "seat_count": 2,
+    "require_adjacent": true,
+    "pending_rows": [],
+    "row_preferences": {
+      "N": [],
+      "O": []
+    },
+    "message_thread_id": 1239,
+    "summary_msg_id": 1241,
+    "status_msg_id": 1242,
+    "category_msg_id": 1243
+  }
+}
