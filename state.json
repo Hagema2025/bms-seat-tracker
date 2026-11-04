@@ -15,21 +15,22 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     22 free \u00b7 435 booked \u00b7 since 04 Nov 08:45 AM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 04 Nov 08:45 AM",
-        "last_checked_ist": "2026-11-05 03:01:09 AM",
+        "last_checked_ist": "2026-11-05 03:10:50 AM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": true,
-        "first_failed_time": "03:06:30 AM",
-        "first_failed_full": "2026-11-05 03:06:30 AM",
-        "first_failed_ts": 1793828190.8637013,
-        "fail_log": [
+        "serverfailed": false,
+        "outages": [
             {
-                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
-                "first": "2026-11-05 03:06:30 AM",
-                "last": "2026-11-05 03:06:30 AM",
-                "count": 1
+                "n": 1,
+                "start": "2026-11-05 03:06:30 AM",
+                "end": "2026-11-05 03:10:52 AM",
+                "mins": 4.4,
+                "secs": 261,
+                "total_fails": 1,
+                "reasons": [
+                    "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-05 03:06:30 AM -> 2026-11-05 03:06:30 AM | x1"
+                ]
             }
-        ],
-        "fail_total": 1
+        ]
     }
 }
