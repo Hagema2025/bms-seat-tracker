@@ -18,7 +18,7 @@
         "last_checked_ist": "2026-11-06 03:35:37 AM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": false,
+        "serverfailed": true,
         "outages": [
             {
                 "n": 1,
@@ -53,6 +53,18 @@
                     "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-06 03:16:40 AM -> 2026-11-06 03:21:40 AM | x2"
                 ]
             }
-        ]
+        ],
+        "first_failed_time": "03:41:44 AM",
+        "first_failed_full": "2026-11-06 03:41:44 AM",
+        "first_failed_ts": 1793916704.4303465,
+        "fail_log": [
+            {
+                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
+                "first": "2026-11-06 03:41:44 AM",
+                "last": "2026-11-06 03:41:44 AM",
+                "count": 1
+            }
+        ],
+        "fail_total": 1
     }
 }
