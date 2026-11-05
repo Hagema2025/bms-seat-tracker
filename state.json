@@ -50,10 +50,10 @@
             {
                 "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
                 "first": "2026-11-06 03:16:40 AM",
-                "last": "2026-11-06 03:16:40 AM",
-                "count": 1
+                "last": "2026-11-06 03:21:40 AM",
+                "count": 2
             }
         ],
-        "fail_total": 1
+        "fail_total": 2
     }
 }
