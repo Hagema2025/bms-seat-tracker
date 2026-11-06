@@ -160,6 +160,7 @@
                 "count": 3
             }
         ],
-        "fail_total": 3
+        "fail_total": 3,
+        "expired_notified": true
     }
 }
