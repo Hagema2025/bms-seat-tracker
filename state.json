@@ -14,17 +14,13 @@
                 "at": "04 Nov 08:45 AM"
             }
         },
-        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     0 free \u00b7 457 booked \u00b7 since 04 Nov 08:45 AM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     3 free \u00b7 57 booked \u00b7 since 04 Nov 08:45 AM",
-        "last_checked_ist": "2026-11-06 07:51:02 PM",
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     0 free \u00b7 457 booked \u00b7 since 04 Nov 08:45 AM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     1 free \u00b7 59 booked \u00b7 since 04 Nov 08:45 AM",
+        "last_checked_ist": "2026-11-06 08:05:45 PM",
         "known_seats": [
-            "O-23",
-            "N-5",
-            "N-4"
+            "N-29"
         ],
-        "all_matches": [
-            "Row N: 4, 5"
-        ],
-        "serverfailed": true,
+        "all_matches": [],
+        "serverfailed": false,
         "outages": [
             {
                 "n": 1,
@@ -124,19 +120,18 @@
                 "reasons": [
                     "Empty structural array (Error Code 5) | 2026-11-06 04:31:34 PM -> 2026-11-06 07:31:33 PM | x37"
                 ]
-            }
-        ],
-        "first_failed_time": "07:55:49 PM",
-        "first_failed_full": "2026-11-06 07:55:49 PM",
-        "first_failed_ts": 1793975149.2308888,
-        "fail_log": [
+            },
             {
-                "reason": "Empty structural array (Error Code 5)",
-                "first": "2026-11-06 07:55:49 PM",
-                "last": "2026-11-06 08:01:21 PM",
-                "count": 2
+                "n": 10,
+                "start": "2026-11-06 07:55:49 PM",
+                "end": "2026-11-06 08:05:48 PM",
+                "mins": 10.0,
+                "secs": 599,
+                "total_fails": 2,
+                "reasons": [
+                    "Empty structural array (Error Code 5) | 2026-11-06 07:55:49 PM -> 2026-11-06 08:01:21 PM | x2"
+                ]
             }
-        ],
-        "fail_total": 2
+        ]
     }
 }
