@@ -25,7 +25,7 @@
             "Row N: 29, 30",
             "Row N: 30, 31"
         ],
-        "serverfailed": false,
+        "serverfailed": true,
         "outages": [
             {
                 "n": 1,
@@ -148,6 +148,18 @@
                     "Empty structural array (Error Code 5) | 2026-11-06 08:16:04 PM -> 2026-11-06 08:16:04 PM | x1"
                 ]
             }
-        ]
+        ],
+        "first_failed_time": "08:31:36 PM",
+        "first_failed_full": "2026-11-06 08:31:36 PM",
+        "first_failed_ts": 1793977296.5705566,
+        "fail_log": [
+            {
+                "reason": "Empty structural array (Error Code 5)",
+                "first": "2026-11-06 08:31:36 PM",
+                "last": "2026-11-06 08:31:36 PM",
+                "count": 1
+            }
+        ],
+        "fail_total": 1
     }
 }
