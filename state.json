@@ -18,7 +18,7 @@
         "last_checked_ist": "2026-11-06 02:45:53 PM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": false,
+        "serverfailed": true,
         "outages": [
             {
                 "n": 1,
@@ -86,6 +86,18 @@
                     "Empty structural array (Error Code 5) | 2026-11-06 01:45:57 PM -> 2026-11-06 01:45:57 PM | x1"
                 ]
             }
-        ]
+        ],
+        "first_failed_time": "02:50:57 PM",
+        "first_failed_full": "2026-11-06 02:50:57 PM",
+        "first_failed_ts": 1793956857.7432656,
+        "fail_log": [
+            {
+                "reason": "Empty structural array (Error Code 5)",
+                "first": "2026-11-06 02:50:57 PM",
+                "last": "2026-11-06 02:50:57 PM",
+                "count": 1
+            }
+        ],
+        "fail_total": 1
     }
 }
