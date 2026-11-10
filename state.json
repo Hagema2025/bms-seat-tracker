@@ -10,8 +10,14 @@
                 "first": "2026-11-11 01:25:51 AM",
                 "last": "2026-11-11 01:55:52 AM",
                 "count": 7
+            },
+            {
+                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
+                "first": "2026-11-11 02:01:53 AM",
+                "last": "2026-11-11 02:01:53 AM",
+                "count": 1
             }
         ],
-        "fail_total": 7
+        "fail_total": 8
     }
 }
