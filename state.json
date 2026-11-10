@@ -1,29 +1,37 @@
 {
     "INTO_92880_1259": {
-        "serverfailed": true,
-        "first_failed_time": "01:25:51 AM",
-        "first_failed_full": "2026-11-11 01:25:51 AM",
-        "first_failed_ts": 1794340551.2725143,
-        "fail_log": [
+        "serverfailed": false,
+        "outages": [
             {
-                "reason": "Empty structural array (Error Code 5)",
-                "first": "2026-11-11 01:25:51 AM",
-                "last": "2026-11-11 01:55:52 AM",
-                "count": 7
-            },
-            {
-                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
-                "first": "2026-11-11 02:01:53 AM",
-                "last": "2026-11-11 02:01:53 AM",
-                "count": 1
-            },
-            {
-                "reason": "Empty structural array (Error Code 5)",
-                "first": "2026-11-11 02:06:07 AM",
-                "last": "2026-11-11 04:21:04 AM",
-                "count": 28
+                "n": 1,
+                "start": "2026-11-11 01:25:51 AM",
+                "end": "2026-11-11 04:25:46 AM",
+                "mins": 179.9,
+                "secs": 10795,
+                "total_fails": 36,
+                "reasons": [
+                    "Empty structural array (Error Code 5) | 2026-11-11 01:25:51 AM -> 2026-11-11 01:55:52 AM | x7",
+                    "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-11 02:01:53 AM -> 2026-11-11 02:01:53 AM | x1",
+                    "Empty structural array (Error Code 5) | 2026-11-11 02:06:07 AM -> 2026-11-11 04:21:04 AM | x28"
+                ]
             }
         ],
-        "fail_total": 36
+        "open_cats": [
+            "A"
+        ],
+        "cat_since": {
+            "A": {
+                "state": "open",
+                "at": "11 Nov 04:25 AM"
+            },
+            "B": {
+                "state": "hidden",
+                "at": "11 Nov 04:25 AM"
+            }
+        },
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     450 free \u00b7 7 booked \u00b7 since 11 Nov 04:25 AM\n\ud83d\ude48 EX (B): Hidden (no bookings yet)\n     60 free \u00b7 0 booked \u00b7 since 11 Nov 04:25 AM",
+        "last_checked_ist": "2026-11-11 04:25:43 AM",
+        "known_seats": [],
+        "all_matches": []
     }
 }
