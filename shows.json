@@ -1,1 +1,23 @@
-{}
+{
+  "20261111012452": {
+    "event_code": "ET00523997",
+    "venue_code": "INTO",
+    "theatre": "INOX: The Marina Mall, OMR",
+    "session_id": "92880",
+    "date": "20261113",
+    "url": "https://in.bookmyshow.com/movies/chennai/seat-layout/ET00523997/INTO/92880/20261113",
+    "name": "Ramyana 60rs",
+    "show_time": "11:40 PM",
+    "seat_count": 2,
+    "require_adjacent": true,
+    "pending_rows": [],
+    "row_preferences": {
+      "O": [],
+      "N": []
+    },
+    "message_thread_id": 1259,
+    "summary_msg_id": 1261,
+    "status_msg_id": 1262,
+    "category_msg_id": 1263
+  }
+}
