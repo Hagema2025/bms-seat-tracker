@@ -16,8 +16,14 @@
                 "first": "2026-11-11 02:01:53 AM",
                 "last": "2026-11-11 02:01:53 AM",
                 "count": 1
+            },
+            {
+                "reason": "Empty structural array (Error Code 5)",
+                "first": "2026-11-11 02:06:07 AM",
+                "last": "2026-11-11 02:06:07 AM",
+                "count": 1
             }
         ],
-        "fail_total": 8
+        "fail_total": 9
     }
 }
