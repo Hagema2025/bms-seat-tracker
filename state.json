@@ -1,1 +1,17 @@
-{}
+{
+    "INTO_92880_1259": {
+        "serverfailed": true,
+        "first_failed_time": "01:25:51 AM",
+        "first_failed_full": "2026-11-11 01:25:51 AM",
+        "first_failed_ts": 1794340551.2725143,
+        "fail_log": [
+            {
+                "reason": "Empty structural array (Error Code 5)",
+                "first": "2026-11-11 01:25:51 AM",
+                "last": "2026-11-11 01:25:51 AM",
+                "count": 1
+            }
+        ],
+        "fail_total": 1
+    }
+}
