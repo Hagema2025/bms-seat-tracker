@@ -20,10 +20,10 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-11 02:06:07 AM",
-                "last": "2026-11-11 02:41:13 AM",
-                "count": 8
+                "last": "2026-11-11 02:46:00 AM",
+                "count": 9
             }
         ],
-        "fail_total": 16
+        "fail_total": 17
     }
 }
