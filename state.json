@@ -1,6 +1,6 @@
 {
     "INTO_92880_1259": {
-        "serverfailed": true,
+        "serverfailed": false,
         "outages": [
             {
                 "n": 1,
@@ -25,6 +25,17 @@
                 "reasons": [
                     "Empty structural array (Error Code 5) | 2026-11-11 08:36:25 PM -> 2026-11-11 08:36:25 PM | x1"
                 ]
+            },
+            {
+                "n": 3,
+                "start": "2026-11-12 03:06:32 AM",
+                "end": "2026-11-12 03:10:59 AM",
+                "mins": 4.4,
+                "secs": 266,
+                "total_fails": 1,
+                "reasons": [
+                    "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-12 03:06:32 AM -> 2026-11-12 03:06:32 AM | x1"
+                ]
             }
         ],
         "open_cats": [
@@ -42,21 +53,9 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     262 free \u00b7 195 booked \u00b7 since 11 Nov 04:25 AM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 11 Nov 06:20 AM",
-        "last_checked_ist": "2026-11-12 03:01:15 AM",
+        "last_checked_ist": "2026-11-12 03:10:56 AM",
         "known_seats": [],
-        "all_matches": [],
-        "first_failed_time": "03:06:32 AM",
-        "first_failed_full": "2026-11-12 03:06:32 AM",
-        "first_failed_ts": 1794432992.2429097,
-        "fail_log": [
-            {
-                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
-                "first": "2026-11-12 03:06:32 AM",
-                "last": "2026-11-12 03:06:32 AM",
-                "count": 1
-            }
-        ],
-        "fail_total": 1
+        "all_matches": []
     },
     "INTO_92904_1284": {
         "open_cats": [
@@ -74,7 +73,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     180 free \u00b7 277 booked \u00b7 since 11 Nov 05:05 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 11 Nov 05:05 PM",
-        "last_checked_ist": "2026-11-12 03:05:42 AM",
+        "last_checked_ist": "2026-11-12 03:10:56 AM",
         "known_seats": [],
         "all_matches": [],
         "serverfailed": false,
@@ -108,7 +107,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     183 free \u00b7 274 booked \u00b7 since 11 Nov 05:05 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 11 Nov 05:05 PM",
-        "last_checked_ist": "2026-11-12 03:05:42 AM",
+        "last_checked_ist": "2026-11-12 03:10:56 AM",
         "known_seats": [],
         "all_matches": [],
         "serverfailed": false,
