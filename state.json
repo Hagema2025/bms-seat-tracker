@@ -31,12 +31,12 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     362 free \u00b7 95 booked \u00b7 since 11 Nov 04:25 AM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     4 free \u00b7 56 booked \u00b7 since 11 Nov 06:20 AM",
-        "last_checked_ist": "2026-11-11 07:20:58 PM",
+        "last_checked_ist": "2026-11-11 07:25:41 PM",
         "known_seats": [
             "N-16",
-            "O-36",
+            "O-37",
             "O-35",
-            "O-37"
+            "O-36"
         ],
         "all_matches": [
             "Row O: 35, 36",
@@ -58,8 +58,8 @@
                 "at": "11 Nov 05:05 PM"
             }
         },
-        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     215 free \u00b7 242 booked \u00b7 since 11 Nov 05:05 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 11 Nov 05:05 PM",
-        "last_checked_ist": "2026-11-11 07:20:58 PM",
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     217 free \u00b7 240 booked \u00b7 since 11 Nov 05:05 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 11 Nov 05:05 PM",
+        "last_checked_ist": "2026-11-11 07:25:41 PM",
         "known_seats": [],
         "all_matches": []
     },
@@ -79,7 +79,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     234 free \u00b7 223 booked \u00b7 since 11 Nov 05:05 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 11 Nov 05:05 PM",
-        "last_checked_ist": "2026-11-11 07:20:58 PM",
+        "last_checked_ist": "2026-11-11 07:25:41 PM",
         "known_seats": [],
         "all_matches": []
     }
