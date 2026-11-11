@@ -63,11 +63,11 @@
             {
                 "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
                 "first": "2026-11-12 03:16:46 AM",
-                "last": "2026-11-12 03:16:46 AM",
-                "count": 1
+                "last": "2026-11-12 03:21:46 AM",
+                "count": 2
             }
         ],
-        "fail_total": 1
+        "fail_total": 2
     },
     "INTO_92904_1284": {
         "open_cats": [
@@ -85,10 +85,10 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     180 free \u00b7 277 booked \u00b7 since 11 Nov 05:05 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 11 Nov 05:05 PM",
-        "last_checked_ist": "2026-11-12 03:10:56 AM",
+        "last_checked_ist": "2026-11-12 03:20:55 AM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": true,
+        "serverfailed": false,
         "outages": [
             {
                 "n": 1,
@@ -100,20 +100,19 @@
                 "reasons": [
                     "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-11 08:36:47 PM -> 2026-11-11 08:36:47 PM | x1"
                 ]
-            }
-        ],
-        "first_failed_time": "03:17:37 AM",
-        "first_failed_full": "2026-11-12 03:17:37 AM",
-        "first_failed_ts": 1794433657.2668931,
-        "fail_log": [
+            },
             {
-                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
-                "first": "2026-11-12 03:17:37 AM",
-                "last": "2026-11-12 03:17:37 AM",
-                "count": 1
+                "n": 2,
+                "start": "2026-11-12 03:17:37 AM",
+                "end": "2026-11-12 03:21:59 AM",
+                "mins": 4.4,
+                "secs": 261,
+                "total_fails": 1,
+                "reasons": [
+                    "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-12 03:17:37 AM -> 2026-11-12 03:17:37 AM | x1"
+                ]
             }
-        ],
-        "fail_total": 1
+        ]
     },
     "INTO_92906_1292": {
         "open_cats": [
@@ -131,10 +130,10 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     183 free \u00b7 274 booked \u00b7 since 11 Nov 05:05 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 11 Nov 05:05 PM",
-        "last_checked_ist": "2026-11-12 03:10:56 AM",
+        "last_checked_ist": "2026-11-12 03:20:55 AM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": true,
+        "serverfailed": false,
         "outages": [
             {
                 "n": 1,
@@ -146,19 +145,18 @@
                 "reasons": [
                     "Empty structural array (Error Code 5) | 2026-11-11 08:37:21 PM -> 2026-11-11 08:37:21 PM | x1"
                 ]
-            }
-        ],
-        "first_failed_time": "03:18:28 AM",
-        "first_failed_full": "2026-11-12 03:18:28 AM",
-        "first_failed_ts": 1794433708.3287625,
-        "fail_log": [
+            },
             {
-                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
-                "first": "2026-11-12 03:18:28 AM",
-                "last": "2026-11-12 03:18:28 AM",
-                "count": 1
+                "n": 2,
+                "start": "2026-11-12 03:18:28 AM",
+                "end": "2026-11-12 03:22:02 AM",
+                "mins": 3.6,
+                "secs": 214,
+                "total_fails": 1,
+                "reasons": [
+                    "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-12 03:18:28 AM -> 2026-11-12 03:18:28 AM | x1"
+                ]
             }
-        ],
-        "fail_total": 1
+        ]
     }
 }
