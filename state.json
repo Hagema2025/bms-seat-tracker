@@ -1,6 +1,6 @@
 {
     "INTO_92880_1259": {
-        "serverfailed": false,
+        "serverfailed": true,
         "outages": [
             {
                 "n": 1,
@@ -77,7 +77,19 @@
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     141 free \u00b7 316 booked \u00b7 since 11 Nov 04:25 AM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 11 Nov 06:20 AM",
         "last_checked_ist": "2026-11-13 03:01:19 AM",
         "known_seats": [],
-        "all_matches": []
+        "all_matches": [],
+        "first_failed_time": "03:06:35 AM",
+        "first_failed_full": "2026-11-13 03:06:35 AM",
+        "first_failed_ts": 1794519395.2447956,
+        "fail_log": [
+            {
+                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
+                "first": "2026-11-13 03:06:35 AM",
+                "last": "2026-11-13 03:06:35 AM",
+                "count": 1
+            }
+        ],
+        "fail_total": 1
     },
     "INTO_92904_1284": {
         "open_cats": [
@@ -95,7 +107,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     102 free \u00b7 355 booked \u00b7 since 11 Nov 05:05 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 11 Nov 05:05 PM",
-        "last_checked_ist": "2026-11-13 03:01:19 AM",
+        "last_checked_ist": "2026-11-13 03:05:45 AM",
         "known_seats": [],
         "all_matches": [],
         "serverfailed": false,
@@ -151,7 +163,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     117 free \u00b7 340 booked \u00b7 since 11 Nov 05:05 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 11 Nov 05:05 PM",
-        "last_checked_ist": "2026-11-13 03:01:19 AM",
+        "last_checked_ist": "2026-11-13 03:05:45 AM",
         "known_seats": [],
         "all_matches": [],
         "serverfailed": false,
