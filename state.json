@@ -147,10 +147,10 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     13 free \u00b7 444 booked \u00b7 since 11 Nov 05:05 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 11 Nov 05:05 PM",
-        "last_checked_ist": "2026-11-14 03:11:06 AM",
+        "last_checked_ist": "2026-11-14 03:21:06 AM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": true,
+        "serverfailed": false,
         "outages": [
             {
                 "n": 1,
@@ -220,20 +220,19 @@
                 "reasons": [
                     "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-14 03:06:32 AM -> 2026-11-14 03:06:32 AM | x1"
                 ]
-            }
-        ],
-        "first_failed_time": "03:16:46 AM",
-        "first_failed_full": "2026-11-14 03:16:46 AM",
-        "first_failed_ts": 1794606406.8025413,
-        "fail_log": [
+            },
             {
-                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
-                "first": "2026-11-14 03:16:46 AM",
-                "last": "2026-11-14 03:16:46 AM",
-                "count": 1
+                "n": 7,
+                "start": "2026-11-14 03:16:46 AM",
+                "end": "2026-11-14 03:21:09 AM",
+                "mins": 4.4,
+                "secs": 262,
+                "total_fails": 1,
+                "reasons": [
+                    "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-14 03:16:46 AM -> 2026-11-14 03:16:46 AM | x1"
+                ]
             }
-        ],
-        "fail_total": 1
+        ]
     },
     "INTO_92906_1292": {
         "open_cats": [
@@ -251,10 +250,10 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     38 free \u00b7 419 booked \u00b7 since 11 Nov 05:05 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 11 Nov 05:05 PM",
-        "last_checked_ist": "2026-11-14 03:11:06 AM",
+        "last_checked_ist": "2026-11-14 03:21:06 AM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": true,
+        "serverfailed": false,
         "outages": [
             {
                 "n": 1,
@@ -302,19 +301,18 @@
                     "Empty structural array (Error Code 5) | 2026-11-13 07:37:23 PM -> 2026-11-13 07:42:58 PM | x2",
                     "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-13 07:48:28 PM -> 2026-11-13 07:58:11 PM | x3"
                 ]
-            }
-        ],
-        "first_failed_time": "03:17:38 AM",
-        "first_failed_full": "2026-11-14 03:17:38 AM",
-        "first_failed_ts": 1794606458.480361,
-        "fail_log": [
+            },
             {
-                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
-                "first": "2026-11-14 03:17:38 AM",
-                "last": "2026-11-14 03:17:38 AM",
-                "count": 1
+                "n": 5,
+                "start": "2026-11-14 03:17:38 AM",
+                "end": "2026-11-14 03:21:12 AM",
+                "mins": 3.6,
+                "secs": 213,
+                "total_fails": 1,
+                "reasons": [
+                    "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-14 03:17:38 AM -> 2026-11-14 03:17:38 AM | x1"
+                ]
             }
-        ],
-        "fail_total": 1
+        ]
     }
 }
