@@ -113,11 +113,11 @@
             {
                 "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
                 "first": "2026-11-13 07:16:20 PM",
-                "last": "2026-11-13 07:16:20 PM",
-                "count": 1
+                "last": "2026-11-13 07:21:23 PM",
+                "count": 2
             }
         ],
-        "fail_total": 2
+        "fail_total": 3
     },
     "INTO_92904_1284": {
         "open_cats": [
@@ -194,9 +194,15 @@
                 "first": "2026-11-13 07:11:33 PM",
                 "last": "2026-11-13 07:16:33 PM",
                 "count": 2
+            },
+            {
+                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
+                "first": "2026-11-13 07:22:01 PM",
+                "last": "2026-11-13 07:22:01 PM",
+                "count": 1
             }
         ],
-        "fail_total": 2
+        "fail_total": 3
     },
     "INTO_92906_1292": {
         "open_cats": [
@@ -266,10 +272,10 @@
             {
                 "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
                 "first": "2026-11-13 07:17:24 PM",
-                "last": "2026-11-13 07:17:24 PM",
-                "count": 1
+                "last": "2026-11-13 07:22:53 PM",
+                "count": 2
             }
         ],
-        "fail_total": 2
+        "fail_total": 3
     }
 }
