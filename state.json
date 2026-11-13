@@ -111,16 +111,19 @@
                 "at": "11 Nov 06:20 AM"
             }
         },
-        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     26 free \u00b7 431 booked \u00b7 since 11 Nov 04:25 AM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     4 free \u00b7 56 booked \u00b7 since 11 Nov 06:20 AM",
-        "last_checked_ist": "2026-11-13 10:11:06 PM",
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     26 free \u00b7 431 booked \u00b7 since 11 Nov 04:25 AM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     6 free \u00b7 54 booked \u00b7 since 11 Nov 06:20 AM",
+        "last_checked_ist": "2026-11-13 10:15:57 PM",
         "known_seats": [
-            "O-34",
             "O-31",
+            "N-38",
             "O-30",
+            "O-34",
+            "N-39",
             "O-14"
         ],
         "all_matches": [
-            "Row O: 30, 31"
+            "Row O: 30, 31",
+            "Row N: 38, 39"
         ]
     },
     "INTO_92904_1284": {
@@ -139,7 +142,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     21 free \u00b7 436 booked \u00b7 since 11 Nov 05:05 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 11 Nov 05:05 PM",
-        "last_checked_ist": "2026-11-13 10:11:06 PM",
+        "last_checked_ist": "2026-11-13 10:15:57 PM",
         "known_seats": [],
         "all_matches": [],
         "serverfailed": false,
@@ -219,8 +222,8 @@
                 "at": "11 Nov 05:05 PM"
             }
         },
-        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     53 free \u00b7 404 booked \u00b7 since 11 Nov 05:05 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     2 free \u00b7 58 booked \u00b7 since 11 Nov 05:05 PM",
-        "last_checked_ist": "2026-11-13 10:11:06 PM",
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     54 free \u00b7 403 booked \u00b7 since 11 Nov 05:05 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     2 free \u00b7 58 booked \u00b7 since 11 Nov 05:05 PM",
+        "last_checked_ist": "2026-11-13 10:15:57 PM",
         "known_seats": [
             "N-10",
             "N-9"
