@@ -369,6 +369,7 @@
                     "Empty structural array (Error Code 5) | 2026-11-14 07:51:02 PM -> 2026-11-14 07:51:02 PM | x1"
                 ]
             }
-        ]
+        ],
+        "expired_notified": true
     }
 }
