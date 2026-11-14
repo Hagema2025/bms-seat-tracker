@@ -278,7 +278,7 @@
             "N-37"
         ],
         "all_matches": [],
-        "serverfailed": false,
+        "serverfailed": true,
         "outages": [
             {
                 "n": 1,
@@ -360,6 +360,18 @@
                     "Empty structural array (Error Code 5) | 2026-11-14 06:31:30 PM -> 2026-11-14 07:25:56 PM | x12"
                 ]
             }
-        ]
+        ],
+        "first_failed_time": "07:51:02 PM",
+        "first_failed_full": "2026-11-14 07:51:02 PM",
+        "first_failed_ts": 1794666062.7324553,
+        "fail_log": [
+            {
+                "reason": "Empty structural array (Error Code 5)",
+                "first": "2026-11-14 07:51:02 PM",
+                "last": "2026-11-14 07:51:02 PM",
+                "count": 1
+            }
+        ],
+        "fail_total": 1
     }
 }
