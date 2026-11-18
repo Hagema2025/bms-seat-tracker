@@ -59,5 +59,29 @@
     "summary_msg_id": 1294,
     "status_msg_id": 1295,
     "category_msg_id": 1296
+  },
+  "20261118123158": {
+    "event_code": "ET00526277",
+    "venue_code": "INTO",
+    "theatre": "INOX: The Marina Mall, OMR",
+    "session_id": "93228",
+    "date": "20261121",
+    "url": "https://in.bookmyshow.com/movies/chen/seat-layout/ET00526277/INTO/93228/20261121",
+    "name": "Aot 60rs deepak",
+    "show_time": "4:00 PM",
+    "seat_count": 1,
+    "require_adjacent": true,
+    "pending_rows": [],
+    "row_preferences": {
+      "J": [
+        "4",
+        "5",
+        "6"
+      ]
+    },
+    "message_thread_id": 1329,
+    "summary_msg_id": 1331,
+    "status_msg_id": 1332,
+    "category_msg_id": 1333
   }
 }
