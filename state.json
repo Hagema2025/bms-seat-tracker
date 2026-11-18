@@ -371,5 +371,25 @@
             }
         ],
         "expired_notified": true
+    },
+    "INTO_93228_1329": {
+        "open_cats": [
+            "A",
+            "B"
+        ],
+        "cat_since": {
+            "A": {
+                "state": "open",
+                "at": "18 Nov 12:35 PM"
+            },
+            "B": {
+                "state": "open",
+                "at": "18 Nov 12:35 PM"
+            }
+        },
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     127 free \u00b7 10 booked \u00b7 since 18 Nov 12:35 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     9 free \u00b7 7 booked \u00b7 since 18 Nov 12:35 PM",
+        "last_checked_ist": "2026-11-18 12:35:48 PM",
+        "known_seats": [],
+        "all_matches": []
     }
 }
