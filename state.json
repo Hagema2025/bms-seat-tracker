@@ -388,7 +388,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     123 free \u00b7 14 booked \u00b7 since 18 Nov 12:35 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     1 free \u00b7 15 booked \u00b7 since 18 Nov 12:35 PM",
-        "last_checked_ist": "2026-11-19 10:51:07 AM",
+        "last_checked_ist": "2026-11-19 11:01:21 AM",
         "known_seats": [],
         "all_matches": [],
         "serverfailed": false,
@@ -438,5 +438,20 @@
                 ]
             }
         ]
+    },
+    "INTO_93252_1337": {
+        "serverfailed": true,
+        "first_failed_time": "11:01:29 AM",
+        "first_failed_full": "2026-11-19 11:01:29 AM",
+        "first_failed_ts": 1795066289.8913913,
+        "fail_log": [
+            {
+                "reason": "Empty structural array (Error Code 5)",
+                "first": "2026-11-19 11:01:29 AM",
+                "last": "2026-11-19 11:01:29 AM",
+                "count": 1
+            }
+        ],
+        "fail_total": 1
     }
 }
