@@ -391,7 +391,7 @@
         "last_checked_ist": "2026-11-19 03:11:04 PM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": false,
+        "serverfailed": true,
         "outages": [
             {
                 "n": 1,
@@ -437,10 +437,22 @@
                     "Empty structural array (Error Code 5) | 2026-11-19 07:06:10 AM -> 2026-11-19 07:06:10 AM | x1"
                 ]
             }
-        ]
+        ],
+        "first_failed_time": "03:16:09 PM",
+        "first_failed_full": "2026-11-19 03:16:09 PM",
+        "first_failed_ts": 1795081569.9633014,
+        "fail_log": [
+            {
+                "reason": "Empty structural array (Error Code 5)",
+                "first": "2026-11-19 03:16:09 PM",
+                "last": "2026-11-19 03:16:09 PM",
+                "count": 1
+            }
+        ],
+        "fail_total": 1
     },
     "INTO_93252_1337": {
-        "serverfailed": false,
+        "serverfailed": true,
         "outages": [
             {
                 "n": 1,
@@ -609,6 +621,18 @@
             "Row C: 4, 5",
             "Row M: 4, 5",
             "Row N: 4, 5"
-        ]
+        ],
+        "first_failed_time": "03:16:47 PM",
+        "first_failed_full": "2026-11-19 03:16:47 PM",
+        "first_failed_ts": 1795081607.3975275,
+        "fail_log": [
+            {
+                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
+                "first": "2026-11-19 03:16:47 PM",
+                "last": "2026-11-19 03:16:47 PM",
+                "count": 1
+            }
+        ],
+        "fail_total": 1
     }
 }
