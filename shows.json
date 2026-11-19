@@ -100,5 +100,22 @@
     "summary_msg_id": 1339,
     "status_msg_id": 1340,
     "category_msg_id": 1341
+  },
+  "20261119212800": {
+    "event_code": "ET00526306",
+    "venue_code": "INTO",
+    "theatre": "INOX: The Marina Mall, OMR",
+    "session_id": "93296",
+    "date": "20261218",
+    "url": "https://in.bookmyshow.com/movies/chen/seat-layout/ET00526306/INTO/93296/20261218",
+    "name": "Avg",
+    "show_time": "8:20 PM",
+    "seat_count": 2,
+    "require_adjacent": true,
+    "row_preferences": {},
+    "message_thread_id": 1348,
+    "summary_msg_id": 1350,
+    "status_msg_id": 1351,
+    "category_msg_id": 1352
   }
 }
