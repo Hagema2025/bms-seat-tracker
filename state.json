@@ -388,7 +388,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     116 free \u00b7 21 booked \u00b7 since 18 Nov 12:35 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     2 free \u00b7 14 booked \u00b7 since 18 Nov 12:35 PM",
-        "last_checked_ist": "2026-11-20 03:41:01 AM",
+        "last_checked_ist": "2026-11-20 03:46:10 AM",
         "known_seats": [],
         "all_matches": [],
         "serverfailed": false,
@@ -782,11 +782,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-19 06:41:14 PM",
-                "last": "2026-11-20 03:41:10 AM",
-                "count": 109
+                "last": "2026-11-20 03:46:19 AM",
+                "count": 110
             }
         ],
-        "fail_total": 150
+        "fail_total": 151
     },
     "INTO_93296_1348": {
         "serverfailed": false,
@@ -828,36 +828,33 @@
                 "at": "19 Nov 11:11 PM"
             }
         },
-        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     27 free \u00b7 430 booked \u00b7 since 19 Nov 11:11 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 19 Nov 11:11 PM",
-        "last_checked_ist": "2026-11-20 03:41:01 AM",
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     24 free \u00b7 433 booked \u00b7 since 19 Nov 11:11 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 19 Nov 11:11 PM",
+        "last_checked_ist": "2026-11-20 03:46:10 AM",
         "known_seats": [
-            "J-7",
-            "J-8",
-            "M-17",
-            "I-43",
-            "M-40",
-            "L-39",
-            "M-18",
-            "H-43",
-            "H-1",
-            "M-19",
-            "M-20",
-            "J-41",
-            "H-2",
-            "M-37",
-            "M-36",
+            "J-43",
             "L-40",
-            "J-42",
-            "M-16",
             "M-21",
+            "L-38",
+            "M-38",
+            "H-2",
+            "H-3",
+            "J-41",
+            "M-40",
+            "M-19",
+            "H-43",
+            "M-16",
+            "M-20",
+            "M-37",
             "I-4",
             "L-37",
-            "M-22",
-            "L-38",
-            "H-3",
-            "J-43",
-            "M-38",
-            "M-39"
+            "I-43",
+            "M-18",
+            "J-42",
+            "M-39",
+            "M-36",
+            "L-39",
+            "M-17",
+            "M-22"
         ],
         "all_matches": [
             "Row M: 21, 22",
@@ -867,7 +864,6 @@
             "Row M: 17, 18",
             "Row M: 16, 17",
             "Row M: 36, 37",
-            "Row J: 7, 8",
             "Row L: 37, 38",
             "Row M: 37, 38",
             "Row L: 38, 39",
@@ -876,8 +872,7 @@
             "Row M: 39, 40",
             "Row J: 41, 42",
             "Row H: 2, 3",
-            "Row J: 42, 43",
-            "Row H: 1, 2"
+            "Row J: 42, 43"
         ]
     }
 }
