@@ -388,7 +388,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     118 free \u00b7 19 booked \u00b7 since 18 Nov 12:35 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     2 free \u00b7 14 booked \u00b7 since 18 Nov 12:35 PM",
-        "last_checked_ist": "2026-11-19 11:46:04 PM",
+        "last_checked_ist": "2026-11-19 11:51:04 PM",
         "known_seats": [],
         "all_matches": [],
         "serverfailed": false,
@@ -760,11 +760,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-19 06:41:14 PM",
-                "last": "2026-11-19 11:46:19 PM",
-                "count": 62
+                "last": "2026-11-19 11:51:26 PM",
+                "count": 63
             }
         ],
-        "fail_total": 103
+        "fail_total": 104
     },
     "INTO_93296_1348": {
         "serverfailed": false,
@@ -795,24 +795,11 @@
                 "at": "19 Nov 11:11 PM"
             }
         },
-        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     9 free \u00b7 448 booked \u00b7 since 19 Nov 11:11 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 19 Nov 11:11 PM",
-        "last_checked_ist": "2026-11-19 11:46:04 PM",
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     1 free \u00b7 456 booked \u00b7 since 19 Nov 11:11 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 19 Nov 11:11 PM",
+        "last_checked_ist": "2026-11-19 11:51:04 PM",
         "known_seats": [
-            "L-30",
-            "J-21",
-            "L-14",
-            "L-24",
-            "I-43",
-            "J-22",
-            "L-15",
-            "L-31",
-            "J-20"
+            "H-9"
         ],
-        "all_matches": [
-            "Row J: 21, 22",
-            "Row J: 20, 21",
-            "Row L: 14, 15",
-            "Row L: 30, 31"
-        ]
+        "all_matches": []
     }
 }
