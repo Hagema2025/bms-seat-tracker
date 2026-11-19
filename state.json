@@ -391,7 +391,7 @@
         "last_checked_ist": "2026-11-20 04:10:59 AM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": false,
+        "serverfailed": true,
         "outages": [
             {
                 "n": 1,
@@ -511,7 +511,19 @@
                     "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-20 04:06:38 AM -> 2026-11-20 04:06:38 AM | x1"
                 ]
             }
-        ]
+        ],
+        "first_failed_time": "04:16:50 AM",
+        "first_failed_full": "2026-11-20 04:16:50 AM",
+        "first_failed_ts": 1795128410.5263703,
+        "fail_log": [
+            {
+                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
+                "first": "2026-11-20 04:16:50 AM",
+                "last": "2026-11-20 04:16:50 AM",
+                "count": 1
+            }
+        ],
+        "fail_total": 1
     },
     "INTO_93252_1337": {
         "serverfailed": true,
@@ -807,12 +819,18 @@
                 "first": "2026-11-20 04:11:09 AM",
                 "last": "2026-11-20 04:11:09 AM",
                 "count": 1
+            },
+            {
+                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
+                "first": "2026-11-20 04:17:41 AM",
+                "last": "2026-11-20 04:17:41 AM",
+                "count": 1
             }
         ],
-        "fail_total": 156
+        "fail_total": 157
     },
     "INTO_93296_1348": {
-        "serverfailed": false,
+        "serverfailed": true,
         "outages": [
             {
                 "n": 1,
@@ -896,6 +914,18 @@
             "Row M: 39, 40",
             "Row J: 41, 42",
             "Row J: 42, 43"
-        ]
+        ],
+        "first_failed_time": "04:18:33 AM",
+        "first_failed_full": "2026-11-20 04:18:33 AM",
+        "first_failed_ts": 1795128513.2688172,
+        "fail_log": [
+            {
+                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
+                "first": "2026-11-20 04:18:33 AM",
+                "last": "2026-11-20 04:18:33 AM",
+                "count": 1
+            }
+        ],
+        "fail_total": 1
     }
 }
