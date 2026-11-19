@@ -391,7 +391,7 @@
         "last_checked_ist": "2026-11-19 07:01:15 AM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": false,
+        "serverfailed": true,
         "outages": [
             {
                 "n": 1,
@@ -426,6 +426,18 @@
                     "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-19 03:26:42 AM -> 2026-11-19 03:26:42 AM | x1"
                 ]
             }
-        ]
+        ],
+        "first_failed_time": "07:06:10 AM",
+        "first_failed_full": "2026-11-19 07:06:10 AM",
+        "first_failed_ts": 1795052170.2390842,
+        "fail_log": [
+            {
+                "reason": "Empty structural array (Error Code 5)",
+                "first": "2026-11-19 07:06:10 AM",
+                "last": "2026-11-19 07:06:10 AM",
+                "count": 1
+            }
+        ],
+        "fail_total": 1
     }
 }
