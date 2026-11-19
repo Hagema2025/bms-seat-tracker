@@ -388,10 +388,10 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     116 free \u00b7 21 booked \u00b7 since 18 Nov 12:35 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     2 free \u00b7 14 booked \u00b7 since 18 Nov 12:35 PM",
-        "last_checked_ist": "2026-11-20 03:01:22 AM",
+        "last_checked_ist": "2026-11-20 03:10:59 AM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": true,
+        "serverfailed": false,
         "outages": [
             {
                 "n": 1,
@@ -477,20 +477,19 @@
                 "reasons": [
                     "Empty structural array (Error Code 5) | 2026-11-19 11:41:08 PM -> 2026-11-19 11:41:08 PM | x1"
                 ]
-            }
-        ],
-        "first_failed_time": "03:06:38 AM",
-        "first_failed_full": "2026-11-20 03:06:38 AM",
-        "first_failed_ts": 1795124198.4354575,
-        "fail_log": [
+            },
             {
-                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
-                "first": "2026-11-20 03:06:38 AM",
-                "last": "2026-11-20 03:06:38 AM",
-                "count": 1
+                "n": 8,
+                "start": "2026-11-20 03:06:38 AM",
+                "end": "2026-11-20 03:11:02 AM",
+                "mins": 4.4,
+                "secs": 263,
+                "total_fails": 1,
+                "reasons": [
+                    "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-20 03:06:38 AM -> 2026-11-20 03:06:38 AM | x1"
+                ]
             }
-        ],
-        "fail_total": 1
+        ]
     },
     "INTO_93252_1337": {
         "serverfailed": true,
@@ -772,14 +771,14 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-19 06:41:14 PM",
-                "last": "2026-11-20 03:06:46 AM",
-                "count": 102
+                "last": "2026-11-20 03:11:09 AM",
+                "count": 103
             }
         ],
-        "fail_total": 143
+        "fail_total": 144
     },
     "INTO_93296_1348": {
-        "serverfailed": true,
+        "serverfailed": false,
         "outages": [
             {
                 "n": 1,
@@ -790,6 +789,17 @@
                 "total_fails": 20,
                 "reasons": [
                     "Empty structural array (Error Code 5) | 2026-11-19 09:32:18 PM -> 2026-11-19 11:06:41 PM | x20"
+                ]
+            },
+            {
+                "n": 2,
+                "start": "2026-11-20 03:07:37 AM",
+                "end": "2026-11-20 03:11:13 AM",
+                "mins": 3.6,
+                "secs": 215,
+                "total_fails": 1,
+                "reasons": [
+                    "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-20 03:07:37 AM -> 2026-11-20 03:07:37 AM | x1"
                 ]
             }
         ],
@@ -807,37 +817,36 @@
                 "at": "19 Nov 11:11 PM"
             }
         },
-        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     28 free \u00b7 429 booked \u00b7 since 19 Nov 11:11 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 19 Nov 11:11 PM",
-        "last_checked_ist": "2026-11-20 03:01:22 AM",
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     27 free \u00b7 430 booked \u00b7 since 19 Nov 11:11 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 19 Nov 11:11 PM",
+        "last_checked_ist": "2026-11-20 03:10:59 AM",
         "known_seats": [
-            "M-40",
-            "M-22",
-            "M-39",
-            "M-18",
-            "J-8",
-            "M-19",
             "J-41",
-            "H-1",
-            "J-43",
-            "H-3",
-            "L-39",
-            "J-7",
-            "M-36",
-            "I-4",
-            "M-38",
-            "L-38",
-            "L-37",
-            "M-21",
-            "M-17",
-            "I-43",
-            "M-20",
-            "J-31",
-            "J-42",
+            "H-2",
+            "J-8",
+            "M-16",
+            "M-19",
             "M-37",
             "L-40",
-            "H-2",
-            "M-16",
-            "H-43"
+            "M-21",
+            "M-38",
+            "M-17",
+            "M-18",
+            "M-20",
+            "L-39",
+            "J-42",
+            "M-39",
+            "H-43",
+            "I-4",
+            "J-7",
+            "I-43",
+            "J-43",
+            "L-37",
+            "L-38",
+            "H-3",
+            "M-36",
+            "M-22",
+            "M-40",
+            "H-1"
         ],
         "all_matches": [
             "Row M: 21, 22",
@@ -858,18 +867,6 @@
             "Row H: 2, 3",
             "Row J: 42, 43",
             "Row H: 1, 2"
-        ],
-        "first_failed_time": "03:07:37 AM",
-        "first_failed_full": "2026-11-20 03:07:37 AM",
-        "first_failed_ts": 1795124257.089284,
-        "fail_log": [
-            {
-                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
-                "first": "2026-11-20 03:07:37 AM",
-                "last": "2026-11-20 03:07:37 AM",
-                "count": 1
-            }
-        ],
-        "fail_total": 1
+        ]
     }
 }
