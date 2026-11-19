@@ -388,7 +388,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     118 free \u00b7 19 booked \u00b7 since 18 Nov 12:35 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     2 free \u00b7 14 booked \u00b7 since 18 Nov 12:35 PM",
-        "last_checked_ist": "2026-11-19 11:31:32 PM",
+        "last_checked_ist": "2026-11-19 11:35:50 PM",
         "known_seats": [],
         "all_matches": [],
         "serverfailed": false,
@@ -749,11 +749,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-19 06:41:14 PM",
-                "last": "2026-11-19 11:31:47 PM",
-                "count": 59
+                "last": "2026-11-19 11:36:07 PM",
+                "count": 60
             }
         ],
-        "fail_total": 100
+        "fail_total": 101
     },
     "INTO_93296_1348": {
         "serverfailed": false,
@@ -784,35 +784,12 @@
                 "at": "19 Nov 11:11 PM"
             }
         },
-        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     15 free \u00b7 442 booked \u00b7 since 19 Nov 11:11 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 19 Nov 11:11 PM",
-        "last_checked_ist": "2026-11-19 11:31:32 PM",
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     2 free \u00b7 455 booked \u00b7 since 19 Nov 11:11 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 60 booked \u00b7 since 19 Nov 11:11 PM",
+        "last_checked_ist": "2026-11-19 11:35:50 PM",
         "known_seats": [
-            "I-38",
-            "J-14",
-            "H-7",
-            "I-29",
-            "H-5",
-            "I-30",
-            "H-8",
-            "I-37",
-            "K-9",
-            "I-36",
-            "K-10",
-            "M-29",
-            "J-15",
-            "J-13",
-            "H-6"
+            "I-31",
+            "I-24"
         ],
-        "all_matches": [
-            "Row I: 29, 30",
-            "Row J: 14, 15",
-            "Row J: 13, 14",
-            "Row K: 9, 10",
-            "Row I: 36, 37",
-            "Row H: 7, 8",
-            "Row I: 37, 38",
-            "Row H: 6, 7",
-            "Row H: 5, 6"
-        ]
+        "all_matches": []
     }
 }
