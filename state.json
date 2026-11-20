@@ -391,7 +391,7 @@
         "last_checked_ist": "2026-11-21 03:11:02 AM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": false,
+        "serverfailed": true,
         "outages": [
             {
                 "n": 1,
@@ -533,7 +533,19 @@
                     "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-21 03:06:38 AM -> 2026-11-21 03:06:38 AM | x1"
                 ]
             }
-        ]
+        ],
+        "first_failed_time": "03:16:47 AM",
+        "first_failed_full": "2026-11-21 03:16:47 AM",
+        "first_failed_ts": 1795211207.6767673,
+        "fail_log": [
+            {
+                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
+                "first": "2026-11-21 03:16:47 AM",
+                "last": "2026-11-21 03:16:47 AM",
+                "count": 1
+            }
+        ],
+        "fail_total": 1
     },
     "INTO_93252_1337": {
         "serverfailed": true,
@@ -839,11 +851,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-20 04:21:14 AM",
-                "last": "2026-11-21 03:11:11 AM",
-                "count": 275
+                "last": "2026-11-21 03:16:54 AM",
+                "count": 276
             }
         ],
-        "fail_total": 432
+        "fail_total": 433
     },
     "INTO_93296_1348": {
         "serverfailed": true,
@@ -1034,9 +1046,15 @@
                 "first": "2026-11-21 03:11:19 AM",
                 "last": "2026-11-21 03:11:19 AM",
                 "count": 1
+            },
+            {
+                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
+                "first": "2026-11-21 03:17:45 AM",
+                "last": "2026-11-21 03:17:45 AM",
+                "count": 1
             }
         ],
-        "fail_total": 174
+        "fail_total": 175
     },
     "INTO_93232_1428": {
         "open_cats": [
@@ -1056,6 +1074,19 @@
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     102 free \u00b7 35 booked \u00b7 since 20 Nov 09:41 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 16 booked \u00b7 since 20 Nov 09:41 PM",
         "last_checked_ist": "2026-11-21 03:11:02 AM",
         "known_seats": [],
-        "all_matches": []
+        "all_matches": [],
+        "serverfailed": true,
+        "first_failed_time": "03:18:37 AM",
+        "first_failed_full": "2026-11-21 03:18:37 AM",
+        "first_failed_ts": 1795211317.4513924,
+        "fail_log": [
+            {
+                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
+                "first": "2026-11-21 03:18:37 AM",
+                "last": "2026-11-21 03:18:37 AM",
+                "count": 1
+            }
+        ],
+        "fail_total": 1
     }
 }
