@@ -388,10 +388,10 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     62 free \u00b7 75 booked \u00b7 since 18 Nov 12:35 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 16 booked \u00b7 since 18 Nov 12:35 PM",
-        "last_checked_ist": "2026-11-21 03:01:16 AM",
+        "last_checked_ist": "2026-11-21 03:11:02 AM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": true,
+        "serverfailed": false,
         "outages": [
             {
                 "n": 1,
@@ -521,20 +521,19 @@
                 "reasons": [
                     "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-20 04:16:50 AM -> 2026-11-20 04:16:50 AM | x1"
                 ]
-            }
-        ],
-        "first_failed_time": "03:06:38 AM",
-        "first_failed_full": "2026-11-21 03:06:38 AM",
-        "first_failed_ts": 1795210598.298465,
-        "fail_log": [
+            },
             {
-                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
-                "first": "2026-11-21 03:06:38 AM",
-                "last": "2026-11-21 03:06:38 AM",
-                "count": 1
+                "n": 12,
+                "start": "2026-11-21 03:06:38 AM",
+                "end": "2026-11-21 03:11:05 AM",
+                "mins": 4.4,
+                "secs": 267,
+                "total_fails": 1,
+                "reasons": [
+                    "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-21 03:06:38 AM -> 2026-11-21 03:06:38 AM | x1"
+                ]
             }
-        ],
-        "fail_total": 1
+        ]
     },
     "INTO_93252_1337": {
         "serverfailed": true,
@@ -840,11 +839,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-20 04:21:14 AM",
-                "last": "2026-11-21 03:06:45 AM",
-                "count": 274
+                "last": "2026-11-21 03:11:11 AM",
+                "count": 275
             }
         ],
-        "fail_total": 431
+        "fail_total": 432
     },
     "INTO_93296_1348": {
         "serverfailed": true,
@@ -1029,9 +1028,15 @@
                 "first": "2026-11-21 03:07:37 AM",
                 "last": "2026-11-21 03:07:37 AM",
                 "count": 1
+            },
+            {
+                "reason": "Empty structural array (Error Code 5)",
+                "first": "2026-11-21 03:11:19 AM",
+                "last": "2026-11-21 03:11:19 AM",
+                "count": 1
             }
         ],
-        "fail_total": 173
+        "fail_total": 174
     },
     "INTO_93232_1428": {
         "open_cats": [
@@ -1049,7 +1054,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     102 free \u00b7 35 booked \u00b7 since 20 Nov 09:41 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 16 booked \u00b7 since 20 Nov 09:41 PM",
-        "last_checked_ist": "2026-11-21 03:05:46 AM",
+        "last_checked_ist": "2026-11-21 03:11:02 AM",
         "known_seats": [],
         "all_matches": []
     }
