@@ -117,5 +117,30 @@
     "summary_msg_id": 1350,
     "status_msg_id": 1351,
     "category_msg_id": 1352
+  },
+  "20261120213719": {
+    "event_code": "ET00526277",
+    "venue_code": "INTO",
+    "theatre": "INOX: The Marina Mall, OMR",
+    "session_id": "93232",
+    "date": "20261122",
+    "url": "https://in.bookmyshow.com/movies/chennai/seat-layout/ET00526277/INTO/93232/20261122",
+    "name": "16",
+    "show_time": "4:00 PM",
+    "seat_count": 1,
+    "require_adjacent": true,
+    "pending_rows": [],
+    "row_preferences": {
+      "J": [
+        "4",
+        "5",
+        "6"
+      ],
+      "K": []
+    },
+    "message_thread_id": 1428,
+    "summary_msg_id": 1430,
+    "status_msg_id": 1431,
+    "category_msg_id": 1432
   }
 }
