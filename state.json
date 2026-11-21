@@ -895,11 +895,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-20 04:21:14 AM",
-                "last": "2026-11-22 02:01:23 AM",
-                "count": 549
+                "last": "2026-11-22 02:05:52 AM",
+                "count": 550
             }
         ],
-        "fail_total": 706
+        "fail_total": 707
     },
     "INTO_93296_1348": {
         "serverfailed": true,
@@ -1100,11 +1100,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-21 03:21:16 AM",
-                "last": "2026-11-22 02:01:31 AM",
-                "count": 273
+                "last": "2026-11-22 02:06:02 AM",
+                "count": 274
             }
         ],
-        "fail_total": 448
+        "fail_total": 449
     },
     "INTO_93232_1428": {
         "open_cats": [
@@ -1122,7 +1122,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     17 free \u00b7 120 booked \u00b7 since 20 Nov 09:41 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 16 booked \u00b7 since 20 Nov 09:41 PM",
-        "last_checked_ist": "2026-11-22 02:01:16 AM",
+        "last_checked_ist": "2026-11-22 02:05:45 AM",
         "known_seats": [],
         "all_matches": [],
         "serverfailed": false,
