@@ -895,11 +895,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-20 04:21:14 AM",
-                "last": "2026-11-22 03:11:00 AM",
-                "count": 563
+                "last": "2026-11-22 03:16:03 AM",
+                "count": 564
             }
         ],
-        "fail_total": 720
+        "fail_total": 721
     },
     "INTO_93296_1348": {
         "serverfailed": true,
@@ -1114,9 +1114,15 @@
                 "first": "2026-11-22 03:11:08 AM",
                 "last": "2026-11-22 03:11:08 AM",
                 "count": 1
+            },
+            {
+                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
+                "first": "2026-11-22 03:16:53 AM",
+                "last": "2026-11-22 03:16:53 AM",
+                "count": 1
             }
         ],
-        "fail_total": 462
+        "fail_total": 463
     },
     "INTO_93232_1428": {
         "open_cats": [
@@ -1137,7 +1143,7 @@
         "last_checked_ist": "2026-11-22 03:10:54 AM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": false,
+        "serverfailed": true,
         "outages": [
             {
                 "n": 1,
@@ -1161,6 +1167,18 @@
                     "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-22 03:07:34 AM -> 2026-11-22 03:07:34 AM | x1"
                 ]
             }
-        ]
+        ],
+        "first_failed_time": "03:17:45 AM",
+        "first_failed_full": "2026-11-22 03:17:45 AM",
+        "first_failed_ts": 1795297665.552552,
+        "fail_log": [
+            {
+                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
+                "first": "2026-11-22 03:17:45 AM",
+                "last": "2026-11-22 03:17:45 AM",
+                "count": 1
+            }
+        ],
+        "fail_total": 1
     }
 }
