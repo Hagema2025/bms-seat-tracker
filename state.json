@@ -388,7 +388,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     34 free \u00b7 103 booked \u00b7 since 18 Nov 12:35 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 16 booked \u00b7 since 18 Nov 12:35 PM",
-        "last_checked_ist": "2026-11-21 10:55:41 AM",
+        "last_checked_ist": "2026-11-21 11:01:15 AM",
         "known_seats": [],
         "all_matches": [],
         "serverfailed": false,
@@ -850,11 +850,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-20 04:21:14 AM",
-                "last": "2026-11-21 10:55:52 AM",
-                "count": 368
+                "last": "2026-11-21 11:01:24 AM",
+                "count": 369
             }
         ],
-        "fail_total": 525
+        "fail_total": 526
     },
     "INTO_93296_1348": {
         "serverfailed": true,
@@ -1055,11 +1055,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-21 03:21:16 AM",
-                "last": "2026-11-21 10:56:02 AM",
-                "count": 92
+                "last": "2026-11-21 11:01:35 AM",
+                "count": 93
             }
         ],
-        "fail_total": 267
+        "fail_total": 268
     },
     "INTO_93232_1428": {
         "open_cats": [
@@ -1076,8 +1076,8 @@
                 "at": "20 Nov 09:41 PM"
             }
         },
-        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     93 free \u00b7 44 booked \u00b7 since 20 Nov 09:41 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 16 booked \u00b7 since 20 Nov 09:41 PM",
-        "last_checked_ist": "2026-11-21 10:55:41 AM",
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     87 free \u00b7 50 booked \u00b7 since 20 Nov 09:41 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 16 booked \u00b7 since 20 Nov 09:41 PM",
+        "last_checked_ist": "2026-11-21 11:01:15 AM",
         "known_seats": [],
         "all_matches": [],
         "serverfailed": false,
