@@ -387,8 +387,8 @@
                 "at": "18 Nov 12:35 PM"
             }
         },
-        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     4 free \u00b7 133 booked \u00b7 since 18 Nov 12:35 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 16 booked \u00b7 since 18 Nov 12:35 PM",
-        "last_checked_ist": "2026-11-21 01:46:02 PM",
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     3 free \u00b7 134 booked \u00b7 since 18 Nov 12:35 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 16 booked \u00b7 since 18 Nov 12:35 PM",
+        "last_checked_ist": "2026-11-21 01:50:56 PM",
         "known_seats": [],
         "all_matches": [],
         "serverfailed": false,
@@ -850,11 +850,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-20 04:21:14 AM",
-                "last": "2026-11-21 01:46:13 PM",
-                "count": 402
+                "last": "2026-11-21 01:51:06 PM",
+                "count": 403
             }
         ],
-        "fail_total": 559
+        "fail_total": 560
     },
     "INTO_93296_1348": {
         "serverfailed": true,
@@ -1055,11 +1055,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-21 03:21:16 AM",
-                "last": "2026-11-21 01:46:22 PM",
-                "count": 126
+                "last": "2026-11-21 01:51:15 PM",
+                "count": 127
             }
         ],
-        "fail_total": 301
+        "fail_total": 302
     },
     "INTO_93232_1428": {
         "open_cats": [
@@ -1077,7 +1077,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     71 free \u00b7 66 booked \u00b7 since 20 Nov 09:41 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 16 booked \u00b7 since 20 Nov 09:41 PM",
-        "last_checked_ist": "2026-11-21 01:46:02 PM",
+        "last_checked_ist": "2026-11-21 01:50:56 PM",
         "known_seats": [],
         "all_matches": [],
         "serverfailed": false,
