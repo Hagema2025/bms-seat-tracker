@@ -391,7 +391,7 @@
         "last_checked_ist": "2026-11-21 03:20:55 PM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": false,
+        "serverfailed": true,
         "outages": [
             {
                 "n": 1,
@@ -555,7 +555,19 @@
                     "Empty structural array (Error Code 5) | 2026-11-21 03:16:01 PM -> 2026-11-21 03:16:01 PM | x1"
                 ]
             }
-        ]
+        ],
+        "first_failed_time": "03:25:49 PM",
+        "first_failed_full": "2026-11-21 03:25:49 PM",
+        "first_failed_ts": 1795254949.6443787,
+        "fail_log": [
+            {
+                "reason": "Empty structural array (Error Code 5)",
+                "first": "2026-11-21 03:25:49 PM",
+                "last": "2026-11-21 03:25:49 PM",
+                "count": 1
+            }
+        ],
+        "fail_total": 1
     },
     "INTO_93252_1337": {
         "serverfailed": true,
@@ -861,11 +873,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-20 04:21:14 AM",
-                "last": "2026-11-21 03:21:06 PM",
-                "count": 421
+                "last": "2026-11-21 03:25:57 PM",
+                "count": 422
             }
         ],
-        "fail_total": 578
+        "fail_total": 579
     },
     "INTO_93296_1348": {
         "serverfailed": true,
@@ -1066,11 +1078,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-21 03:21:16 AM",
-                "last": "2026-11-21 03:21:15 PM",
-                "count": 145
+                "last": "2026-11-21 03:26:06 PM",
+                "count": 146
             }
         ],
-        "fail_total": 320
+        "fail_total": 321
     },
     "INTO_93232_1428": {
         "open_cats": [
@@ -1088,7 +1100,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     44 free \u00b7 93 booked \u00b7 since 20 Nov 09:41 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 16 booked \u00b7 since 20 Nov 09:41 PM",
-        "last_checked_ist": "2026-11-21 03:20:55 PM",
+        "last_checked_ist": "2026-11-21 03:25:40 PM",
         "known_seats": [],
         "all_matches": [],
         "serverfailed": false,
