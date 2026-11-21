@@ -391,7 +391,7 @@
         "last_checked_ist": "2026-11-21 03:10:56 PM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": false,
+        "serverfailed": true,
         "outages": [
             {
                 "n": 1,
@@ -544,7 +544,19 @@
                     "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-21 03:16:47 AM -> 2026-11-21 03:16:47 AM | x1"
                 ]
             }
-        ]
+        ],
+        "first_failed_time": "03:16:01 PM",
+        "first_failed_full": "2026-11-21 03:16:01 PM",
+        "first_failed_ts": 1795254361.6352406,
+        "fail_log": [
+            {
+                "reason": "Empty structural array (Error Code 5)",
+                "first": "2026-11-21 03:16:01 PM",
+                "last": "2026-11-21 03:16:01 PM",
+                "count": 1
+            }
+        ],
+        "fail_total": 1
     },
     "INTO_93252_1337": {
         "serverfailed": true,
@@ -850,11 +862,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-20 04:21:14 AM",
-                "last": "2026-11-21 03:11:07 PM",
-                "count": 419
+                "last": "2026-11-21 03:16:09 PM",
+                "count": 420
             }
         ],
-        "fail_total": 576
+        "fail_total": 577
     },
     "INTO_93296_1348": {
         "serverfailed": true,
@@ -1055,11 +1067,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-21 03:21:16 AM",
-                "last": "2026-11-21 03:11:15 PM",
-                "count": 143
+                "last": "2026-11-21 03:16:16 PM",
+                "count": 144
             }
         ],
-        "fail_total": 318
+        "fail_total": 319
     },
     "INTO_93232_1428": {
         "open_cats": [
@@ -1077,7 +1089,7 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     44 free \u00b7 93 booked \u00b7 since 20 Nov 09:41 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 16 booked \u00b7 since 20 Nov 09:41 PM",
-        "last_checked_ist": "2026-11-21 03:10:56 PM",
+        "last_checked_ist": "2026-11-21 03:15:51 PM",
         "known_seats": [],
         "all_matches": [],
         "serverfailed": false,
