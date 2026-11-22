@@ -895,11 +895,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-20 04:21:14 AM",
-                "last": "2026-11-23 03:25:46 AM",
-                "count": 854
+                "last": "2026-11-23 03:31:33 AM",
+                "count": 855
             }
         ],
-        "fail_total": 1011
+        "fail_total": 1012
     },
     "INTO_93296_1348": {
         "serverfailed": true,
@@ -1150,9 +1150,15 @@
                 "first": "2026-11-23 03:21:11 AM",
                 "last": "2026-11-23 03:25:55 AM",
                 "count": 2
+            },
+            {
+                "reason": "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill",
+                "first": "2026-11-23 03:32:25 AM",
+                "last": "2026-11-23 03:32:25 AM",
+                "count": 1
             }
         ],
-        "fail_total": 753
+        "fail_total": 754
     },
     "INTO_93232_1428": {
         "open_cats": [
