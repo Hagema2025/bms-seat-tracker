@@ -895,11 +895,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-20 04:21:14 AM",
-                "last": "2026-11-22 03:25:53 PM",
-                "count": 710
+                "last": "2026-11-22 03:31:27 PM",
+                "count": 711
             }
         ],
-        "fail_total": 867
+        "fail_total": 868
     },
     "INTO_93296_1348": {
         "serverfailed": true,
@@ -1124,11 +1124,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-22 03:21:15 AM",
-                "last": "2026-11-22 03:26:02 PM",
-                "count": 146
+                "last": "2026-11-22 03:31:35 PM",
+                "count": 147
             }
         ],
-        "fail_total": 609
+        "fail_total": 610
     },
     "INTO_93232_1428": {
         "open_cats": [
@@ -1149,7 +1149,7 @@
         "last_checked_ist": "2026-11-22 03:25:45 PM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": false,
+        "serverfailed": true,
         "outages": [
             {
                 "n": 1,
@@ -1195,6 +1195,18 @@
                     "Empty structural array (Error Code 5) | 2026-11-22 11:31:47 AM -> 2026-11-22 03:21:18 PM | x47"
                 ]
             }
-        ]
+        ],
+        "first_failed_time": "03:31:44 PM",
+        "first_failed_full": "2026-11-22 03:31:44 PM",
+        "first_failed_ts": 1795341704.1534061,
+        "fail_log": [
+            {
+                "reason": "Empty structural array (Error Code 5)",
+                "first": "2026-11-22 03:31:44 PM",
+                "last": "2026-11-22 03:31:44 PM",
+                "count": 1
+            }
+        ],
+        "fail_total": 1
     }
 }
