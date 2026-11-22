@@ -895,11 +895,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-20 04:21:14 AM",
-                "last": "2026-11-22 03:21:01 PM",
-                "count": 709
+                "last": "2026-11-22 03:25:53 PM",
+                "count": 710
             }
         ],
-        "fail_total": 866
+        "fail_total": 867
     },
     "INTO_93296_1348": {
         "serverfailed": true,
@@ -1124,11 +1124,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-22 03:21:15 AM",
-                "last": "2026-11-22 03:21:09 PM",
-                "count": 145
+                "last": "2026-11-22 03:26:02 PM",
+                "count": 146
             }
         ],
-        "fail_total": 608
+        "fail_total": 609
     },
     "INTO_93232_1428": {
         "open_cats": [
@@ -1146,10 +1146,10 @@
             }
         },
         "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     4 free \u00b7 133 booked \u00b7 since 20 Nov 09:41 PM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     0 free \u00b7 16 booked \u00b7 since 20 Nov 09:41 PM",
-        "last_checked_ist": "2026-11-22 11:25:39 AM",
+        "last_checked_ist": "2026-11-22 03:25:45 PM",
         "known_seats": [],
         "all_matches": [],
-        "serverfailed": true,
+        "serverfailed": false,
         "outages": [
             {
                 "n": 1,
@@ -1183,19 +1183,18 @@
                 "reasons": [
                     "Socket Exception: Failed to perform, curl: (28) Operation timed out after N mill | 2026-11-22 03:17:45 AM -> 2026-11-22 03:17:45 AM | x1"
                 ]
-            }
-        ],
-        "first_failed_time": "11:31:47 AM",
-        "first_failed_full": "2026-11-22 11:31:47 AM",
-        "first_failed_ts": 1795327307.0470498,
-        "fail_log": [
+            },
             {
-                "reason": "Empty structural array (Error Code 5)",
-                "first": "2026-11-22 11:31:47 AM",
-                "last": "2026-11-22 03:21:18 PM",
-                "count": 47
+                "n": 4,
+                "start": "2026-11-22 11:31:47 AM",
+                "end": "2026-11-22 03:26:06 PM",
+                "mins": 234.3,
+                "secs": 14059,
+                "total_fails": 47,
+                "reasons": [
+                    "Empty structural array (Error Code 5) | 2026-11-22 11:31:47 AM -> 2026-11-22 03:21:18 PM | x47"
+                ]
             }
-        ],
-        "fail_total": 47
+        ]
     }
 }
