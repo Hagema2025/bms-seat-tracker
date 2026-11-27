@@ -895,11 +895,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-20 04:21:14 AM",
-                "last": "2026-11-27 05:35:55 AM",
-                "count": 2031
+                "last": "2026-11-27 05:41:00 AM",
+                "count": 2032
             }
         ],
-        "fail_total": 2188
+        "fail_total": 2189
     },
     "INTO_93296_1348": {
         "serverfailed": true,
@@ -1244,11 +1244,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-27 03:11:16 AM",
-                "last": "2026-11-27 05:36:03 AM",
-                "count": 30
+                "last": "2026-11-27 05:41:08 AM",
+                "count": 31
             }
         ],
-        "fail_total": 1930
+        "fail_total": 1931
     },
     "INTO_93232_1428": {
         "open_cats": [
