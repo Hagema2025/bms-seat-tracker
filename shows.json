@@ -142,5 +142,30 @@
     "summary_msg_id": 1430,
     "status_msg_id": 1431,
     "category_msg_id": 1432
+  },
+  "20261128003604": {
+    "event_code": "ET00525197",
+    "venue_code": "INTO",
+    "theatre": "INOX: The Marina Mall, OMR",
+    "session_id": "93603",
+    "date": "20261128",
+    "url": "https://in.bookmyshow.com/movies/chen/seat-layout/ET00525197/INTO/93603/20261128",
+    "name": "Cosmic samson 60rs",
+    "show_time": "11:00 PM",
+    "seat_count": 2,
+    "require_adjacent": true,
+    "pending_rows": [],
+    "row_preferences": {
+      "J": [
+        "1",
+        "2",
+        "3"
+      ],
+      "K": []
+    },
+    "message_thread_id": 1438,
+    "summary_msg_id": 1440,
+    "status_msg_id": 1441,
+    "category_msg_id": 1442
   }
 }
