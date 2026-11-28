@@ -919,11 +919,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-28 02:11:09 PM",
-                "last": "2026-11-28 10:35:51 PM",
-                "count": 102
+                "last": "2026-11-28 10:41:01 PM",
+                "count": 103
             }
         ],
-        "fail_total": 2679
+        "fail_total": 2680
     },
     "INTO_93296_1348": {
         "serverfailed": true,
@@ -1280,11 +1280,11 @@
             {
                 "reason": "Empty structural array (Error Code 5)",
                 "first": "2026-11-28 03:11:20 AM",
-                "last": "2026-11-28 10:35:59 PM",
-                "count": 234
+                "last": "2026-11-28 10:41:09 PM",
+                "count": 235
             }
         ],
-        "fail_total": 2421
+        "fail_total": 2422
     },
     "INTO_93232_1428": {
         "open_cats": [
@@ -1381,26 +1381,14 @@
                 "at": "28 Nov 12:41 AM"
             }
         },
-        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     64 free \u00b7 73 booked \u00b7 since 28 Nov 12:41 AM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     9 free \u00b7 7 booked \u00b7 since 28 Nov 12:41 AM",
-        "last_checked_ist": "2026-11-28 10:35:44 PM",
+        "cat_text": "\ud83c\udff7\ufe0f Categories\n\ud83d\udd13 CL (A): Open (bookings seen)\n     61 free \u00b7 76 booked \u00b7 since 28 Nov 12:41 AM\n\ud83d\udd13 EX (B): Open (bookings seen)\n     2 free \u00b7 14 booked \u00b7 since 28 Nov 12:41 AM",
+        "last_checked_ist": "2026-11-28 10:40:54 PM",
         "known_seats": [
-            "K-2",
-            "K-11",
-            "K-10",
-            "K-13",
-            "K-4",
             "K-12",
-            "K-9",
-            "K-3",
-            "K-1"
+            "K-11"
         ],
         "all_matches": [
-            "Row K: 9, 10",
-            "Row K: 11, 12",
-            "Row K: 12, 13",
-            "Row K: 3, 4",
-            "Row K: 2, 3",
-            "Row K: 1, 2"
+            "Row K: 11, 12"
         ],
         "serverfailed": false,
         "outages": [
